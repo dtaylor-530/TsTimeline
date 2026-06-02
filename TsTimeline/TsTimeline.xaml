@@ -2,29 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:timelineControl="clr-namespace:TsTimeline"
                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
-    <DataTemplate DataType="{x:Type timelineControl:IHoldClipDataContext}">
-        <timelineControl:HoldClip
-            UseLayoutRounding="False"
-            Scale="{Binding Scale , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"
-            StartValue="{Binding StartFrame}"
-            EndValue="{Binding EndFrame}"
-            Width="{Binding CanvasActualWidth, RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"
-            Height="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"
-            ClipToBounds="False" />
-    </DataTemplate>
 
-    <DataTemplate DataType="{x:Type timelineControl:ITriggerClipDataContext}">
-        <timelineControl:TriggerClip
-            UseLayoutRounding="False"
-            Scale="{Binding Scale , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"
-            Value="{Binding Frame}"
-            Width="{Binding CanvasActualWidth, RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"
-            Height="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"
-            ClipToBounds="False" />
-    </DataTemplate>
-
-    <Style TargetType="{x:Type timelineControl:TsTimeline}">
-        <Setter Property="UseLayoutRounding" Value="True" />
+    <timelineControl:WidthToMarginConverter x:Key="WidthToMarginConverter"></timelineControl:WidthToMarginConverter>
+    
+    <Style TargetType="{x:Type timelineControl:TsTimeline}">       
+        <Setter Property="UseLayoutRounding" Value="True" /> 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type timelineControl:TsTimeline}">
@@ -55,9 +37,11 @@
                                 <timelineControl:ScrollViewerBindBehavior
                                     Target="{Binding ElementName=PART_SCROLL_VIEWER}" />
                             </b:Interaction.Behaviors>
-                            <ItemsControl ItemsSource="{TemplateBinding Tracks}" AlternationCount="2" />
+                            <ItemsControl ItemsSource="{TemplateBinding ItemsSource}" 
+                                          ItemTemplate="{TemplateBinding ItemTemplate}"
+                                          ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
                         </ScrollViewer>
-                        <timelineControl:MeasureRenderer
+                        <timelineControl:MeasureRenderer                         
                             Grid.Column="1"
                             Width="{TemplateBinding CanvasActualWidth}"
                             Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}"
@@ -74,19 +58,7 @@
                                       Background="Transparent"
                                       VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"
                                       HorizontalContentAlignment="Left">
-                            <ItemsControl ItemsSource="{TemplateBinding Tracks}" HorizontalAlignment="Left"
-                                          x:Name="PART_TimeLineContentHost" Background="Transparent"
-                                          Width="{TemplateBinding CanvasActualWidth }">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border x:Name="bd">
-                                            <timelineControl:ClipsControl Height="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"
-                                                                          Scale="{Binding Scale , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"
-                                                                          ItemTemplateSelector="{timelineControl:InterfaceTemplateSelector}"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <ItemsPresenter/>             
                         </ScrollViewer>
                     </Grid>
                 </ControlTemplate>

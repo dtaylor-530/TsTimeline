@@ -8,13 +8,13 @@ namespace TsTimeline
     [TemplatePart(Name="PART_LEFT", Type=typeof(Thumb))]
     [TemplatePart(Name="PART_RIGHT", Type=typeof(Thumb))]
     [TemplatePart(Name="PART_CENTER", Type=typeof(Thumb))]
-    public class HoldClip : ClipBase
+    public partial class ClipBase
     {
         public static readonly DependencyProperty StartValueProperty =
-            DepProp.Register<HoldClip, double>(
+            DepProp.Register<ClipBase, double>(
                 nameof(StartValue),
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                OnValueChanged);
+                ValueChanged);
         public double StartValue
         {
             get => (double) GetValue(StartValueProperty);
@@ -22,29 +22,15 @@ namespace TsTimeline
         }
 
         public static readonly DependencyProperty EndValueProperty = 
-            DepProp.Register<HoldClip, double>(
+            DepProp.Register<ClipBase, double>(
                 nameof(EndValue),
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                OnValueChanged);
+                ValueChanged);
 
         public double EndValue
         {
             get => (double) GetValue(EndValueProperty);
             set => SetValue(EndValueProperty, value);
-        }
-
-        protected override void OnScaleChanged()
-        {
-            base.OnScaleChanged();
-            UpdateThumbs();
-        }
-
-        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is HoldClip t)
-            {
-                t.UpdateThumbs();
-            }
         }
 
         private double MaxValue => (int) (ActualWidth * (1.0 / Scale) + 0.5d);
@@ -111,12 +97,6 @@ namespace TsTimeline
             }
 
             return d;
-        }
-
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-            TrySetupThumbs();
         }
 
         private Thumb _left;

@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/HoldClip.xaml" />
+            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/ClipsControl.xaml" />
+            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TriggerClip.xaml" />
+            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/ClipBase.xaml" />
+            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TsTimeline.xaml" />
+            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/Vector3EditBox.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

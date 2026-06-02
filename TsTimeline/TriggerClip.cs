@@ -6,13 +6,13 @@ using System.Windows.Controls.Primitives;
 namespace TsTimeline
 {
     [TemplatePart(Name="PART_THUMB", Type=typeof(Thumb))]
-    public class TriggerClip : ClipBase
+    public partial class ClipBase
     {
         public static readonly DependencyProperty ValueProperty =
-            DepProp.Register<TriggerClip, double>(
+            DepProp.Register<ClipBase, double>(
                 nameof(Value),
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                OnValueChanged);
+                ValueChanged);
 
         public double Value
         {
@@ -20,21 +20,11 @@ namespace TsTimeline
             set => SetValue(ValueProperty, value);
         }
 
-        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if(d is TriggerClip t)
-                t.UpdateThumb();
-        }
-
-        protected override void OnScaleChanged()
-        {
-            this.UpdateThumb();
-        }
-
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             TryGetThumb(out _);
+            TrySetupThumbs();
         }
 
         private void Thumb_OnDragDelta(Vector vector)

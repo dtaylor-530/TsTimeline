@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:timelineControl="clr-namespace:TsTimeline">
+
+    <Style TargetType="{x:Type timelineControl:ClipBase}">
+        <Setter Property="UseLayoutRounding" Value="False" />
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Scale" Value="{Binding Scale , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}" />
+        <Setter Property="Width" Value="{Binding CanvasActualWidth , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}" />
+        <Setter Property="Height" Value="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}" />
+    </Style>
+
+
+</ResourceDictionary>

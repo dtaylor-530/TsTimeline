@@ -6,8 +6,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TrackStyles.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TimelineTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/Themes/Generic.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

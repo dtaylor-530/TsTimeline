@@ -10,7 +10,6 @@ namespace SandBox
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowVm();
         }
     }
 }

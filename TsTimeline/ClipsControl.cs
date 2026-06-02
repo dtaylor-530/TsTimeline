@@ -4,8 +4,21 @@ using System.Windows.Input;
 
 namespace TsTimeline
 {
-    public class ClipsControl : ItemsControl , ISelectable
+
+  
+    public class ClipsControl : TreeViewItem , ISelectable
     {
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new ClipBase();
+        }
+
+        protected override bool IsItemItsOwnContainerOverride(object item)
+        {
+            return item is ClipBase;
+        }
+
+
         public SelectorService SelectorService => SelectorService.Default;
         
         public static readonly DependencyProperty LastMouseDownXProperty =
@@ -26,19 +39,10 @@ namespace TsTimeline
             set => SetValue(ScaleProperty, value);
         }
 
-        public static readonly DependencyProperty IsSelectedProperty =
-            DepProp.Register<ClipsControl, bool>(nameof(IsSelected) , FrameworkPropertyMetadataOptions.BindsTwoWayByDefault , SelectedChanged);
-
         private static void SelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if(d is ClipsControl c)
                 c.OnSelectedChanged();
-        }
-
-        public bool IsSelected
-        {
-            get => (bool) GetValue(IsSelectedProperty);
-            set => SetValue(IsSelectedProperty, value);
         }
 
         public ClipsControl()

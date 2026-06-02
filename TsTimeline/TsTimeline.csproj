@@ -1,19 +1,42 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <UseWPF>true</UseWPF>
-        <TargetFrameworks>net462;netcoreapp3.1</TargetFrameworks>
-        <AssemblyName>Timeline</AssemblyName>
-    </PropertyGroup>
-
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+      <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="Vector3EditBoxStyle.xaml">
+      <Page Update="Vector3EditBox.xaml">
         <Generator></Generator>
       </Page>
     </ItemGroup>
+	
+	<ItemGroup>
 
+		<Compile Update="TsTimeline.cs">
+			<DependentUpon>TsTimeline.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="ClipBase.cs">
+			<DependentUpon>ClipBase.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="ClipsControl.cs">
+			<DependentUpon>ClipsControl.xaml</DependentUpon>
+		</Compile>
+
+		<Compile Update="TriggerClip.cs">
+			<DependentUpon>TriggerClip.xaml</DependentUpon>
+		</Compile>
+
+		<Compile Update="HoldClip.cs">
+			<DependentUpon>HoldClip.xaml</DependentUpon>
+		</Compile>
+
+		<Compile Update="Vector3EditBox.cs">
+			<DependentUpon>Vector3EditBox.xaml</DependentUpon>
+		</Compile>
+	</ItemGroup>
 </Project>

@@ -1,37 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using TsTimeline;
 
 namespace SandBox
 {
-    public class TriggerClipVm : Notification, ITriggerClipDataContext
-    {
-        public double Value { get; set; }
-    }
-
-    public class HoldClipVm : Notification, IHoldClipDataContext
-    {
-        public double StartValue { get; set; }
-        public double EndValue { get; set; }
-    }
-
-    public class TrackVm : Notification
-    {
-        public string Name => "Test Track";
-
-        public double Min
-        {
-            get => Clips.OfType<IHoldClipDataContext>().Min(x => x.StartValue);
-        }
-        
-        public double Max
-        {
-            get => Clips.OfType<IHoldClipDataContext>().Max(x => x.EndValue);
-        }
-        
-        public ObservableCollection<Notification> Clips { get; } = new ObservableCollection<Notification>();
-    }
 
     public class MainWindowVm : Notification
     {

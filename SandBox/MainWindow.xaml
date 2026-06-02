@@ -8,25 +8,48 @@
         xmlns:tsTimeline="clr-namespace:TsTimeline;assembly=TsTimeline"
         mc:Ignorable="d"
         Title="1000 tracks &amp; 3000 clips demo" Height="450" Width="800">
-    <Window.Resources>
-        <DataTemplate DataType="{x:Type local:TrackVm}"> 
-            <Grid> 
-                <Grid.ColumnDefinitions> 
-                    <ColumnDefinition Width="100"/> 
-                    <ColumnDefinition Width="10"/> 
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="50"/>
-                </Grid.ColumnDefinitions> 
-                <TextBlock Text="{Binding Name}"/> 
-                <TextBox  Text="{Binding Min , Mode=OneWay}" IsReadOnly="True" Grid.Column="2"/> 
-                <TextBox  Text="{Binding Max , Mode=OneWay}" IsReadOnly="True" Grid.Column="3"/> 
-            </Grid> 
-        </DataTemplate> 
-    </Window.Resources>
+    <FrameworkElement.DataContext>
+        <local:MainWindowVm/>
+    </FrameworkElement.DataContext>
+    <FrameworkElement.Resources>
 
-    <!-- <ListView ItemsSource="{Binding Tracks}" ItemTemplateSelector="{tsTimeline:InterfaceTemplateSelector}"/> -->
-    <tsTimeline:TsTimeline Maximum="1000" Tracks="{Binding Tracks}"/>
-    <!-- -->
-    <!-- <ContentPresenter Content="{Binding Tracks[0]}"></ContentPresenter> -->
+        <local:CustomStyleSelector x:Key="CustomStyleSelector">
+            <local:CustomStyleSelector.TriggerStyle>
+                <Style TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource TriggerClipStyle}">
+                    <Setter Property="Value" Value="{Binding Value}"></Setter>
+                </Style>
+            </local:CustomStyleSelector.TriggerStyle>
+            <local:CustomStyleSelector.HoldStyle>
+                <Style TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource HoldClipStyle}">
+                    <Setter Property="StartValue" Value="{Binding StartValue}"></Setter>
+                    <Setter Property="EndValue" Value="{Binding EndValue}"></Setter>
+                </Style>
+            </local:CustomStyleSelector.HoldStyle>
+        </local:CustomStyleSelector>
+
+        <local:ClipTemplateSelector x:Key="ClipTemplateSelector">
+            <local:ClipTemplateSelector.TrackTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type local:TrackVm}" ItemsSource="{Binding Clips}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Name}"/>
+                        <TextBox  Text="{Binding Min , Mode=OneWay}" IsReadOnly="True" Grid.Column="2"/>
+                        <TextBox  Text="{Binding Max , Mode=OneWay}" IsReadOnly="True" Grid.Column="3"/>
+                    </Grid>
+                </HierarchicalDataTemplate>
+            </local:ClipTemplateSelector.TrackTemplate>
+        </local:ClipTemplateSelector>
+    </FrameworkElement.Resources>
+
+    <tsTimeline:TsTimeline Maximum="1000" ItemsSource="{Binding Tracks}"
+                           ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
+                           ItemContainerStyleSelector="{StaticResource CustomStyleSelector}">
+    </tsTimeline:TsTimeline>
+
     
 </Window>

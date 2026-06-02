@@ -8,9 +8,20 @@ using System.Windows.Media;
 namespace TsTimeline
 {
     [TemplatePart(Name="PART_SCROLL_VIEWER", Type=typeof(ScrollViewer))]
-    [TemplatePart(Name = "PART_TimeLineContentHost" , Type = typeof(ItemsControl))]
-    public class TsTimeline : Control
+    public class TsTimeline : TreeView
     {
+
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new ClipsControl();
+        }
+
+        protected override bool IsItemItsOwnContainerOverride(object item)
+        {
+            return item is ClipsControl;
+        }
+
+
         public static readonly DependencyProperty MaximumProperty =
             DepProp.Register<TsTimeline, double>(nameof(Maximum) , 1000d, FrameworkPropertyMetadataOptions.AffectsMeasure);
 
@@ -47,13 +58,6 @@ namespace TsTimeline
             set => SetValue(TrackHeightProperty, value);
         }
 
-        public static readonly DependencyProperty TracksProperty =
-            DepProp.Register<TsTimeline, IEnumerable>(nameof(Tracks));
-        public IEnumerable Tracks
-        {
-            get => (IEnumerable) GetValue(TracksProperty);
-            set => SetValue(TracksProperty, value);
-        }
 
         public static readonly DependencyPropertyKey CanvasActualWidthPropertyKey = 
             DepProp.RegisterReadOnly<TsTimeline, double>(nameof(CanvasActualWidth));
@@ -136,6 +140,7 @@ namespace TsTimeline
             //
             // drawingContext.DrawLine(pen,new Point(x + startSnap,0)  ,new Point(x + startSnap,ActualHeight) );
             // drawingContext.DrawTextEx($"{Math.Ceiling((x + start - 0.5 ) * (1.0 / Scale)) }",mouse.X + 2, mouse.Y - 10);
+            base.OnRender(drawingContext);
         }
 
         public override void OnApplyTemplate()
@@ -143,16 +148,6 @@ namespace TsTimeline
             base.OnApplyTemplate();
             ScrollViewer = GetTemplateChild("PART_SCROLL_VIEWER") as ScrollViewer;
 
-            var itemsHost = GetTemplateChild("PART_TimeLineContentHost") as ItemsControl;
-            
-            if (itemsHost != null)
-            {
-                itemsHost.MouseDown += (s, e) =>
-                {
-                    ClipBase.SelectorService.ClearSelect();
-                    e.Handled = true;
-                };                
-            }
         }
     }
 }
