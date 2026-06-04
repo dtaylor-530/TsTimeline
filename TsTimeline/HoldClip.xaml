@@ -31,9 +31,9 @@
                             Width="{TemplateBinding Width}"
                             Height="{TemplateBinding Height}"
                             ClipToBounds="{TemplateBinding ClipToBounds}">
-                        <Thumb x:Name="PART_CENTER" Background="Orange" Opacity="0.25" />
-                        <Thumb x:Name="PART_LEFT" Background="Orange" Opacity="0.55" />
-                        <Thumb x:Name="PART_RIGHT" Background="Orange" Opacity="0.55" />
+                        <Thumb x:Name="PART_CENTER" Background="Orange" Opacity="0.25"         Cursor="Hand"/>
+                        <Thumb x:Name="PART_LEFT" Background="Orange" Opacity="0.55"        Cursor="Hand" />
+                        <Thumb x:Name="PART_RIGHT" Background="Orange" Opacity="0.55"         Cursor="Hand"/>
                     </Canvas>
                 </ControlTemplate>
             </Setter.Value>

@@ -8,14 +8,12 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Page Update="Vector3EditBox.xaml">
-        <Generator></Generator>
-      </Page>
-    </ItemGroup>
 	
 	<ItemGroup>
+
+		<Compile Update="HoldClip - Copy.cs">
+		  <DependentUpon>HoldClip.xaml</DependentUpon>
+		</Compile>
 
 		<Compile Update="TsTimeline.cs">
 			<DependentUpon>TsTimeline.xaml</DependentUpon>
@@ -34,9 +32,8 @@
 		<Compile Update="HoldClip.cs">
 			<DependentUpon>HoldClip.xaml</DependentUpon>
 		</Compile>
-
-		<Compile Update="Vector3EditBox.cs">
-			<DependentUpon>Vector3EditBox.xaml</DependentUpon>
+		<Compile Update="Timeline.cs">
+			<DependentUpon>Timeline.xaml</DependentUpon>
 		</Compile>
 	</ItemGroup>
 </Project>

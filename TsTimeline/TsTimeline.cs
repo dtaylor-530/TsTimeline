@@ -2,14 +2,56 @@
 using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace TsTimeline
 {
-    [TemplatePart(Name="PART_SCROLL_VIEWER", Type=typeof(ScrollViewer))]
+    [TemplatePart(Name = "PART_SCROLL_VIEWER", Type = typeof(ScrollViewer))]
     public class TsTimeline : TreeView
     {
+        public static readonly DependencyProperty ValueConverterProperty =
+    DependencyProperty.Register(nameof(ValueConverter), typeof(IValueConverter), typeof(TsTimeline), new PropertyMetadata());
+
+        public static readonly DependencyProperty TickMarginProperty =
+    DependencyProperty.Register(nameof(TickMargin), typeof(double), typeof(TsTimeline), new FrameworkPropertyMetadata(15d, FrameworkPropertyMetadataOptions.AffectsMeasure));
+
+        public static readonly DependencyProperty LineIntervalProperty =
+    DependencyProperty.Register(nameof(LineInterval), typeof(int), typeof(TsTimeline), new FrameworkPropertyMetadata(10, FrameworkPropertyMetadataOptions.AffectsMeasure));
+
+        public static readonly DependencyProperty ValueProperty =
+    DependencyProperty.Register(nameof(Value), typeof(double), typeof(TsTimeline), new PropertyMetadata(valueChanged));
+
+
+
+        public static readonly DependencyProperty MaximumProperty =
+            DepProp.Register<TsTimeline, double>(nameof(Maximum), 1000d, FrameworkPropertyMetadataOptions.AffectsMeasure);
+
+        public static readonly DependencyProperty MinimumProperty =
+    DepProp.Register<TsTimeline, double>(nameof(Minimum), 0d, FrameworkPropertyMetadataOptions.AffectsMeasure);
+
+        public static readonly DependencyProperty TrackHeightProperty =
+DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
+
+        internal static readonly DependencyPropertyKey ScrollViewerPropertyKey =
+            DepProp.RegisterReadOnly<TsTimeline, ScrollViewer>(nameof(ScrollViewer));
+
+        public static readonly DependencyProperty ScrollViewerProperty = ScrollViewerPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty Alter0Property =
+            DepProp.Register<TsTimeline, Brush>(nameof(Alter0), Brushes.FloralWhite);
+        public static readonly DependencyProperty Alter1Property =
+    DepProp.Register<TsTimeline, Brush>(nameof(Alter1), Brushes.WhiteSmoke);
+
+        public static readonly DependencyProperty ViewportProperty =
+    DependencyProperty.Register(nameof(Viewport), typeof(Viewport), typeof(TsTimeline), new PropertyMetadata());
+
+
+        private MeasureRenderer? measureRenderer;
+        private Timeline? timeLine;
+        private Grid? stretchGrid;
+
 
         protected override DependencyObject GetContainerForItemOverride()
         {
@@ -21,87 +63,82 @@ namespace TsTimeline
             return item is ClipsControl;
         }
 
+        #region Properties
+        public Viewport Viewport
+        {
+            get { return (Viewport)GetValue(ViewportProperty); }
+            set { SetValue(ViewportProperty, value); }
+        }
 
-        public static readonly DependencyProperty MaximumProperty =
-            DepProp.Register<TsTimeline, double>(nameof(Maximum) , 1000d, FrameworkPropertyMetadataOptions.AffectsMeasure);
+        public IValueConverter ValueConverter
+        {
+            get { return (IValueConverter)GetValue(ValueConverterProperty); }
+            set { SetValue(ValueConverterProperty, value); }
+        }
+
+        public double TickMargin
+        {
+            get { return (double)GetValue(TickMarginProperty); }
+            set { SetValue(TickMarginProperty, value); }
+        }
+
+        public int LineInterval
+        {
+            get { return (int)GetValue(LineIntervalProperty); }
+            set { SetValue(LineIntervalProperty, value); }
+        }
+
+        public double Value
+        {
+            get { return (double)GetValue(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
+        }
 
         public double Maximum
         {
-            get => (double) GetValue(MaximumProperty);
+            get => (double)GetValue(MaximumProperty);
             set => SetValue(MaximumProperty, value);
         }
 
-        public static readonly DependencyProperty MinimumProperty =             
-            DepProp.Register<TsTimeline, double>(nameof(Minimum) , 0d, FrameworkPropertyMetadataOptions.AffectsMeasure);
-
         public double Minimum
         {
-            get => (double) GetValue(MinimumProperty);
+            get => (double)GetValue(MinimumProperty);
             set => SetValue(MinimumProperty, value);
         }
 
-        public static readonly DependencyProperty ScaleProperty = 
-            DepProp.Register<TsTimeline, double>(nameof(Scale) , 12d, FrameworkPropertyMetadataOptions.AffectsMeasure);
-
-        public double Scale
-        {
-            get => (double) GetValue(ScaleProperty);
-            set => SetValue(ScaleProperty, value);
-        }
-
-        public static readonly DependencyProperty TrackHeightProperty = 
-            DepProp.Register<TsTimeline, double>(nameof(TrackHeight) , 15d);
 
         public double TrackHeight
         {
-            get => (double) GetValue(TrackHeightProperty);
+            get => (double)GetValue(TrackHeightProperty);
             set => SetValue(TrackHeightProperty, value);
         }
 
-
-        public static readonly DependencyPropertyKey CanvasActualWidthPropertyKey = 
-            DepProp.RegisterReadOnly<TsTimeline, double>(nameof(CanvasActualWidth));
-
-        public static readonly DependencyProperty CanvasActualWidthProperty = CanvasActualWidthPropertyKey.DependencyProperty;
-        
-        public double CanvasActualWidth
-        {
-            get => (double) GetValue(CanvasActualWidthProperty);
-            private set => SetValue(CanvasActualWidthPropertyKey, value);
-        }
-
-        internal static readonly DependencyPropertyKey ScrollViewerPropertyKey = 
-            DepProp.RegisterReadOnly<TsTimeline, ScrollViewer>(nameof(ScrollViewer));
-        
-        public static readonly DependencyProperty ScrollViewerProperty = ScrollViewerPropertyKey.DependencyProperty;
         public ScrollViewer ScrollViewer
         {
-            get { return (ScrollViewer) GetValue(ScrollViewerProperty); }
+            get { return (ScrollViewer)GetValue(ScrollViewerProperty); }
             private set => SetValue(ScrollViewerPropertyKey, value);
         }
 
-        public static readonly DependencyProperty Alter0Property =
-            DepProp.Register<TsTimeline, Brush>(nameof(Alter0),Brushes.FloralWhite);
 
         public Brush Alter0
         {
-            get { return (Brush) GetValue(Alter0Property); }
+            get { return (Brush)GetValue(Alter0Property); }
             set { SetValue(Alter0Property, value); }
         }
-        
-        public static readonly DependencyProperty Alter1Property =
-            DepProp.Register<TsTimeline, Brush>(nameof(Alter1),Brushes.WhiteSmoke);
+
 
         public Brush Alter1
         {
-            get { return (Brush) GetValue(Alter1Property); }
+            get { return (Brush)GetValue(Alter1Property); }
             set { SetValue(Alter1Property, value); }
         }
+
+        #endregion Properties
         public TsTimeline()
         {
             LayoutUpdated += (s, e) =>
             {
-                CanvasActualWidth = Maximum * Scale;
+                Viewport.ViewportWidth = ScrollViewer.ViewportWidth;
             };
 
             PreviewMouseWheel += (s, e) =>
@@ -110,10 +147,9 @@ namespace TsTimeline
                 {
                     var delta = 1f + e.Delta * 0.001f;
 
-                    var ss = Scale * delta;
+                    var ss = Viewport.ZoomX * delta;
 
-                    Scale = Math.Min(Math.Max(0.125f, ss), 32.0f);
-                    //Console.WriteLine(Scale);
+                    Viewport.ZoomX = Math.Min(Math.Max(0.125f, ss), 32.0f);
                     e.Handled = true;
                 }
             };
@@ -121,33 +157,27 @@ namespace TsTimeline
             PreviewMouseMove += (s, e) => { InvalidateVisual(); };
             MouseLeave += (s, e) => { InvalidateVisual(); };
         }
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            // double start = 0;
-            //
-            // if(ScrollViewer is null)
-            //     ScrollViewer = this.FindChild<ScrollViewer>();
-            //
-            // if (ScrollViewer != null)
-            //     start = ScrollViewer.HorizontalOffset;
-            //
-            //
-            // var pen = new Pen(Brushes.RoyalBlue,1);
-            // var mouse = Mouse.GetPosition(this);
-            //
-            // var x = MathEx.Snap(mouse.X + Scale * 0.5, Scale);
-            // var startSnap = MathEx.Snap(mouse.X + start + Scale * 0.5, Scale) - x - start;
-            //
-            // drawingContext.DrawLine(pen,new Point(x + startSnap,0)  ,new Point(x + startSnap,ActualHeight) );
-            // drawingContext.DrawTextEx($"{Math.Ceiling((x + start - 0.5 ) * (1.0 / Scale)) }",mouse.X + 2, mouse.Y - 10);
-            base.OnRender(drawingContext);
-        }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             ScrollViewer = GetTemplateChild("PART_SCROLL_VIEWER") as ScrollViewer;
+            measureRenderer = GetTemplateChild("PART_MEASURE_RENDERER") as MeasureRenderer;
+            timeLine = GetTemplateChild("PART_TIMELINE") as Timeline;
+            stretchGrid = GetTemplateChild("PART_STRETCH_GRID") as Grid;
 
+            timeLine.ValueChanged += (_, _) =>
+            {
+                this.Value = timeLine.Value / Viewport.ZoomX / Viewport.Scale;
+            };
+   
         }
+        private static void valueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is TsTimeline tsTimeLine)
+            {
+                tsTimeLine.timeLine.Value = tsTimeLine.Value * tsTimeLine.Viewport.ZoomX * tsTimeLine.Viewport.Scale; ;
+            }
+        }  
     }
 }

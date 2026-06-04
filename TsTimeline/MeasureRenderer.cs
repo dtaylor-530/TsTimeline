@@ -1,225 +1,211 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
+using TsTimeline.Axis;
 
 namespace TsTimeline
 {
     public class MeasureRenderer : Control
     {
-        public static readonly DependencyProperty ScrollViewerProperty =
-            DepProp.Register<MeasureRenderer, ScrollViewer>(nameof(ScrollViewer),ScrollViewerChanged);
 
-        public static readonly DependencyProperty ScaleProperty = 
-            DepProp.Register<MeasureRenderer,double>(nameof(Scale),1d);
-        
-        public static readonly DependencyProperty ItemHeightProperty = 
-            DepProp.Register<MeasureRenderer,double>(nameof(ItemHeight),15d);
+        public static readonly DependencyProperty ViewportProperty =
+            DependencyProperty.Register(
+                nameof(Viewport),
+                typeof(Viewport),
+                typeof(MeasureRenderer),
+                new PropertyMetadata(null, OnViewportChanged));
+
+        public static readonly DependencyProperty ItemHeightProperty =
+            DependencyProperty.Register(
+                nameof(ItemHeight),
+                typeof(double),
+                typeof(MeasureRenderer),
+                new PropertyMetadata(15d, OnInvalidate));
+
+        public static readonly DependencyProperty ItemCountProperty =
+            DependencyProperty.Register(
+                nameof(ItemCount),
+                typeof(int),
+                typeof(MeasureRenderer),
+                new PropertyMetadata(1, OnInvalidate));
+
+        public static readonly DependencyProperty TickMarginProperty =
+            DependencyProperty.Register(
+                nameof(TickMargin),
+                typeof(double),
+                typeof(MeasureRenderer),
+                new PropertyMetadata(15d, OnInvalidate));
 
         public static readonly DependencyProperty Alter0Property =
-            DepProp.Register<MeasureRenderer, Brush>(nameof(Alter0),Brushes.FloralWhite);
+            DependencyProperty.Register(
+                nameof(Alter0),
+                typeof(Brush),
+                typeof(MeasureRenderer),
+                new PropertyMetadata(Brushes.FloralWhite, OnInvalidate));
 
         public static readonly DependencyProperty Alter1Property =
-            DepProp.Register<MeasureRenderer, Brush>(nameof(Alter1),Brushes.WhiteSmoke);
+            DependencyProperty.Register(
+                nameof(Alter1),
+                typeof(Brush),
+                typeof(MeasureRenderer),
+                new PropertyMetadata(Brushes.WhiteSmoke, OnInvalidate));
 
-        public ScrollViewer ScrollViewer
+        public static readonly DependencyProperty ValueConverterProperty =
+            DependencyProperty.Register(
+                nameof(ValueConverter),
+                typeof(IValueConverter),
+                typeof(MeasureRenderer),
+                new PropertyMetadata(null, OnInvalidate));
+
+        #region properties
+        public Viewport Viewport
         {
-            get => (ScrollViewer) GetValue(ScrollViewerProperty);
-            set => SetValue(ScrollViewerProperty, value);
+            get => (Viewport)GetValue(ViewportProperty);
+            set => SetValue(ViewportProperty, value);
         }
-        public double Scale
-        {
-            get => (double) GetValue(ScaleProperty);
-            set => SetValue(ScaleProperty, value);
-        }
+
         public double ItemHeight
         {
-            get => (double) GetValue(ItemHeightProperty);
+            get => (double)GetValue(ItemHeightProperty);
             set => SetValue(ItemHeightProperty, value);
         }
+
+        public int ItemCount
+        {
+            get => (int)GetValue(ItemCountProperty);
+            set => SetValue(ItemCountProperty, value);
+        }
+
+        public double TickMargin
+        {
+            get => (double)GetValue(TickMarginProperty);
+            set => SetValue(TickMarginProperty, value);
+        }
+
         public Brush Alter0
         {
-            get { return (Brush) GetValue(Alter0Property); }
-            set { SetValue(Alter0Property, value); }
+            get => (Brush)GetValue(Alter0Property);
+            set => SetValue(Alter0Property, value);
         }
 
         public Brush Alter1
         {
-            get { return (Brush) GetValue(Alter1Property); }
-            set { SetValue(Alter1Property, value); }
+            get => (Brush)GetValue(Alter1Property);
+            set => SetValue(Alter1Property, value);
         }
 
-        private double _offset = 15;
-        
-        private static void ScrollViewerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public IValueConverter? ValueConverter
         {
-            if (d is MeasureRenderer m)
-                m.OnScrollViewerChanged(e.NewValue as ScrollViewer, e.OldValue as ScrollViewer);
+            get => (IValueConverter?)GetValue(ValueConverterProperty);
+            set => SetValue(ValueConverterProperty, value);
         }
 
-        private void OnScrollViewerChanged(ScrollViewer newValue, ScrollViewer oldValue)
-        {
-            if (newValue != null)
-                newValue.ScrollChanged += OnScrollChanged;
-            if (oldValue != null)
-                oldValue.ScrollChanged -= OnScrollChanged;
+        #endregion  properties
 
-            RaiseInvalidateVisual();
-            
-            void OnScrollChanged(object sender, ScrollChangedEventArgs e)
-            {
-                RaiseInvalidateVisual();
-            }
-        }
+        private readonly AxisEngine _axisEngine = new(new TimelineTickGenerator());
+        private readonly AxisRenderer _renderer = new();
+        private readonly AxisLabelCache _labelCache;
 
-        private Throttler _throttler;
+        private AxisModel? _cachedModel;
+        private bool _dirty = true;
 
-        private void RaiseInvalidateVisual()
-        {
-            InvalidateVisual();
-            if(_throttler is null)
-                _throttler = new Throttler(TimeSpan.FromMilliseconds(0) , InvalidateVisual);
-            _throttler.Invoke();
-        }
 
         public MeasureRenderer()
         {
-            this.SizeChanged += (s, e) =>
-            {
-                RaiseInvalidateVisual();
-            };
+            _renderer.AddLayer(new BackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
+            _renderer.AddLayer(new GridLayer());
+            _renderer.AddLayer(new TickLayer());
+            _renderer.AddLayer(new LabelLayer());
+
+            _labelCache = new AxisLabelCache(new Typeface("Segoe UI"), 10, Brushes.Black);
+
+            SizeChanged += (_, _) => MarkDirty();
         }
 
-        int scale_factor(double scale)
+
+        private static void OnViewportChanged(
+            DependencyObject d,
+            DependencyPropertyChangedEventArgs e)
         {
-            if (scale >= 16)
-                return 1;
-            if (scale >= 8)
-                return 5;
-            if (Scale >= 4)
-                return 10;
-            if (scale >= 2)
-                return 25;
-            if (scale >= 1)
-                return 50;
-            if (scale >= 0.5)
-                return 100;
-            if (scale >= 0.25)
-                return 200;
-            if (scale >= 0.125)
-                return 400;
-            return 800;
+            var self = (MeasureRenderer)d;
+
+            if (e.OldValue is Viewport old)
+                old.PropertyChanged -= self.OnViewportPropertyChanged;
+
+            if (e.NewValue is Viewport @new)
+                @new.PropertyChanged += self.OnViewportPropertyChanged;
+
+            self.MarkDirty();
         }
-        
+
+        private void OnViewportPropertyChanged(
+            object? sender,
+            System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(Viewport.OffsetX):
+                case nameof(Viewport.ZoomX):
+                case nameof(Viewport.ViewportWidth):
+                case nameof(Viewport.WorldStart):
+                case nameof(Viewport.WorldEnd):
+                case nameof(Viewport.MinPixelSpacing):
+                case nameof(Viewport.Scale):
+                    MarkDirty();
+                    break;
+            }
+        }
+
+        private static void OnInvalidate(
+            DependencyObject d,
+            DependencyPropertyChangedEventArgs e) =>
+            ((MeasureRenderer)d).MarkDirty();
+
+        private void MarkDirty()
+        {
+            _dirty = true;
+            InvalidateVisual();
+            Width = Viewport.ViewportWidth * Viewport.ZoomX;
+        }
+
+
+        private void EnsureModel()
+        {
+            if (!_dirty && _cachedModel != null)
+                return;
+
+            _cachedModel = _axisEngine.Build(Viewport);
+            _dirty = false;
+        }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
-            int maxValue = (int) ((ActualWidth+ 0.5) * (1.0 / Scale) );
-            var factor = scale_factor(Scale);
-            
-            for (int i = 0; i <= maxValue; i+= factor)
+            base.OnRender(drawingContext);
+
+            EnsureModel();
+
+            if (_cachedModel == null)
+                return;
+
+            var formatter = ValueConverter != null
+                ? (ILabelFormatter)new ConverterFormatter(ValueConverter)
+                : new NumericLabelFormatter();
+
+            var context = new AxisRenderContext
             {
-                var x = (i * Scale);
-
-                // 画面サイズ以上の描画はキャンセル
-                if (IsLeftOutside(x))
-                    continue;
-
-                if (IsRightOutSide(x))
-                    break;
-
-                var alignment = TextAlignment.TopCenter;
-                if (i == 0)
-                    alignment = TextAlignment.TopLeft;
-
-                var drawPoint = OffsetPoint(x, 0);
-                
-                drawingContext.DrawTextEx($"{i}", drawPoint.X, drawPoint.Y, alignment);
-            }
-
-            DrawBackGround(drawingContext);
-            DrawGrid(drawingContext);
-        }
-
-        private void DrawBackGround(DrawingContext drawingContext)
-        {
-            var pen = new Pen();
-
-            var brushes = new [] {Alter0,Alter1};
-
-            var h = (int)ItemHeight;
-
-            var scrollOffset = (int) (-ScrollViewer?.VerticalOffset ?? 0);
-            int index = -scrollOffset % (h * 2) > (h - 1) ? 1: 0;
-            for (int i = scrollOffset%h + h; i < ActualHeight; i+=h)
-            {
-                if (i < h)
-                {
-                    drawingContext.DrawRectangle(brushes[index++%2],pen,new Rect(0,h,ActualWidth,i ));
-                }
-                else
-                {
-                    drawingContext.DrawRectangle(brushes[index++%2],pen,new Rect(0,i,ActualWidth,h));                    
-                }
-            }
-        }
-
-        private void DrawGrid(DrawingContext drawingContext)
-        {    
-            var pen = new Pen()
-            {
-                Brush = Brushes.LightGray,
-                Thickness = 0.5d,
+                DrawingContext = drawingContext,
+                Model = _cachedModel,
+                Bounds = new Rect(0, 0, ActualWidth, ActualHeight),
+                TickMargin = TickMargin,
+                TrackHeight = ItemHeight,
+                TrackCount = ItemCount,
+                LabelFormatter = formatter,
+                LabelCache = _labelCache,
             };
 
-            var lineInterval = 10;
-            var maxValue = ActualWidth * (1.0f / Scale);
-            var interval = Math.Max((int) MathEx.Snap(lineInterval * (1.0 / Scale), 1) , 1);
-
-            for (double i = 0; i < maxValue; i += interval)
-            {
-                double x = i * Scale;
-
-                // 画面サイズ以上の描画はキャンセル
-                if (IsLeftOutside(x))
-                    continue;
-
-                if (IsRightOutSide(x))
-                    break;
-
-                var beginY = ActualHeight;
-                var endY = 15;
-                drawingContext.DrawLine(pen, OffsetPoint(x,beginY), OffsetPoint(x,endY) );
-            }
+            _renderer.Render(context);
         }
-
-        private Point OffsetPoint(double x, double y)
-        {
-            if (ScrollViewer != null)
-            {
-                return new Point(x - ScrollViewer.HorizontalOffset , y);                
-            }
-            return new Point(x,y);
-        }
-
-        bool IsLeftOutside(double x)
-        {
-            var offset = 0d;
-            if (ScrollViewer != null)
-            {
-                offset = ScrollViewer.HorizontalOffset;                
-            }
-            return x < offset;
-        }
-        
-        bool IsRightOutSide(double x)
-        {
-            var offset = ActualWidth;
-            if (ScrollViewer != null)
-            {
-                offset = ScrollViewer.HorizontalOffset + ScrollViewer.ActualWidth;
-            }
-            return x >= offset;
-        }
-        
     }
 }

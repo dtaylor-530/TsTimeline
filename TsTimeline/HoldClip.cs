@@ -10,22 +10,27 @@ namespace TsTimeline
     [TemplatePart(Name="PART_CENTER", Type=typeof(Thumb))]
     public partial class ClipBase
     {
+        private Thumb _left;
+        private Thumb _right;
+        private Thumb _center;
+
         public static readonly DependencyProperty StartValueProperty =
             DepProp.Register<ClipBase, double>(
                 nameof(StartValue),
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                 ValueChanged);
+
+        public static readonly DependencyProperty EndValueProperty =
+            DepProp.Register<ClipBase, double>(
+                nameof(EndValue),
+                FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                ValueChanged);
+
         public double StartValue
         {
             get => (double) GetValue(StartValueProperty);
             set => SetValue(StartValueProperty, value);
         }
-
-        public static readonly DependencyProperty EndValueProperty = 
-            DepProp.Register<ClipBase, double>(
-                nameof(EndValue),
-                FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                ValueChanged);
 
         public double EndValue
         {
@@ -33,14 +38,14 @@ namespace TsTimeline
             set => SetValue(EndValueProperty, value);
         }
 
-        private double MaxValue => (int) (ActualWidth * (1.0 / Scale) + 0.5d);
+        private double MaxValue => (int) (ActualWidth * (1.0 / Viewport.ZoomX) + 0.5d);
 
         private void Right_OnDragDelta(Vector vector)
         {
             if (IsReadOnly)
                 return;
             
-            var change = Math.Ceiling(vector.X * (1.0d / Scale) - 0.5d);
+            var change = Math.Ceiling(vector.X * (1.0d / Viewport.ZoomX) - 0.5d);
 
             // 右側のクランプ
             if (EndValue + change > MaxValue)
@@ -59,7 +64,7 @@ namespace TsTimeline
         {
             if (IsReadOnly)
                 return;
-            var change = Math.Ceiling(vector.X * (1.0d / Scale) - 0.5d);            
+            var change = Math.Ceiling(vector.X * (1.0d / Viewport.ZoomX) - 0.5d);            
             var diff = ClampToCanvasDiff(change);
 
             StartValue += diff;
@@ -71,7 +76,7 @@ namespace TsTimeline
             if (IsReadOnly)
                 return;
             
-            var change = Math.Ceiling(vector.X * (1.0d / Scale) - 0.5d);
+            var change = Math.Ceiling(vector.X * (1.0d / Viewport.ZoomX) - 0.5d);
             // 右側のクランプ
             if (StartValue + change >= EndValue)
             {
@@ -98,10 +103,6 @@ namespace TsTimeline
 
             return d;
         }
-
-        private Thumb _left;
-        private Thumb _right;
-        private Thumb _center;
 
         private bool TrySetupThumbs()
         {
@@ -142,13 +143,13 @@ namespace TsTimeline
             if (TrySetupThumbs() is false)
                 return;
             
-            Canvas.SetLeft(_left,StartValue * Scale - _left.ActualWidth / 2);
-            Canvas.SetLeft(_right,EndValue * Scale - _right.ActualWidth / 2);
-            Canvas.SetLeft(_center,StartValue * Scale );
+            Canvas.SetLeft(_left,StartValue * Viewport.Scale * Viewport.ZoomX - _left.ActualWidth / 2);
+            Canvas.SetLeft(_right,EndValue * Viewport.Scale * Viewport.ZoomX - _right.ActualWidth / 2);
+            Canvas.SetLeft(_center,StartValue * Viewport.Scale * Viewport.ZoomX);
             
-            var w = EndValue * Scale - StartValue * Scale;
+            var w = EndValue * Viewport.Scale * Viewport.ZoomX - StartValue * Viewport.Scale * Viewport.ZoomX;
 
-            if(w > 0)
+            if (w > 0)
                 _center.Width = w;
         }
     }

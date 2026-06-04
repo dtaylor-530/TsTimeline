@@ -11,12 +11,12 @@ namespace SandBox
     {
         public override Style SelectStyle(object item, DependencyObject container)
         {
-            if (item is TriggerClipVm)
+            if (item is TriggerClipViewModel)
             {
                 return TriggerStyle;
             }
 
-            if (item is HoldClipVm)
+            if (item is HoldClipViewModel)
             {
                 return HoldStyle;
             }

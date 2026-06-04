@@ -12,7 +12,7 @@ namespace SandBox
 
         public override DataTemplate SelectTemplate(object item, System.Windows.DependencyObject container)
         {
-            if (item is TrackVm)
+            if (item is TrackViewModel)
             {
                 return TrackTemplate;
             }

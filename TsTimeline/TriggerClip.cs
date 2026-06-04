@@ -5,7 +5,7 @@ using System.Windows.Controls.Primitives;
 
 namespace TsTimeline
 {
-    [TemplatePart(Name="PART_THUMB", Type=typeof(Thumb))]
+    [TemplatePart(Name = "PART_THUMB", Type = typeof(Thumb))]
     public partial class ClipBase
     {
         public static readonly DependencyProperty ValueProperty =
@@ -16,7 +16,7 @@ namespace TsTimeline
 
         public double Value
         {
-            get => (double) GetValue(ValueProperty);
+            get => (double)GetValue(ValueProperty);
             set => SetValue(ValueProperty, value);
         }
 
@@ -31,15 +31,15 @@ namespace TsTimeline
         {
             if (IsReadOnly)
                 return;
-            
-            var change = Math.Ceiling(vector.X * (1.0d / Scale) - 0.5d);
+
+            var change = Math.Ceiling(vector.X * (1.0d / Viewport.ZoomX) - 0.5d);
             // 右側のクランプ
-            if (Value + change >= ActualWidth * (1.0d / Scale))
+            if (Value + change >= ActualWidth * (1.0d / Viewport.ZoomX))
             {
-                change = ActualWidth * (1.0d / Scale) - Value;
+                change = ActualWidth * (1.0d / Viewport.ZoomX) - Value;
             }
             // 左側のクランプ
-            else if (Value + change<= 0)
+            else if (Value + change <= 0)
             {
                 change = -Value;
             }
@@ -56,16 +56,16 @@ namespace TsTimeline
                 thumb = _thumb;
                 return true;
             }
-            
+
             _thumb = thumb = this.GetTemplateChild("PART_THUMB") as Thumb;
 
             if (thumb != null)
             {
-                var eventBinder = new ThumbDragToMousePointConverter(thumb,OnMouseDownSelectedChanged);
+                var eventBinder = new ThumbDragToMousePointConverter(thumb, OnMouseDownSelectedChanged);
                 eventBinder.BindDragDelta(Thumb_OnDragDelta);
                 Loaded += (s, e) =>
                 {
-                    UpdateThumb();                    
+                    UpdateThumb();
                 };
             }
 
@@ -76,7 +76,7 @@ namespace TsTimeline
         {
             if (TryGetThumb(out var thumb))
             {
-                Canvas.SetLeft(thumb, Value * Scale - thumb.ActualWidth / 2);
+                Canvas.SetLeft(thumb, Value * Viewport.Scale * Viewport.ZoomX - thumb.ActualWidth / 2);
             }
         }
     }

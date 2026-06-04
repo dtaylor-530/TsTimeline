@@ -7,7 +7,7 @@
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TriggerClip.xaml" />
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/ClipBase.xaml" />
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TsTimeline.xaml" />
-            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/Vector3EditBox.xaml" />
+            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/Timeline.xaml" />
         </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

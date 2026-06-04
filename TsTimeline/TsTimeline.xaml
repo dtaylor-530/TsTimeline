@@ -4,9 +4,10 @@
                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
     <timelineControl:WidthToMarginConverter x:Key="WidthToMarginConverter"></timelineControl:WidthToMarginConverter>
-    
-    <Style TargetType="{x:Type timelineControl:TsTimeline}">       
-        <Setter Property="UseLayoutRounding" Value="True" /> 
+    <timelineControl:MultiplyConverter x:Key="MultiplyConverter"/>
+
+    <Style TargetType="{x:Type timelineControl:TsTimeline}">
+        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type timelineControl:TsTimeline}">
@@ -41,24 +42,37 @@
                                           ItemTemplate="{TemplateBinding ItemTemplate}"
                                           ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
                         </ScrollViewer>
-                        <timelineControl:MeasureRenderer                         
+                        <timelineControl:MeasureRenderer  
+                            x:Name="PART_MEASURE_RENDERER"
                             Grid.Column="1"
-                            Width="{TemplateBinding CanvasActualWidth}"
-                            Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}"
-                            ScrollViewer="{Binding ElementName=PART_SCROLL_VIEWER}"
+                            ValueConverter="{TemplateBinding ValueConverter}"
+                            Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}"                                             
+                            TickMargin="{TemplateBinding TickMargin}"
                             Alter0="{TemplateBinding Alter0}"
                             Alter1="{TemplateBinding Alter1}"
-                            Scale="{Binding Scale , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"
+                            Viewport="{TemplateBinding Viewport}"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top" />
-                        <ScrollViewer HorizontalAlignment="Left" VerticalAlignment="Top"
+                        
+                        <timelineControl:Timeline 
+                            x:Name="PART_TIMELINE"
+                            Grid.Column="1"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Left"
+                            Viewport="{TemplateBinding Viewport}"
+                            Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}"
+                           >
+                        </timelineControl:Timeline>
+                        
+                        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                       Grid.Column="1"
-                                      Margin="0,15,0,0"
+                                      Margin="0,15,0,15"
                                       x:Name="PART_SCROLL_VIEWER"
                                       Background="Transparent"
-                                      VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"
+                                      CanContentScroll="False"
+                                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                                       HorizontalContentAlignment="Left">
-                            <ItemsPresenter/>             
+                            <ItemsPresenter />
                         </ScrollViewer>
                     </Grid>
                 </ControlTemplate>

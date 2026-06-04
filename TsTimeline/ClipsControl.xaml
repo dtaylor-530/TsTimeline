@@ -4,52 +4,8 @@
 
 
     <Style TargetType="{x:Type timelineControl:ClipsControl}">
-        <!--<Setter Property="ItemContainerStyle">
-     <Setter.Value>
-         <Style TargetType="{x:Type TreeViewItem}">
-             
-        --><!--<Setter Property="Template">
-                 <Setter.Value>
-                     <ControlTemplate TargetType="{x:Type TreeViewItem}">
-                         <ItemsPresenter />
-                         
-                     </ControlTemplate>
-                 </Setter.Value>
-             </Setter>--><!--
-   
-       
-             <Setter Property="Background" Value="Transparent"/>
-             <Setter Property="BorderBrush" Value="Transparent"/>
-             <Setter Property="BorderThickness" Value="1"/>
-             
-        --><!--<Setter Property="Padding" Value="4"/>--><!--
-        
-
-             <Style.Triggers>
-                 <Trigger Property="IsMouseOver" Value="True">
-                     <Setter Property="Background" Value="#10FFFFFF"/>
-                 </Trigger>
-
-                 <Trigger Property="IsSelected" Value="True">
-                     <Setter Property="Background" Value="#20FFFFFF"/>
-                     <Setter Property="BorderBrush" Value="#40FFFFFF"/>
-                 </Trigger>
-
-                 <MultiTrigger>
-                     <MultiTrigger.Conditions>
-                         <Condition Property="IsSelected" Value="True"/>
-                         <Condition Property="Selector.IsSelectionActive" Value="False"/>
-                     </MultiTrigger.Conditions>
-                     <Setter Property="Background" Value="#15FFFFFF"/>
-                     <Setter Property="BorderBrush" Value="#30FFFFFF"/>
-                 </MultiTrigger>
-             </Style.Triggers>
-         </Style>
-     </Setter.Value>
- </Setter>-->
         <Setter Property="Height" Value="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"></Setter>
         <Setter Property="Scale" Value="{Binding Scale , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"></Setter>
-        <!--<Setter Property="ItemTemplateSelector" Value="{Binding ClipTemplateSelector,  RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"></Setter>-->
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
@@ -57,33 +13,10 @@
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
-        <!--<Setter Property="ItemContainerStyle">
-            <Setter.Value>
-                <Style TargetType="TreeViewItem">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type TreeViewItem}">
-                                <ItemsPresenter />
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Setter.Value>
-        </Setter>-->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type timelineControl:ClipsControl}">
-                    <!--<Border x:Name="bd">
-                        <Grid>-->
-                            <!--<Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="{Binding HeaderWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=timelineControl:TsTimeline}}" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>-->
-                            <!--<ContentPresenter ContentSource="Header" Grid.Column="0" />-->
-                            <ItemsPresenter Grid.Column="1" />
-                        <!--</Grid>
-                    </Border>-->
-
+                    <ItemsPresenter Grid.Column="1" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -5,10 +5,8 @@
     <Style TargetType="{x:Type timelineControl:ClipBase}">
         <Setter Property="UseLayoutRounding" Value="False" />
         <Setter Property="ClipToBounds" Value="False" />
-        <Setter Property="Scale" Value="{Binding Scale , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}" />
-        <Setter Property="Width" Value="{Binding CanvasActualWidth , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}" />
+        <Setter Property="Viewport" Value="{Binding Viewport , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}" />
         <Setter Property="Height" Value="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}" />
     </Style>
-
 
 </ResourceDictionary>

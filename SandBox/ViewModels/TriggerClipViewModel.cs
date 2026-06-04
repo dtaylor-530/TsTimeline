@@ -2,7 +2,7 @@
 
 namespace SandBox
 {
-    public class TriggerClipVm : Notification
+    public class TriggerClipViewModel : Notification
     {
         public double Value { get; set; }
     }
