@@ -27,6 +27,34 @@
                         <Setter Property="EndValue" Value="{Binding EndValue}"></Setter>
                     </Style>
                 </local:CustomStyleSelector.HoldStyle>
+                <local:CustomStyleSelector.BandStyle>
+                    <Style TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource {x:Type tsTimeline:ClipBase}}">
+                        <Setter Property="StartValue" Value="{Binding StartValue}"></Setter>
+                        <Setter Property="EndValue" Value="{Binding EndValue}"></Setter>
+                        <Setter Property="Background" >
+                            <Setter.Value>
+                                <SolidColorBrush Color="CornflowerBlue" Opacity="0.5"></SolidColorBrush>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}" >
+                                    <Canvas x:Name="PART_CANVAS"
+                                                    Width="{TemplateBinding Width}"
+                                                    Height="{TemplateBinding Height}">
+                                        <Border
+                                                    x:Name="PART_CENTER" 
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    Width="{TemplateBinding Width}"
+                                                    Height="{TemplateBinding Height}" ToolTip="{TemplateBinding EndValue}"/>
+                                    </Canvas>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </local:CustomStyleSelector.BandStyle>
             </local:CustomStyleSelector>
 
             <local:ClipTemplateSelector x:Key="ClipTemplateSelector">
@@ -81,7 +109,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
-                        <!--<RowDefinition Height="*"/>-->
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -96,6 +124,19 @@
                         <ContentControl Content="{Binding Progress}" Grid.Column="3"/>
                     </Grid>
 
+                    <tsTimeline:CombinedTimeline 
+                        x:Name="CombinedTimeline"
+                        Maximum="1000" 
+                        ValueConverter="{StaticResource ValueConverter}"
+                        Grid.Row="1"
+                        Value="{Binding Progress.Progress, Mode=TwoWay}"
+                        Viewport="{Binding Viewport}"
+                        ItemsSource="{Binding Player.PlayList.Stacks}"
+                        OffsetX="{Binding ElementName=TsTimeline, Path=OffsetX, Mode=OneWay}"
+                        ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
+                        ItemContainerStyleSelector="{StaticResource CustomStyleSelector}">
+                    </tsTimeline:CombinedTimeline>
+
                     <tsTimeline:TsTimeline 
                             x:Name="TsTimeline"
                             Maximum="1000" 
@@ -107,7 +148,6 @@
                         ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
                         ItemContainerStyleSelector="{StaticResource CustomStyleSelector}">
                     </tsTimeline:TsTimeline>
-
 
                     <StackPanel VerticalAlignment="Bottom" Grid.Row="1">
                         <Grid >

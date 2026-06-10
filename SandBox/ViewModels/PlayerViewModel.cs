@@ -12,6 +12,7 @@ namespace SandBox
         public string Name { get; set; } 
 
         public ObservableCollection<TrackViewModel> Tracks { get; set; } 
+        public ObservableCollection<TrackViewModel> Stacks { get; set; } 
     }
 
 

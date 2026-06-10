@@ -6,18 +6,25 @@ namespace SandBox
 {
     public class TrackViewModel : Notification
     {
-        public string Name { get; set; }= "Test Track";
+        public string Name { get; set; } = "Test Track";
+
+        public int Order { get; set; }
 
         public double Min
         {
             get => Clips.OfType<HoldClipViewModel>().Min(x => x.StartValue);
         }
-        
+
         public double Max
         {
             get => Clips.OfType<HoldClipViewModel>().Max(x => x.EndValue);
         }
-        
+
         public ObservableCollection<Notification> Clips { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Min}/{Max}";
+        }
     }
 }
