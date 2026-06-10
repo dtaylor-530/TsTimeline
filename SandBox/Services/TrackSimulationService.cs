@@ -46,27 +46,28 @@ namespace SandBox
                 playerViewModel.PlayList.Tracks.Add(track);
             }
 
-            var stacks = toRanges(playerViewModel.PlayList.Tracks,
-                a => a.Clips.OfType<HoldClipViewModel>().Select(a => ((int)a.StartValue, (int)a.EndValue)))
-                .Select(kvp => new TrackViewModel()
-                {
-                    Order = kvp.Key,
-                    Clips = new(
+            playerViewModel.PlayList.Stacks = new ObservableCollection<TrackViewModel>(toStacks());
 
-                        groupContiguousNumbers(kvp.Value.ToArray())
-                        .Select(group => new HoldClipViewModel()
-                        {
-                            StartValue = group.First(),
-                            EndValue = group.Last(),
-                        })
-                        .Cast<Notification>()
-                    )
-                })
-                .OrderBy(a => a.Order)
-                .ToArray();
-
-            playerViewModel.PlayList.Stacks = new ObservableCollection<TrackViewModel>(stacks);
-
+            IEnumerable<TrackViewModel> toStacks()
+            {
+                return toRanges(
+                    playerViewModel.PlayList.Tracks,
+                    a => a.Clips.OfType<HoldClipViewModel>()
+                    .Select(a => ((int)a.StartValue, (int)a.EndValue)))
+                    .Select(kvp => new TrackViewModel()
+                    {
+                        Order = kvp.Key,
+                        Clips = new(
+                            groupContiguousNumbers([.. kvp.Value])
+                            .Select(group => new HoldClipViewModel()
+                            {
+                                StartValue = group.First(),
+                                EndValue = group.Last(),
+                            })
+                            .Cast<Notification>())
+                    })
+                    .OrderBy(a => a.Order);
+            }
 
             static List<List<int>> groupContiguousNumbers(params int[] numbers)
             {
@@ -75,8 +76,7 @@ namespace SandBox
 
                 foreach (var number in numbers.Order())
                 {
-                    if (currentGroup.Count == 0 ||
-                        number == currentGroup.Last() + 1)
+                    if (currentGroup.Count == 0 || number == currentGroup.Last() + 1)
                     {
                         currentGroup.Add(number);
                     }
@@ -115,13 +115,14 @@ namespace SandBox
                         }
                         return acc;
                     })
-                    .Aggregate(new Dictionary<int, List<int>>(), (min_max, kvp) =>
+                    .Aggregate(new Dictionary<int, List<int>>(), 
+                    (min_max, kvp) =>
                     {
                         for (int i = 0; i < kvp.Value + 1; i++)
                         {
                             if (!min_max.TryGetValue(i, out var current))
                             {
-                                min_max[i] = new() { kvp.Key };
+                                min_max[i] = [kvp.Key];
                             }
                             else
                             {
