@@ -6,23 +6,9 @@ using System.Windows.Media;
 
 namespace TsTimeline
 {
-    public sealed class AxisLabelCache
+    public sealed class AxisLabelCache(Typeface typeface, double fontSize, Brush foreground)
     {
         private readonly Dictionary<string, FormattedText> _cache = new();
-
-        private readonly Typeface _typeface;
-        private readonly double _fontSize;
-        private readonly Brush _foreground;
-
-        public AxisLabelCache(
-            Typeface typeface,
-            double fontSize,
-            Brush foreground)
-        {
-            _typeface = typeface;
-            _fontSize = fontSize;
-            _foreground = foreground;
-        }
 
         public FormattedText Get(string text)
         {
@@ -33,9 +19,9 @@ namespace TsTimeline
                 text,
                 CultureInfo.InvariantCulture,
                 FlowDirection.LeftToRight,
-                _typeface,
-                _fontSize,
-                _foreground,
+                typeface,
+                fontSize,
+                foreground,
                 VisualTreeHelper.GetDpi(Application.Current.MainWindow).PixelsPerDip);
 
             _cache[text] = formatted;

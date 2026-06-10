@@ -8,6 +8,13 @@
 
     <Style TargetType="{x:Type timelineControl:TsTimeline}">
         <Setter Property="UseLayoutRounding" Value="True" />
+        <!--<Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel IsItemsHost="True"></StackPanel>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>-->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type timelineControl:TsTimeline}">
@@ -18,7 +25,7 @@
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Height="16" VerticalAlignment="Bottom" Background="#FFE3E3E3"
                                 BorderThickness="0" />
-                        <ScrollViewer Grid.Column="0" Margin="0,15,0,16">
+                        <ScrollViewer Grid.Column="0" Margin="0,15,0,0">
                             <ScrollViewer.Template>
                                 <ControlTemplate TargetType="ScrollViewer">
                                     <Grid>
@@ -53,26 +60,25 @@
                             Viewport="{TemplateBinding Viewport}"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top" />
-                        
+
                         <timelineControl:Timeline 
                             x:Name="PART_TIMELINE"
                             Grid.Column="1"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             Viewport="{TemplateBinding Viewport}"
-                            Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}"
-                           >
+                            Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}">
                         </timelineControl:Timeline>
-                        
+
                         <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                       Grid.Column="1"
-                                      Margin="0,15,0,15"
+                                      Margin="0,15,0,0"
                                       x:Name="PART_SCROLL_VIEWER"
                                       Background="Transparent"
                                       CanContentScroll="False"
                                       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                                       HorizontalContentAlignment="Left">
-                            <ItemsPresenter />
+                            <ItemsPresenter x:Name="ItemsPresenter" />
                         </ScrollViewer>
                     </Grid>
                 </ControlTemplate>

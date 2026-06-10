@@ -5,17 +5,8 @@ using System.Windows.Data;
 
 namespace TsTimeline.Axis
 {
-    public sealed class ConverterFormatter
-            : ILabelFormatter
+    public sealed class ConverterFormatter(IValueConverter _converter) : ILabelFormatter
     {
-        private readonly IValueConverter _converter;
-
-        public ConverterFormatter(
-            IValueConverter converter)
-        {
-            _converter = converter;
-        }
-
         public string Format(double value)
         {
             return

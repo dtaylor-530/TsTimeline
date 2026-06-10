@@ -11,7 +11,7 @@ namespace TsTimeline
                 yield break;
 
             double unitStep =
-                (viewport.MinPixelSpacing / viewport.ZoomX)/viewport.Scale;
+                (viewport.MinPixelSpacing / viewport.ZoomX)/viewport.ScaleX;
 
             double majorStep =
                 NiceNumber(unitStep * 5);

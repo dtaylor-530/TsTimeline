@@ -63,10 +63,10 @@ namespace TsTimeline
             {
                 var eventBinder = new ThumbDragToMousePointConverter(thumb, OnMouseDownSelectedChanged);
                 eventBinder.BindDragDelta(Thumb_OnDragDelta);
-                Loaded += (s, e) =>
-                {
-                    UpdateThumb();
-                };
+                //Loaded += (s, e) =>
+                //{
+                //    UpdateThumb();
+                //};
             }
 
             return _thumb != null;
@@ -76,7 +76,7 @@ namespace TsTimeline
         {
             if (TryGetThumb(out var thumb))
             {
-                Canvas.SetLeft(thumb, Value * Viewport.Scale * Viewport.ZoomX - thumb.ActualWidth / 2);
+                Canvas.SetLeft(thumb, Value * Viewport.ScaleX * Viewport.ZoomX - thumb.ActualWidth / 2);
             }
         }
     }

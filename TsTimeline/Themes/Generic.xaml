@@ -8,6 +8,7 @@
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/ClipBase.xaml" />
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TsTimeline.xaml" />
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/Timeline.xaml" />
+            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/CombinedTimeline.xaml" />
         </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

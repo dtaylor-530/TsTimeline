@@ -15,14 +15,18 @@ namespace TsTimeline
         private double _worldEnd = 1000;
         private double _cursorPosition;
         private int _minPixelSpacing = 5;
-        private int _scale = 10;
+        private int _scaleX = 10;
+        private double _viewportHeight;
+        private double _zoomY;
+        private double _offsetY;
+        private int _scaleY;
 
         public double OffsetX
         {
             get => _offsetX;
             set
             {
-                var clamped = ClampOffset(value);
+                var clamped = clampOffset(value);
                 if (_offsetX == clamped) return;
                 _offsetX = clamped;
                 OnPropertyChanged();
@@ -40,7 +44,7 @@ namespace TsTimeline
                 if (Math.Abs(_zoomX - value) < 0.00001) return;
                 _zoomX = value;
                 // Re-clamp offset now that visible width has changed
-                _offsetX = ClampOffset(_offsetX);
+                _offsetX = clampOffset(_offsetX);
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(VisibleWorldWidth));
                 OnPropertyChanged(nameof(VisibleStart));
@@ -56,11 +60,80 @@ namespace TsTimeline
                 if (_viewportWidth == value) return;
                 _viewportWidth = value;
                 // Re-clamp: a wider viewport may push OffsetX out of range
-                _offsetX = ClampOffset(_offsetX);
+                _offsetX = clampOffset(_offsetX);
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(VisibleWorldWidth));
-                OnPropertyChanged(nameof(VisibleStart));
-                OnPropertyChanged(nameof(VisibleEnd));
+                //OnPropertyChanged(nameof(VisibleWorldWidth));
+                //OnPropertyChanged(nameof(VisibleStart));
+                //OnPropertyChanged(nameof(VisibleEnd));
+            }
+        }
+        public int ScaleX
+        {
+            get => _scaleX;
+            set
+            {
+                if (_scaleX == value) return;
+                _scaleX = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public double OffsetY
+        {
+            get => _offsetY;
+            set
+            {
+                if (_worldStart == value) return;
+                _worldStart = value;
+                _offsetX = clampOffset(_offsetX);
+                OnPropertyChanged();
+                //OnPropertyChanged(nameof(VisibleStart));
+                //OnPropertyChanged(nameof(VisibleEnd));
+            }
+        }
+
+        public double ZoomY
+        {
+            get => _zoomY;
+            set
+            {
+                value = Math.Max(0.01, value);
+                if (Math.Abs(_zoomY - value) < 0.00001) return;
+                _zoomY = value;
+                // Re-clamp offset now that visible width has changed
+                _offsetY = clampOffset(_offsetY);
+                OnPropertyChanged();
+                //OnPropertyChanged(nameof(VisibleWorldWidth));
+                //OnPropertyChanged(nameof(VisibleStart));
+                //OnPropertyChanged(nameof(VisibleEnd));
+            }
+        }
+
+        public double ViewportHeight
+        {
+            get => _viewportHeight;
+            set
+            {
+                if (_viewportHeight == value) return;
+                _viewportHeight = value;
+                // Re-clamp: a wider viewport may push OffsetX out of range
+                _offsetY = clampOffset(_offsetY);
+                OnPropertyChanged();
+                //OnPropertyChanged(nameof(VisibleWorldWidth));
+                //OnPropertyChanged(nameof(VisibleStart));
+                //OnPropertyChanged(nameof(VisibleEnd));
+            }
+        }
+
+        public int TsTimelineY
+        {
+            get => _scaleY;
+            set
+            {
+                if (_scaleY == value) return;
+                _scaleY = value;
+                OnPropertyChanged();
             }
         }
 
@@ -71,9 +144,9 @@ namespace TsTimeline
             {
                 if (_worldStart == value) return;
                 _worldStart = value;
-                _offsetX = ClampOffset(_offsetX);
+                _offsetX = clampOffset(_offsetX);
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(WorldLength));
+                //OnPropertyChanged(nameof(WorldLength));
                 OnPropertyChanged(nameof(VisibleStart));
                 OnPropertyChanged(nameof(VisibleEnd));
             }
@@ -86,9 +159,9 @@ namespace TsTimeline
             {
                 if (_worldEnd == value) return;
                 _worldEnd = value;
-                _offsetX = ClampOffset(_offsetX);
+                _offsetX = clampOffset(_offsetX);
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(WorldLength));
+                //OnPropertyChanged(nameof(WorldLength));
                 OnPropertyChanged(nameof(VisibleEnd));
             }
         }
@@ -115,18 +188,8 @@ namespace TsTimeline
             }
         }
 
-        public int Scale
-        {
-            get => _scale;
-            set
-            {
-                if (_scale == value) return;
-                _scale = value;
-                OnPropertyChanged();
-            }
-        }
 
-        public double WorldLength => WorldEnd - WorldStart;
+        //public double WorldLength => WorldEnd - WorldStart;
         public double VisibleWorldWidth => ViewportWidth / ZoomX;
         public double VisibleStart => OffsetX;
         public double VisibleEnd => OffsetX + VisibleWorldWidth;
@@ -138,7 +201,7 @@ namespace TsTimeline
         //        => value * PixelsPerUnit - Offset;
 
         public double WorldToScreen(double world) =>
-            (world - OffsetX) * ZoomX * Scale;
+            (world - OffsetX) * ZoomX * ScaleX;
 
         public double ScreenToWorld(double screen) =>
             OffsetX + screen / ZoomX;
@@ -163,7 +226,7 @@ namespace TsTimeline
 
         // --- helpers ---
 
-        private double ClampOffset(double offset)
+        private double clampOffset(double offset)
         {
             // When the visible range is wider than the world, pin to WorldStart
             double maxOffset = Math.Max(WorldStart, WorldEnd - VisibleWorldWidth);

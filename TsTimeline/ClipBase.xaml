@@ -5,8 +5,8 @@
     <Style TargetType="{x:Type timelineControl:ClipBase}">
         <Setter Property="UseLayoutRounding" Value="False" />
         <Setter Property="ClipToBounds" Value="False" />
-        <Setter Property="Viewport" Value="{Binding Viewport , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}" />
-        <Setter Property="Height" Value="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}" />
+        <Setter Property="Viewport" Value="{Binding Viewport , RelativeSource={RelativeSource AncestorType=TreeView}}" />
+        <Setter Property="Height" Value="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=TreeView}}" />
     </Style>
 
 </ResourceDictionary>

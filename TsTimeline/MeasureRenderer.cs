@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,7 +10,6 @@ namespace TsTimeline
 {
     public class MeasureRenderer : Control
     {
-
         public static readonly DependencyProperty ViewportProperty =
             DependencyProperty.Register(
                 nameof(Viewport),
@@ -20,6 +20,13 @@ namespace TsTimeline
         public static readonly DependencyProperty ItemHeightProperty =
             DependencyProperty.Register(
                 nameof(ItemHeight),
+                typeof(double),
+                typeof(MeasureRenderer),
+                new PropertyMetadata(15d, OnInvalidate));
+
+        public static readonly DependencyProperty ItemWidthProperty =
+            DependencyProperty.Register(
+                nameof(ItemWidth),
                 typeof(double),
                 typeof(MeasureRenderer),
                 new PropertyMetadata(15d, OnInvalidate));
@@ -59,6 +66,10 @@ namespace TsTimeline
                 typeof(MeasureRenderer),
                 new PropertyMetadata(null, OnInvalidate));
 
+
+        public static readonly DependencyProperty RenderersProperty =
+    DependencyProperty.Register(nameof(Renderers), typeof(IEnumerable), typeof(MeasureRenderer), new PropertyMetadata());
+
         #region properties
         public Viewport Viewport
         {
@@ -70,6 +81,11 @@ namespace TsTimeline
         {
             get => (double)GetValue(ItemHeightProperty);
             set => SetValue(ItemHeightProperty, value);
+        }
+        public double ItemWidth
+        {
+            get => (double)GetValue(ItemWidthProperty);
+            set => SetValue(ItemWidthProperty, value);
         }
 
         public int ItemCount
@@ -102,32 +118,27 @@ namespace TsTimeline
             set => SetValue(ValueConverterProperty, value);
         }
 
-        #endregion  properties
-
-        private readonly AxisEngine _axisEngine = new(new TimelineTickGenerator());
-        private readonly AxisRenderer _renderer = new();
-        private readonly AxisLabelCache _labelCache;
-
-        private AxisModel? _cachedModel;
-        private bool _dirty = true;
-
-
-        public MeasureRenderer()
+        public IEnumerable Renderers
         {
-            _renderer.AddLayer(new BackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
-            _renderer.AddLayer(new GridLayer());
-            _renderer.AddLayer(new TickLayer());
-            _renderer.AddLayer(new LabelLayer());
-
-            _labelCache = new AxisLabelCache(new Typeface("Segoe UI"), 10, Brushes.Black);
-
-            SizeChanged += (_, _) => MarkDirty();
+            get { return (IEnumerable)GetValue(RenderersProperty); }
+            set { SetValue(RenderersProperty, value); }
         }
 
 
-        private static void OnViewportChanged(
-            DependencyObject d,
-            DependencyPropertyChangedEventArgs e)
+        #endregion  properties
+
+        private readonly AxisFactory _axisFactory = new(new TimelineTickGenerator());
+        private readonly AxisLabelCache _labelCache;
+        private AxisModel? _cachedModel;
+        private bool _dirty = true;
+
+        public MeasureRenderer()
+        {
+            _labelCache = new AxisLabelCache(new Typeface("Segoe UI"), 10, Brushes.Black);
+            SizeChanged += (_, _) => MarkDirty();
+        }
+
+        private static void OnViewportChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var self = (MeasureRenderer)d;
 
@@ -140,19 +151,17 @@ namespace TsTimeline
             self.MarkDirty();
         }
 
-        private void OnViewportPropertyChanged(
-            object? sender,
-            System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnViewportPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
                 case nameof(Viewport.OffsetX):
                 case nameof(Viewport.ZoomX):
                 case nameof(Viewport.ViewportWidth):
-                case nameof(Viewport.WorldStart):
-                case nameof(Viewport.WorldEnd):
+                //case nameof(Viewport.WorldStart):
+                //case nameof(Viewport.WorldEnd):
                 case nameof(Viewport.MinPixelSpacing):
-                case nameof(Viewport.Scale):
+                case nameof(Viewport.ScaleX):
                     MarkDirty();
                     break;
             }
@@ -176,7 +185,7 @@ namespace TsTimeline
             if (!_dirty && _cachedModel != null)
                 return;
 
-            _cachedModel = _axisEngine.Build(Viewport);
+            _cachedModel = _axisFactory.Build(Viewport);
             _dirty = false;
         }
 
@@ -200,12 +209,16 @@ namespace TsTimeline
                 Bounds = new Rect(0, 0, ActualWidth, ActualHeight),
                 TickMargin = TickMargin,
                 TrackHeight = ItemHeight,
+                TrackWidth = ItemWidth,
                 TrackCount = ItemCount,
                 LabelFormatter = formatter,
                 LabelCache = _labelCache,
             };
-
-            _renderer.Render(context);
+            foreach (var renderer in Renderers)
+                if (renderer is CombinationLayer axisRenderer)
+                    axisRenderer.Render(context);
+                else
+                    throw new Exception("Renderer must be of type AxisRenderer");
         }
     }
 }

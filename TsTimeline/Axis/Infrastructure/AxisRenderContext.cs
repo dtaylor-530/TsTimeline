@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace TsTimeline
 {
-    public sealed class AxisRenderContext
+    public class AxisRenderContext
     {
         public required DrawingContext DrawingContext { get; init; }
 
@@ -17,8 +17,10 @@ namespace TsTimeline
 
         public double TickMargin { get; init; }
 
+        public int TrackCount { get; init; }
+
         public double TrackHeight { get; init; }
 
-        public int TrackCount { get; init; }
+        public double TrackWidth { get; init; }
     }
 }

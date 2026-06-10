@@ -61,7 +61,8 @@ namespace TsTimeline
             if (Viewport == null) return;
             Width = Viewport.ViewportWidth * Viewport.ZoomX;
             UpdateThumb();
-            UpdateThumbs();
+            updateThumbs();
+            UpdateBand();
             //InvalidateVisual();
         }
 
@@ -76,7 +77,7 @@ namespace TsTimeline
                 //case nameof(Viewport.OffsetX):
                 case nameof(Viewport.ZoomX):
                 case nameof(Viewport.ViewportWidth):
-                case nameof(Viewport.Scale):
+                case nameof(Viewport.ScaleX):
                 //case nameof(Viewport.WorldStart):
                 //case nameof(Viewport.WorldEnd):
                     MarkDirty();
@@ -121,7 +122,7 @@ namespace TsTimeline
         protected virtual void OnValueChanged()
         {
             this.UpdateThumb();
-            this.UpdateThumbs();
+            this.updateThumbs();
         }
 
         protected virtual void OnSelectedChanged()

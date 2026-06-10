@@ -10,13 +10,12 @@
     </ItemGroup>
 	
 	<ItemGroup>
-
-		<Compile Update="HoldClip - Copy.cs">
-		  <DependentUpon>HoldClip.xaml</DependentUpon>
-		</Compile>
-
 		<Compile Update="TsTimeline.cs">
 			<DependentUpon>TsTimeline.xaml</DependentUpon>
+		</Compile>
+
+		<Compile Update="CombinedTimeline.cs">
+			<DependentUpon>CombinedTimeline.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="ClipBase.cs">
 			<DependentUpon>ClipBase.xaml</DependentUpon>

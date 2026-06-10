@@ -4,8 +4,6 @@
 
 
     <Style TargetType="{x:Type timelineControl:ClipsControl}">
-        <Setter Property="Height" Value="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"></Setter>
-        <Setter Property="Scale" Value="{Binding Scale , RelativeSource={RelativeSource AncestorType=timelineControl:TsTimeline}}"></Setter>
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>

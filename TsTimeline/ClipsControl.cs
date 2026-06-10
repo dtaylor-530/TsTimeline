@@ -30,15 +30,6 @@ namespace TsTimeline
             set => SetValue(LastMouseDownXProperty, value);
         }
 
-        public static readonly DependencyProperty ScaleProperty =
-            DepProp.Register<ClipsControl, double>(nameof(Scale));
-
-        public double Scale
-        {
-            get => (double) GetValue(ScaleProperty);
-            set => SetValue(ScaleProperty, value);
-        }
-
         private static void SelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if(d is ClipsControl c)
@@ -49,7 +40,7 @@ namespace TsTimeline
         {
             PreviewMouseDown += (s, e) =>
             {
-                LastMouseDownX = e.GetPosition(this).X * (1.0 / Scale);
+                //LastMouseDownX = e.GetPosition(this).X * (1.0 / TsTimeline);
             };
         }
         
