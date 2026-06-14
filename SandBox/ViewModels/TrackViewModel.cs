@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using TsTimeline;
 
 namespace SandBox
 {
@@ -10,21 +9,14 @@ namespace SandBox
 
         public int Order { get; set; }
 
-        public double Min
-        {
-            get => Clips.OfType<HoldClipViewModel>().Min(x => x.StartValue);
-        }
-
-        public double Max
-        {
-            get => Clips.OfType<HoldClipViewModel>().Max(x => x.EndValue);
-        }
-
         public ObservableCollection<Notification> Clips { get; set; }
 
         public override string ToString()
         {
-            return $"{Min}/{Max}";
+            return $"{min}/{max}";
+
+            double min() => Clips.OfType<HoldClipViewModel>().Min(x => x.StartValue);
+            double max() => Clips.OfType<HoldClipViewModel>().Max(x => x.EndValue);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using TsTimeline;
 
@@ -7,14 +9,34 @@ namespace SandBox
 {
     public class ChartSimulationService
     {
-        public void Load(ChartViewModel chartViewModel)
+        public void Load(PlayListViewModel playList)
         {
-            var chartSeries = new ChartSeries();
-            for (int i = 0; i < 10; i++)
+            var maximum = 100;
+            var rand = new Random();
+
+            foreach (var i in Enumerable.Range(0, 200))
             {
-                chartSeries.Values.Add(new ChartPoint (i*10, i * 20));
+                var start = rand.Next(maximum);
+                var end = rand.Next(maximum);
+                var track = new TrackViewModel()
+                {
+                    Name = $"Track {i}",
+                    Order = i,
+                    Clips =
+                    [
+                        new PointViewModel()
+                        {
+                            X = start,
+                            Y = end,
+                        },
+                    ]
+                };
+
+                playList.Tracks.Add(track);
             }
-            chartViewModel.Series = chartSeries;
+
+            foreach (var stack in playList.Tracks.OfType<TrackViewModel>().SelectMany(t => t.Clips.OfType<PointViewModel>()))
+                playList.Stacks.Add(stack);
         }
     }
 }

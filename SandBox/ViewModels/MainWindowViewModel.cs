@@ -10,14 +10,22 @@ namespace SandBox
         private PlayerViewModel player;
         private Viewport viewport;
         private SpeedViewModel speed;
-        private ChartViewModel chart;
         private ProgressViewModel progress;
+        private ConfigurationViewModel configuration;
 
         public Viewport Viewport
         {
             get => viewport; set
             {
                 viewport = value;
+                OnPropertyChanged();
+            }
+        }
+        public ConfigurationViewModel Configuration
+        {
+            get => configuration; set
+            {
+                configuration = value;
                 OnPropertyChanged();
             }
         }
@@ -35,15 +43,6 @@ namespace SandBox
             get => player; set
             {
                 player = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ChartViewModel Chart
-        {
-            get => chart; set
-            {
-                chart = value;
                 OnPropertyChanged();
             }
         }

@@ -15,6 +15,11 @@ namespace SandBox
             {
                 return TriggerStyle;
             }
+              
+            if (item is PointViewModel)
+            {
+                return PointStyle;
+            }
 
             if (item is HoldClipViewModel)
             {
@@ -32,5 +37,6 @@ namespace SandBox
         public Style HoldStyle { get; set; }
         public Style TriggerStyle { get; set; }
         public Style BandStyle { get; set; }
+        public Style PointStyle { get; set; }
     }
 }

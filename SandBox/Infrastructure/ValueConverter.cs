@@ -7,17 +7,24 @@ using System.Windows.Data;
 
 namespace SandBox
 {
+    internal class BasicValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int intValue)
+                return intValue;
+            if (value is double doubleValue)
+                return doubleValue;
+            return DependencyProperty.UnsetValue;
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     internal class ValueConverter : IValueConverter
     {
-        //public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        //{
-        //    if (value is int intValue)
-        //        return intValue;
-        //    if (value is double doubleValue)
-        //        return doubleValue;
-        //    return DependencyProperty.UnsetValue;
-        //}
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is int intValue)

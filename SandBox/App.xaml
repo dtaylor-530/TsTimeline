@@ -11,97 +11,86 @@
 
             </ResourceDictionary.MergedDictionaries>
 
+            <local:ItemPointClipUpdater x:Key="ItemPointClipUpdater"/>
 
+            <!--<local:ValueConverter x:Key="ValueConverter"/>-->
+            <local:BasicValueConverter x:Key="ValueConverter"/>
 
-            <local:ValueConverter x:Key="ValueConverter"/>
+            <Style x:Key="_TriggerClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource TriggerClipStyle}">
+                <Setter Property="Value" Value="{Binding Value}"></Setter>
+            </Style>
 
-            <local:CustomStyleSelector x:Key="CustomStyleSelector">
-                <local:CustomStyleSelector.TriggerStyle>
-                    <Style TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource TriggerClipStyle}">
-                        <Setter Property="Value" Value="{Binding Value}"></Setter>
-                    </Style>
-                </local:CustomStyleSelector.TriggerStyle>
-                <local:CustomStyleSelector.HoldStyle>
-                    <Style TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource HoldClipStyle}">
-                        <Setter Property="StartValue" Value="{Binding StartValue}"></Setter>
-                        <Setter Property="EndValue" Value="{Binding EndValue}"></Setter>
-                    </Style>
-                </local:CustomStyleSelector.HoldStyle>
-                <local:CustomStyleSelector.BandStyle>
-                    <Style TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource {x:Type tsTimeline:ClipBase}}">
-                        <Setter Property="StartValue" Value="{Binding StartValue}"></Setter>
-                        <Setter Property="EndValue" Value="{Binding EndValue}"></Setter>
-                        <Setter Property="Background" >
-                            <Setter.Value>
-                                <SolidColorBrush Color="CornflowerBlue" Opacity="0.5"></SolidColorBrush>
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}" >
-                                    <Canvas x:Name="PART_CANVAS"
-                                                    Width="{TemplateBinding Width}"
-                                                    Height="{TemplateBinding Height}">
-                                        <Border
-                                                    x:Name="PART_CENTER" 
-                                                    Background="{TemplateBinding Background}"
-                                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                                    Width="{TemplateBinding Width}"
-                                                    Height="{TemplateBinding Height}" ToolTip="{TemplateBinding EndValue}"/>
-                                    </Canvas>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </local:CustomStyleSelector.BandStyle>
+            <Style x:Key="_HoldClipStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource HoldClipStyle}">
+                <Setter Property="StartValue" Value="{Binding StartValue}"></Setter>
+                <Setter Property="EndValue" Value="{Binding EndValue}"></Setter>
+            </Style>
+
+            <Style x:Key="_BandClipStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource BandClipStyle}">
+                <Setter Property="StartValue" Value="{Binding StartValue}"></Setter>
+                <Setter Property="EndValue" Value="{Binding EndValue}"></Setter>
+            </Style>
+
+            <Style x:Key="_PointClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource PointClipStyle}">
+                <Setter Property="X" Value="{Binding X}"></Setter>
+                <Setter Property="Y" Value="{Binding Y}"></Setter>
+            </Style>
+
+            <Style x:Key="ItemPointClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource _PointClipStyle}">
+                <Setter Property="Updater" Value="{StaticResource ItemPointClipUpdater}"></Setter>
+            </Style>
+
+            <local:CustomStyleSelector x:Key="CustomStyleSelector" 
+                                       TriggerStyle="{StaticResource _TriggerClipStyle}"
+                                       HoldStyle="{StaticResource _HoldClipStyle}"
+                                       BandStyle="{StaticResource _BandClipStyle}"
+                                       PointStyle="{StaticResource ItemPointClipStyle}"
+                                       >    
+            </local:CustomStyleSelector>
+
+            <local:CustomStyleSelector x:Key="CustomCombinedStyleSelector" 
+                                       TriggerStyle="{StaticResource _TriggerClipStyle}"
+                                       HoldStyle="{StaticResource _HoldClipStyle}"
+                                       BandStyle="{StaticResource _BandClipStyle}"
+                                       PointStyle="{StaticResource _PointClipStyle}"
+                                       >   
             </local:CustomStyleSelector>
 
             <local:ClipTemplateSelector x:Key="ClipTemplateSelector">
                 <local:ClipTemplateSelector.TrackTemplate>
                     <HierarchicalDataTemplate DataType="{x:Type local:TrackViewModel}" ItemsSource="{Binding Clips}">
                         <Grid>
-                            <Grid.ColumnDefinitions>
+                            <!--<Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="10"/>
                                 <ColumnDefinition Width="50"/>
                                 <ColumnDefinition Width="50"/>
-                            </Grid.ColumnDefinitions>
+                            </Grid.ColumnDefinitions>-->
                             <TextBlock Text="{Binding Name}"/>
-                            <TextBox  Text="{Binding Min , Converter={StaticResource ValueConverter}, Mode=OneWay}" IsReadOnly="True" Grid.Column="2"/>
-                            <TextBox  Text="{Binding Max , Converter={StaticResource ValueConverter}, Mode=OneWay}" IsReadOnly="True" Grid.Column="3"/>
+                            <!--<TextBox  Text="{Binding Min , Converter={StaticResource ValueConverter}, Mode=OneWay}" IsReadOnly="True" Grid.Column="2"/>
+                            <TextBox  Text="{Binding Max , Converter={StaticResource ValueConverter}, Mode=OneWay}" IsReadOnly="True" Grid.Column="3"/>-->
                         </Grid>
                     </HierarchicalDataTemplate>
                 </local:ClipTemplateSelector.TrackTemplate>
             </local:ClipTemplateSelector>
 
             <DataTemplate DataType="{x:Type local:PlayerViewModel}">
-                <local:MediaUserControl  Margin="4">
-
-                </local:MediaUserControl>
+                <local:MediaUserControl  Margin="4"/>
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type tsTimeline:Viewport}">
-                <local:ViewportUserControl  Margin="4">
-
-                </local:ViewportUserControl>
+                <local:ViewportUserControl  Margin="4"/>
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type local:SpeedViewModel}">
-                <local:SpeedUserControl Margin="4">
+                <local:SpeedUserControl Margin="4"/>
+            </DataTemplate>
 
-                </local:SpeedUserControl>
+            <DataTemplate DataType="{x:Type local:ConfigurationViewModel}">
+                <local:ConfigurationUserControl Margin="4"/>
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type local:ProgressViewModel}">
-                <local:ProgressUserControl Margin="4" ValueConverter="{StaticResource ValueConverter}">
-
-                </local:ProgressUserControl>
-            </DataTemplate>
-
-            <DataTemplate DataType="{x:Type local:ChartViewModel}">
-                <tsTimeline:ChartControl Series="{Binding Series}" 
-                                             Viewport="{Binding Viewport}" />
+                <local:ProgressUserControl Margin="4" ValueConverter="{StaticResource ValueConverter}"/>
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type local:MainWindowViewModel}">
@@ -117,29 +106,30 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <ContentControl Content="{Binding Viewport}" Grid.Column="0"/>
                         <ContentControl Content="{Binding Player}" Grid.Column="1"/>
                         <ContentControl Content="{Binding Speed}" Grid.Column="2"/>
                         <ContentControl Content="{Binding Progress}" Grid.Column="3"/>
+                        <ContentControl Content="{Binding Configuration}" Grid.Column="4"/>
                     </Grid>
 
                     <tsTimeline:CombinedTimeline 
                         x:Name="CombinedTimeline"
-                        Maximum="1000" 
                         ValueConverter="{StaticResource ValueConverter}"
                         Grid.Row="1"
+                        ChartType="{Binding Configuration.ChartType}"
                         Value="{Binding Progress.Progress, Mode=TwoWay}"
                         Viewport="{Binding Viewport}"
                         ItemsSource="{Binding Player.PlayList.Stacks}"
                         OffsetX="{Binding ElementName=TsTimeline, Path=OffsetX, Mode=OneWay}"
                         ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
-                        ItemContainerStyleSelector="{StaticResource CustomStyleSelector}">
+                        ItemContainerStyleSelector="{StaticResource CustomCombinedStyleSelector}">
                     </tsTimeline:CombinedTimeline>
 
                     <tsTimeline:TsTimeline 
                             x:Name="TsTimeline"
-                            Maximum="1000" 
                         ValueConverter="{StaticResource ValueConverter}"
                         Grid.Row="2"
                         Value="{Binding Progress.Progress, Mode=TwoWay}"

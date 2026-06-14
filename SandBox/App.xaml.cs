@@ -7,26 +7,54 @@ namespace SandBox
     /// </summary>
     public partial class App : Application
     {
-        
+
         protected override void OnStartup(StartupEventArgs e)
         {
             var vm = new MainWindowViewModel
             {
-                Player = new(),
+                Player = new()
+                {
+                    PlayList = new PlayListViewModel
+                    {
+                        Name = "My PlayList",
+                        Tracks = [],
+                        Stacks = []
+                    }
+                },
+                Configuration = new() { ChartType = TsTimeline.ChartType.Points },
                 Viewport = new() { },
                 Speed = new(),
-                Chart = new(),
                 Progress = new()
             };
 
             var timeSimulation = new TimeSimulationService();
-            timeSimulation.Load(vm.Player,vm.Progress, vm.Viewport);
+            timeSimulation.Load(vm.Player, vm.Progress, vm.Viewport);
             timeSimulation.Load(vm.Speed);
-            new ChartSimulationService().Load(vm.Chart);
-            vm.Chart.Viewport = vm.Viewport;
-            new TrackSimulationService().Load(vm.Player);
+
+            reloadData();
+            vm.Configuration.PropertyChanged += (s,e)=> reloadData();
+
             new Window { Content = vm }.Show();
             base.OnStartup(e);
+
+            void reloadData()
+            {
+                vm.Player.PlayList.Stacks?.Clear();
+                vm.Player.PlayList.Tracks?.Clear();
+
+                if (vm.Configuration.ChartType == TsTimeline.ChartType.Points)
+                {
+                    new ChartSimulationService().Load(vm.Player.PlayList);
+                }
+                else if (vm.Configuration.ChartType == TsTimeline.ChartType.Bands)
+                {
+                    new TrackSimulationService().Load(vm.Player.PlayList);
+                }
+                else
+                {
+                    throw new System.Exception(" ");
+                }
+            }
         }
     }
 }

@@ -71,6 +71,31 @@
                                    StringFormat={}{0:F2}}"/>
                 </StackPanel>
             </Grid>
+            <Grid Margin="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Viewport Height"
+                VerticalAlignment="Center"
+                Margin="0,0,10,0"/>
+
+                <StackPanel Grid.Column="1"
+                 Orientation="Horizontal">
+
+                    <Slider Minimum="1"
+                 Maximum="2000"
+                 TickFrequency="10"
+                 Width="150"
+                 Value="{Binding ViewportHeight,
+                                 Mode=TwoWay}"/>
+
+                    <TextBlock Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    Text="{Binding ViewportHeight, StringFormat={}{0:F2}}"/>
+                </StackPanel>
+            </Grid>
             
             <Grid Margin="4">
                 <Grid.ColumnDefinitions>

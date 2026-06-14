@@ -7,15 +7,11 @@ namespace SandBox
 {
     public class TrackSimulationService
     {
-        public void Load(PlayerViewModel playerViewModel)
+        public void Load(PlayListViewModel playList)
         {
             var maximum = 100;
             var rand = new Random();
-            playerViewModel.PlayList = new PlayListViewModel
-            {
-                Name = "My PlayList",
-                Tracks = []
-            };
+    
 
             foreach (var i in Enumerable.Range(0, 200))
             {
@@ -43,15 +39,17 @@ namespace SandBox
                     ]
                 };
 
-                playerViewModel.PlayList.Tracks.Add(track);
+                playList.Tracks.Add(track);
             }
-
-            playerViewModel.PlayList.Stacks = new ObservableCollection<TrackViewModel>(toStacks());
+            foreach (var item in toStacks())
+            {
+                playList.Stacks.Add(item);
+            }
 
             IEnumerable<TrackViewModel> toStacks()
             {
                 return toRanges(
-                    playerViewModel.PlayList.Tracks,
+                    playList.Tracks.OfType<TrackViewModel>(),
                     a => a.Clips.OfType<HoldClipViewModel>()
                     .Select(a => ((int)a.StartValue, (int)a.EndValue)))
                     .Select(kvp => new TrackViewModel()

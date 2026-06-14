@@ -1,20 +1,7 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace SandBox
 {
-    public class PlayListViewModel 
-    {
-        public string Name { get; set; } 
-
-        public ObservableCollection<TrackViewModel> Tracks { get; set; } 
-        public ObservableCollection<TrackViewModel> Stacks { get; set; } 
-    }
-
 
     public class PlayerViewModel : Notification
     {
@@ -32,7 +19,7 @@ namespace SandBox
 
         public event Action<PlayState> PlayStateChanged;
 
-        public TrackViewModel CurrentTrack => PlayList.Tracks.Count > 0 ? PlayList.Tracks[CurrentIndex] : null;
+        public TrackViewModel CurrentTrack => PlayList.Tracks.Count > 0 ? (TrackViewModel)PlayList.Tracks[CurrentIndex] : null;
 
         public int CurrentIndex
         {
