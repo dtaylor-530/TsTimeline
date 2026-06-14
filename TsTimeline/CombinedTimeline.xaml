@@ -25,37 +25,6 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type timelineControl:CombinedTimeline}">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                                <!--<ColumnDefinition Width="Auto" />-->
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <!--<Border Grid.Column="0" Height="16" VerticalAlignment="Bottom" Background="#FFE3E3E3"
-                                BorderThickness="0" />-->
-                            <!--<ScrollViewer Grid.Column="0" Margin="0,15,0,0">
-                                <ScrollViewer.Template>
-                                    <ControlTemplate TargetType="ScrollViewer">
-                                        <Grid>
-                                            <ScrollContentPresenter
-                                            CanContentScroll="{TemplateBinding CanContentScroll}"
-                                            Content="{TemplateBinding Content}"
-                                            Margin="{TemplateBinding Padding}"
-                                            x:Name="PART_ScrollContentPresenter" />
-                                            <Grid Visibility="Collapsed">
-                                                <ScrollBar x:Name="PART_VerticalScrollBar" />
-                                                <ScrollBar x:Name="PART_HorizontalScrollBar" />
-                                            </Grid>
-                                        </Grid>
-                                    </ControlTemplate>
-                                </ScrollViewer.Template>
-                                <b:Interaction.Behaviors>
-                                    <timelineControl:ScrollViewerBindBehavior
-                                    Target="{Binding ElementName=PART_SCROLL_VIEWER}" />
-                                </b:Interaction.Behaviors>
-                                <ItemsControl ItemsSource="{TemplateBinding ItemsSource}" 
-                                          ItemTemplate="{TemplateBinding ItemTemplate}"
-                                          ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
-                            </ScrollViewer>-->
-
                             <timelineControl:MeasureRenderer  
                                 x:Name="PART_MEASURE_RENDERER"
                                 Grid.Column="1"

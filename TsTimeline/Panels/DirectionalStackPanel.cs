@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace TsTimeline
 {
@@ -40,7 +37,7 @@ namespace TsTimeline
                 height += child.DesiredSize.Height;
             }
 
-            return new Size(width, height);
+            return new Size(Viewport?.ViewportWidth * Viewport?.ScaleX * Viewport?.ZoomX ?? width, height);
         }
 
         protected Size DirectionalStackPanel_ArrangeOverride(Size finalSize)

@@ -14,7 +14,7 @@ namespace SandBox
             if (value is int intValue)
                 return intValue;
             if (value is double doubleValue)
-                return doubleValue;
+                return doubleValue.ToString("F1");
             return DependencyProperty.UnsetValue;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

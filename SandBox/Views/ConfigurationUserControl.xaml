@@ -8,6 +8,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ComboBox x:Name="PART_COMBOBOX" SelectedItem="{Binding ChartType, Mode=TwoWay}" Height="25" Width="70"></ComboBox>    
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock VerticalAlignment="Bottom" Text="Type" Margin="4"></TextBlock>
+        <ComboBox x:Name="PART_COMBOBOX" VerticalAlignment="Top" Margin="4" Grid.Row="1" SelectedItem="{Binding ChartType, Mode=TwoWay}" Height="25" Width="70"></ComboBox>    
     </Grid>
 </UserControl>
