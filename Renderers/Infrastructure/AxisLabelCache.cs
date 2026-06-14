@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
-namespace TsTimeline
+namespace Renderers
 {
     public sealed class AxisLabelCache(Typeface typeface, double fontSize, Brush foreground)
     {

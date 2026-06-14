@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TsTimeline
+namespace Renderers
 {
     public sealed class AxisModel
     {

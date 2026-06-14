@@ -1,4 +1,4 @@
-﻿namespace TsTimeline
+﻿namespace Renderers
 {
     public sealed class X_AxisFactory(ITickGenerator tickGenerator) : IAxisFactory
     {

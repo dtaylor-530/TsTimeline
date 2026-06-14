@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Renderers;
 
 namespace TsTimeline
 {
@@ -107,6 +108,7 @@ namespace TsTimeline
                 case nameof(Viewport.ViewportWidth):
                 case nameof(Viewport.ViewportHeight):
                 case nameof(Viewport.ScaleX):         
+                case nameof(Viewport.OffsetX):         
                     //case nameof(Viewport.WorldStart):
                     //case nameof(Viewport.WorldEnd):
                     Update();

@@ -1,4 +1,4 @@
-﻿namespace TsTimeline
+﻿namespace Renderers
 {
     public enum TickLevel
     {

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace TsTimeline
+namespace Renderers
 {
     public sealed class XTickLayer : IAxisLayer
     {

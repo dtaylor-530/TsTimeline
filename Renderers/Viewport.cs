@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
-using Sandbox2.Models;
+using Sandbox;
 
-namespace TsTimeline
+namespace Renderers
 {
     public sealed class Viewport : Notification
     {
@@ -122,7 +122,7 @@ namespace TsTimeline
             }
         }
 
-        public int TsTimelineY
+        public int RenderersY
         {
             get => _scaleY;
             set

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Data;
 
-namespace TsTimeline.Axis
+namespace Renderers
 {
     public sealed class ConverterFormatter(IValueConverter _converter) : ILabelFormatter
     {

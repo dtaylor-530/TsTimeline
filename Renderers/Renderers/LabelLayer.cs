@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace TsTimeline
+namespace Renderers
 {
     public sealed class XLabelLayer : IAxisLayer
     {

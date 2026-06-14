@@ -1,4 +1,4 @@
-﻿namespace TsTimeline
+﻿namespace Renderers
 {
     public interface IAxisFactory
     {

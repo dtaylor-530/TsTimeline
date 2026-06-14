@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace TsTimeline
+namespace Renderers
 {
     public sealed class NumericLabelFormatter : ILabelFormatter
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TsTimeline
+namespace Renderers
 {
     public interface ITickGenerator
     {
