@@ -10,28 +10,27 @@ namespace TsTimeline
     {
         private double _offsetX;
         private double _zoomX = 1.0;
-        private double _viewportWidth;
+        private double _viewportWidth = 1000;
+        private double _viewportHeight = 1000;
         private double _worldStart;
         private double _worldEnd = 1000;
         private double _cursorPosition;
         private int _minPixelSpacing = 5;
         private int _scaleX = 10;
-        private double _viewportHeight;
-        private double _zoomY;
+        private double _zoomY = 1.0;
         private double _offsetY;
-        private int _scaleY;
+        private int _scaleY = 1;
 
         public double OffsetX
         {
             get => _offsetX;
             set
             {
-                var clamped = clampOffset(value);
-                if (_offsetX == clamped) return;
-                _offsetX = clamped;
+                //var clamped = clampOffset(value);
+                //if (_offsetX == clamped) return;
+                if (_offsetX == value) return;               
+                _offsetX = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(VisibleStart));
-                OnPropertyChanged(nameof(VisibleEnd));
             }
         }
 
@@ -46,9 +45,6 @@ namespace TsTimeline
                 // Re-clamp offset now that visible width has changed
                 _offsetX = clampOffset(_offsetX);
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(VisibleWorldWidth));
-                OnPropertyChanged(nameof(VisibleStart));
-                OnPropertyChanged(nameof(VisibleEnd));
             }
         }
 
@@ -62,11 +58,22 @@ namespace TsTimeline
                 // Re-clamp: a wider viewport may push OffsetX out of range
                 _offsetX = clampOffset(_offsetX);
                 OnPropertyChanged();
-                //OnPropertyChanged(nameof(VisibleWorldWidth));
-                //OnPropertyChanged(nameof(VisibleStart));
-                //OnPropertyChanged(nameof(VisibleEnd));
             }
         }
+
+        public double ViewportHeight
+        {
+            get => _viewportHeight;
+            set
+            {
+                if (_viewportHeight == value) return;
+                _viewportHeight = value;
+                // Re-clamp: a wider viewport may push OffsetX out of range
+                _offsetY = clampOffset(_offsetY);
+                OnPropertyChanged();
+            }
+        }
+
         public int ScaleX
         {
             get => _scaleX;
@@ -78,8 +85,17 @@ namespace TsTimeline
             }
         }
 
-
-        public double OffsetY
+        public int ScaleY
+        {
+            get => _scaleY;
+            set
+            {
+                if (_scaleY == value) return;
+                _scaleY = value;
+                OnPropertyChanged();
+            }
+        }
+                public double OffsetY
         {
             get => _offsetY;
             set
@@ -88,8 +104,6 @@ namespace TsTimeline
                 _worldStart = value;
                 _offsetX = clampOffset(_offsetX);
                 OnPropertyChanged();
-                //OnPropertyChanged(nameof(VisibleStart));
-                //OnPropertyChanged(nameof(VisibleEnd));
             }
         }
 
@@ -104,25 +118,7 @@ namespace TsTimeline
                 // Re-clamp offset now that visible width has changed
                 _offsetY = clampOffset(_offsetY);
                 OnPropertyChanged();
-                //OnPropertyChanged(nameof(VisibleWorldWidth));
-                //OnPropertyChanged(nameof(VisibleStart));
-                //OnPropertyChanged(nameof(VisibleEnd));
-            }
-        }
 
-        public double ViewportHeight
-        {
-            get => _viewportHeight;
-            set
-            {
-                if (_viewportHeight == value) return;
-                _viewportHeight = value;
-                // Re-clamp: a wider viewport may push OffsetX out of range
-                _offsetY = clampOffset(_offsetY);
-                OnPropertyChanged();
-                //OnPropertyChanged(nameof(VisibleWorldWidth));
-                //OnPropertyChanged(nameof(VisibleStart));
-                //OnPropertyChanged(nameof(VisibleEnd));
             }
         }
 
@@ -146,9 +142,6 @@ namespace TsTimeline
                 _worldStart = value;
                 _offsetX = clampOffset(_offsetX);
                 OnPropertyChanged();
-                //OnPropertyChanged(nameof(WorldLength));
-                OnPropertyChanged(nameof(VisibleStart));
-                OnPropertyChanged(nameof(VisibleEnd));
             }
         }
 
@@ -161,8 +154,6 @@ namespace TsTimeline
                 _worldEnd = value;
                 _offsetX = clampOffset(_offsetX);
                 OnPropertyChanged();
-                //OnPropertyChanged(nameof(WorldLength));
-                OnPropertyChanged(nameof(VisibleEnd));
             }
         }
 
@@ -200,8 +191,11 @@ namespace TsTimeline
         //public double DomainToScreen(double value)
         //        => value * PixelsPerUnit - Offset;
 
-        public double WorldToScreen(double world) =>
+        public double WorldToXScreen(double world) =>
             (world - OffsetX) * ZoomX * ScaleX;
+
+        public double WorldToYScreen(double world) =>
+            (world - OffsetY) * ZoomY * ScaleY;
 
         public double ScreenToWorld(double screen) =>
             OffsetX + screen / ZoomX;

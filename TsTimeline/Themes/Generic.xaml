@@ -3,8 +3,9 @@
   
         <ResourceDictionary.MergedDictionaries>
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/HoldClip.xaml" />
-            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/ClipsControl.xaml" />
-            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TriggerClip.xaml" />
+            <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/BandClip.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/PointClip.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TriggerClip.xaml" />
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/ClipBase.xaml" />
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/TsTimeline.xaml" />
             <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/Timeline.xaml" />

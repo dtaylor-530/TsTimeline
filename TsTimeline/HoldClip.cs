@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -11,7 +12,6 @@ namespace TsTimeline
     public partial class ClipBase
     {
         private Thumb? _left, _right, _center;
-
         public static readonly DependencyProperty StartValueProperty =
             DepProp.Register<ClipBase, double>(
                 nameof(StartValue),
@@ -43,14 +43,18 @@ namespace TsTimeline
             if (TrySetupThumbs() is false)
                 return;
 
-            Canvas.SetLeft(_left, StartValue * Viewport.ScaleX * Viewport.ZoomX - _left.ActualWidth / 2);
-            Canvas.SetLeft(_right, EndValue * Viewport.ScaleX * Viewport.ZoomX - _right.ActualWidth / 2);
-            Canvas.SetLeft(_center, StartValue * Viewport.ScaleX * Viewport.ZoomX);
+            Canvas.SetLeft(this, StartValue * Viewport.ScaleX * Viewport.ZoomX);
 
-            var w = EndValue * Viewport.ScaleX * Viewport.ZoomX - StartValue * Viewport.ScaleX * Viewport.ZoomX;
+            var pixelsPerUnit = Viewport.ScaleX * Viewport.ZoomX;
+            var width = (EndValue - StartValue) * pixelsPerUnit;
+            if (width > 0)
+            {
+                this.Width = _center.Width = width;
+            }
+            else
+            {
 
-            if (w > 0)
-                _center.Width = w;
+            }
         }
 
         bool TrySetupThumbs()
@@ -58,12 +62,9 @@ namespace TsTimeline
             if (_left != null && _right != null && _center != null)
                 return true;
 
-            if (_left is null)
-                _left = this.GetTemplateChild("PART_LEFT") as Thumb;
-            if (_right is null)
-                _right = this.GetTemplateChild("PART_RIGHT") as Thumb;
-            if (_center is null)
-                _center = this.GetTemplateChild("PART_CENTER") as Thumb;
+            _left ??= this.GetTemplateChild("PART_LEFT") as Thumb;
+            _right ??= this.GetTemplateChild("PART_RIGHT") as Thumb;
+            _center ??= this.GetTemplateChild("PART_CENTER") as Thumb;
 
             var result = _left != null && _right != null && _center != null;
 
@@ -77,11 +78,6 @@ namespace TsTimeline
 
                 var centerBinder = new ThumbDragToMousePointConverter(_center, OnMouseDownSelectedChanged);
                 centerBinder.BindDragDelta(center_OnDragDelta);
-
-                //Loaded += (s, e) =>
-                //{
-                //    UpdateThumbs();
-                //};
             }
 
             void right_OnDragDelta(Vector vector)
@@ -89,30 +85,29 @@ namespace TsTimeline
                 if (IsReadOnly)
                     return;
 
-                var change = Math.Ceiling(vector.X * (1.0d / Viewport.ZoomX) - 0.5d);
-
+                var change = vector.X / (Viewport.ScaleX * Viewport.ZoomX);
                 // 右側のクランプ
                 if (EndValue + change > MaxValue)
                 {
                     change = MaxValue - EndValue;
                 }
-                // 左側のクランプ
                 else if (EndValue + change <= StartValue)
                 {
                     change = StartValue - EndValue + 1;
                 }
+
                 EndValue += change;
             }
 
             void center_OnDragDelta(Vector vector)
             {
-                if (IsReadOnly)
-                    return;
-                var change = Math.Ceiling(vector.X * (1.0d / Viewport.ZoomX) - 0.5d);
-                var diff = clampToCanvasDiff(change);
-
-                StartValue += diff;
-                EndValue += diff;
+                var change = vector.X / (Viewport.ScaleX * Viewport.ZoomX);
+                if (StartValue + change < 0)
+                {
+                    change = 0 - StartValue;
+                }
+                StartValue += change;
+                EndValue += change;
             }
 
             void left_OnDragDelta(Vector vector)
@@ -120,8 +115,9 @@ namespace TsTimeline
                 if (IsReadOnly)
                     return;
 
-                var change = Math.Ceiling(vector.X * (1.0d / Viewport.ZoomX) - 0.5d);
-                // 右側のクランプ
+
+                var change = vector.X / (Viewport.ScaleX * Viewport.ZoomX);
+
                 if (StartValue + change >= EndValue)
                 {
                     change = EndValue - StartValue - 1;
@@ -133,19 +129,6 @@ namespace TsTimeline
                 }
 
                 StartValue += change;
-            }
-
-            double clampToCanvasDiff(double d)
-            {
-                if (StartValue + d <= 0)
-                    return -StartValue;
-
-                if (EndValue + d >= MaxValue)
-                {
-                    return MaxValue - EndValue;
-                }
-
-                return d;
             }
 
             return result;

@@ -5,20 +5,18 @@ using System.Windows.Input;
 
 namespace TsTimeline
 {
-    /// <summary>
-    /// Thumbのドラッグデルタをドラッグ開始地点からの差分に変換してイベントにバインドします。
-    /// </summary>
     public class ThumbDragToMousePointConverter
     {
-        private Point _prevPoint = new Point(0,0);
         private readonly Thumb _thumb;
-        
-        public ThumbDragToMousePointConverter(Thumb thumb , Action mouseDown)
+
+        public ThumbDragToMousePointConverter(
+            Thumb thumb,
+            Action mouseDown)
         {
             _thumb = thumb;
+
             _thumb.DragStarted += (s, e) =>
             {
-                _prevPoint = Mouse.GetPosition(thumb);
                 mouseDown?.Invoke();
             };
         }
@@ -27,8 +25,7 @@ namespace TsTimeline
         {
             _thumb.DragDelta += (s, e) =>
             {
-                var point = Mouse.GetPosition(_thumb);
-                function?.Invoke(point - _prevPoint);
+                function?.Invoke(new Vector(e.HorizontalChange, e.VerticalChange));
             };
         }
     }

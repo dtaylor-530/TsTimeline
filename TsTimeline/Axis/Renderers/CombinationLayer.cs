@@ -4,7 +4,14 @@ namespace TsTimeline
 {
     public sealed class CombinationLayer : IAxisLayer
     {
-        private readonly List<IAxisLayer> _layers = [];
+        private readonly List<IAxisLayer> _layers;
+
+        public CombinationLayer(params IAxisLayer[] layers)
+        {
+            _layers = new List<IAxisLayer>(layers);
+        }
+
+        public IEnumerable<IAxisLayer> Layers => _layers;
 
         public void AddLayer(IAxisLayer layer)
         {

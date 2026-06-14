@@ -6,14 +6,16 @@ using System.Windows.Controls;
 
 namespace TsTimeline
 {
-
-    public class DirectionalStackPanel : Panel
+    /// <summary>
+    /// DirectionalStackPanel
+    /// </summary>
+    public partial class CustomPanel
     {
         public static readonly DependencyProperty DirectionProperty =
             DependencyProperty.Register(
                 nameof(Direction),
                 typeof(Direction),
-                typeof(DirectionalStackPanel),
+                typeof(CustomPanel),
                 new FrameworkPropertyMetadata(
                     Direction.Down,
                     FrameworkPropertyMetadataOptions.AffectsMeasure |
@@ -25,7 +27,7 @@ namespace TsTimeline
             set => SetValue(DirectionProperty, value);
         }
 
-        protected override Size MeasureOverride(Size availableSize)
+        protected Size DirectionalStackPanel_MeasureOverride(Size availableSize)
         {
             double width = 0;
             double height = 0;
@@ -41,7 +43,7 @@ namespace TsTimeline
             return new Size(width, height);
         }
 
-        protected override Size ArrangeOverride(Size finalSize)
+        protected Size DirectionalStackPanel_ArrangeOverride(Size finalSize)
         {
             if (Direction == Direction.Down)
             {

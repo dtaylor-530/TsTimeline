@@ -120,8 +120,8 @@ namespace TsTimeline
 
                 dc.DrawLine(
                     _pen,
-                    new Point(tick.ScreenPosition, width),
-                    new Point(tick.ScreenPosition, 0));
+                    new Point(width, tick.ScreenPosition),
+                    new Point(0, tick.ScreenPosition));
             }
         }
     }

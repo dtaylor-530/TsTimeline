@@ -39,17 +39,16 @@ namespace TsTimeline
         }
 
         public static readonly RoutedEvent ValueChangedEvent = EventManager.RegisterRoutedEvent(
-    "ValueChanged",
-    RoutingStrategy.Bubble,
-    typeof(RoutedEventHandler),
-    typeof(Timeline));
+            "ValueChanged",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(Timeline));
 
         public static readonly DependencyProperty DirectionProperty =
-    DependencyProperty.Register(nameof(Direction), typeof(Direction), typeof(Timeline), new PropertyMetadata(Direction.Down, changed));
+            DependencyProperty.Register(nameof(Direction), typeof(Direction), typeof(Timeline), new PropertyMetadata(Direction.Down, changed));
 
         private static void changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-   
+        {   
         }
 
         public Direction Direction
@@ -153,7 +152,6 @@ namespace TsTimeline
         {
             base.OnApplyTemplate();
 
-            // Re-resolve all parts — template may have been re-applied
             _thumb = null;
             _rectangle = null;
             _line = null;
@@ -166,8 +164,6 @@ namespace TsTimeline
             UpdateVisuals(_smoothValue);
         }
 
-
-        // Rendering loop (smooth animation toward target)
         private void AttachRenderingLoop()
         {
             if (_renderingAttached) return;
@@ -207,9 +203,7 @@ namespace TsTimeline
         {
             if (Viewport == null || Viewport.ZoomX <= 0) return;
 
-            // WorldToScreen already accounts for OffsetX
-            //double screenX = Viewport.WorldToScreen(worldValue);
-            double screenX = worldValue;
+            double screenX = worldValue - Viewport.OffsetX;
 
             if (TryGetThumb(out var thumb))
                 Canvas.SetLeft(thumb, screenX - thumb.ActualWidth / 2);

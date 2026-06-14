@@ -10,6 +10,7 @@ using static TsTimeline.XBackgroundLayer;
 namespace TsTimeline
 {
     [TemplatePart(Name = "PART_SCROLL_VIEWER", Type = typeof(ScrollViewer))]
+    [TemplatePart(Name = "PART_ITEMS_PRESENTER", Type = typeof(ItemsPresenter))]
     public class CombinedTimeline : TreeView
     {
         public static readonly DependencyProperty ValueConverterProperty =
@@ -24,11 +25,11 @@ namespace TsTimeline
         public static readonly DependencyProperty ValueProperty =
     DependencyProperty.Register(nameof(Value), typeof(double), typeof(CombinedTimeline), new PropertyMetadata(valueChanged));
 
-        public static readonly DependencyProperty MaximumProperty =
-            DepProp.Register<CombinedTimeline, double>(nameof(Maximum), 1000d, FrameworkPropertyMetadataOptions.AffectsMeasure);
+        //    public static readonly DependencyProperty MaximumProperty =
+        //        DepProp.Register<CombinedTimeline, double>(nameof(Maximum), 1000d, FrameworkPropertyMetadataOptions.AffectsMeasure);
 
-        public static readonly DependencyProperty MinimumProperty =
-    DepProp.Register<CombinedTimeline, double>(nameof(Minimum), 0d, FrameworkPropertyMetadataOptions.AffectsMeasure);
+        //    public static readonly DependencyProperty MinimumProperty =
+        //DepProp.Register<CombinedTimeline, double>(nameof(Minimum), 0d, FrameworkPropertyMetadataOptions.AffectsMeasure);
 
         public static readonly DependencyProperty TrackHeightProperty =
 DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
@@ -48,15 +49,38 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
         public static readonly DependencyProperty OffsetXProperty =
     DependencyProperty.Register(nameof(OffsetX), typeof(double), typeof(CombinedTimeline), new PropertyMetadata(0d, offsetXChanged));
 
+        public static readonly DependencyProperty ChartTypeProperty =
+    DependencyProperty.Register(nameof(ChartType), typeof(ChartType), typeof(CombinedTimeline), new PropertyMetadata(chartTypeChanged));
+
+        private static void chartTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            //if (d is TreeView treeView)
+            //    treeView.InvalidateVisual();
+        }
+
         private static void offsetXChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if(e.NewValue is double offsetX)
+            if (e.NewValue is double offsetX)
             {
-                if(d is CombinedTimeline combinedTimeline)
+                if (d is CombinedTimeline combinedTimeline)
                 {
-                    combinedTimeline.ScrollViewer.Margin = new Thickness(offsetX, combinedTimeline.ScrollViewer.Margin.Top, 0, combinedTimeline.ScrollViewer.Margin.Bottom);
-                    combinedTimeline.measureRenderer.Margin = new Thickness(offsetX, 0, 0, 0);
-                    combinedTimeline.timeLine.Margin = new Thickness(offsetX, 0, 0, 0);
+                    if (combinedTimeline.scrollViewer is { } scrollViewer)
+                    {
+                        scrollViewer.Margin = new Thickness(offsetX, scrollViewer.Margin.Top, 0, scrollViewer.Margin.Bottom);
+                    }
+                    else
+                    {
+                        combinedTimeline.itemsPresenter.Margin = new Thickness(offsetX, combinedTimeline.itemsPresenter.Margin.Top, 0, combinedTimeline.itemsPresenter.Margin.Bottom);
+                    }
+
+                    if (combinedTimeline.x_measureRenderer != null) 
+                    combinedTimeline.x_measureRenderer.Margin = new Thickness(offsetX, 0, 0, 0);
+
+                    if (combinedTimeline.y_measureRenderer != null)
+                        combinedTimeline.y_measureRenderer.Margin = new Thickness(offsetX, 0, 0, 0);
+
+                    if (combinedTimeline.timeLine != null)
+                        combinedTimeline.timeLine.Margin = new Thickness(offsetX, 0, 0, 0);
                 }
             }
         }
@@ -66,20 +90,29 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CombinedTimeline), new FrameworkPropertyMetadata(typeof(CombinedTimeline)));
         }
 
-        private MeasureRenderer? measureRenderer;
+        private ScrollViewer? scrollViewer;
+        private MeasureRenderer? x_measureRenderer, y_measureRenderer;
         private Timeline? timeLine;
-               
+        private ItemsPresenter? itemsPresenter;
+
         protected override DependencyObject GetContainerForItemOverride()
         {
-            return new ClipsControl();
+            return new ClipBase();
         }
 
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
-            return item is ClipsControl;
+            return item is ClipBase;
         }
 
         #region Properties
+
+        public ChartType ChartType
+        {
+            get { return (ChartType)GetValue(ChartTypeProperty); }
+            set { SetValue(ChartTypeProperty, value); }
+        }
+
         public Viewport Viewport
         {
             get { return (Viewport)GetValue(ViewportProperty); }
@@ -110,17 +143,17 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             set { SetValue(ValueProperty, value); }
         }
 
-        public double Maximum
-        {
-            get => (double)GetValue(MaximumProperty);
-            set => SetValue(MaximumProperty, value);
-        }
+        //public double Maximum
+        //{
+        //    get => (double)GetValue(MaximumProperty);
+        //    set => SetValue(MaximumProperty, value);
+        //}
 
-        public double Minimum
-        {
-            get => (double)GetValue(MinimumProperty);
-            set => SetValue(MinimumProperty, value);
-        }
+        //public double Minimum
+        //{
+        //    get => (double)GetValue(MinimumProperty);
+        //    set => SetValue(MinimumProperty, value);
+        //}
 
 
         public double TrackHeight
@@ -129,11 +162,11 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             set => SetValue(TrackHeightProperty, value);
         }
 
-        public ScrollViewer ScrollViewer
-        {
-            get { return (ScrollViewer)GetValue(ScrollViewerProperty); }
-            private set => SetValue(ScrollViewerPropertyKey, value);
-        }
+        //public ScrollViewer ScrollViewer
+        //{
+        //    get { return (ScrollViewer)GetValue(ScrollViewerProperty); }
+        //    private set => SetValue(ScrollViewerPropertyKey, value);
+        //}
 
 
         public Brush Alter0
@@ -158,7 +191,7 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
         #endregion Properties
 
         public CombinedTimeline()
-        { 
+        {
 
             PreviewMouseWheel += (s, e) =>
             {
@@ -177,40 +210,59 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             MouseLeave += (s, e) => { InvalidateVisual(); };
         }
 
+
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            ScrollViewer = GetTemplateChild("PART_SCROLL_VIEWER") as ScrollViewer;
-            measureRenderer = GetTemplateChild("PART_MEASURE_RENDERER") as MeasureRenderer;
+            scrollViewer = GetTemplateChild("PART_SCROLL_VIEWER") as ScrollViewer;
+            x_measureRenderer = GetTemplateChild("PART_MEASURE_RENDERER") as MeasureRenderer;
+            y_measureRenderer = GetTemplateChild("PART_Y_MEASURE_RENDERER") as MeasureRenderer;
             timeLine = GetTemplateChild("PART_TIMELINE") as Timeline;
-            //LayoutUpdated += (s, e) =>
-            //{
-            //    Viewport.ViewportWidth = ScrollViewer.ViewportWidth;
-            //};
-            var axisRenderer = new CombinationLayer();
-            //axisRenderer.AddLayer(new YBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
-            //axisRenderer.AddLayer(new YGridLayer());
-            //axisRenderer.AddLayer(new YTickLayer());
-            //axisRenderer.AddLayer(new YLabelLayer());
-            axisRenderer.AddLayer(new XUpBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
-            axisRenderer.AddLayer(new XUpGridLayer());
-            axisRenderer.AddLayer(new XUpTickLayer());
-            axisRenderer.AddLayer(new XUpLabelLayer());
-            measureRenderer.Renderers = new CombinationLayer[] { axisRenderer };
+            itemsPresenter = GetTemplateChild("PART_ITEMS_PRESENTER") as ItemsPresenter;
+            LayoutUpdated += (s, e) =>
+            {
+                //Viewport.ViewportWidth = scrollViewer.ViewportWidth;
+                //Viewport.ViewportHeight = scrollViewer.ViewportHeight;
+            };
+            var x_axisRenderer = new CombinationLayer();
+            //x_axisRenderer.AddLayer(new XUpBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
+            x_axisRenderer.AddLayer(new XUpGridLayer());
+            x_axisRenderer.AddLayer(new XUpTickLayer());
+            x_axisRenderer.AddLayer(new XUpLabelLayer());
+
+
+            var y_axisRenderer = new CombinationLayer();
+            //y_axisRenderer.AddLayer(new YBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
+            y_axisRenderer.AddLayer(new YGridLayer());
+            y_axisRenderer.AddLayer(new YTickLayer());
+            y_axisRenderer.AddLayer(new YLabelLayer());
+
+            if (x_measureRenderer != null)
+            {
+                x_measureRenderer.Renderer = x_axisRenderer;
+                x_measureRenderer.AxisFactory = new X_AxisFactory(new TimelineTickGenerator());
+            }
+            if (y_axisRenderer != null)
+            {
+                y_measureRenderer.Renderer = y_axisRenderer;
+                y_measureRenderer.AxisFactory = new Y_AxisFactory(new YUp_TimelineTickGenerator());
+            }
 
             timeLine.ValueChanged += (_, _) =>
             {
                 this.Value = timeLine.Value / Viewport.ZoomX / Viewport.ScaleX;
             };
 
-            //Viewport.PropertyChanged += (_, e) =>
-            //{
-            //    if (e.PropertyName == nameof(Viewport.OffsetX))
-            //    {
-            //        //timeLine.Value = Value * Viewport.ZoomX * Viewport.ScaleX;
-            //        ScrollViewer.Margin  = new Thickness(-Viewport.OffsetX, ScrollViewer.Margin.Top, 0, ScrollViewer.Margin.Bottom);
-            //    }
-            //};
+
+            Viewport.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(Viewport.OffsetX))
+                {
+                    //timeLine.Value = Value * Viewport.ZoomX * Viewport.ScaleX;
+                    scrollViewer.ScrollToHorizontalOffset(Viewport.OffsetX);
+                }
+            };
         }
 
         private static void valueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

@@ -20,28 +20,15 @@ namespace TsTimeline
             set => SetValue(ValueProperty, value);
         }
 
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-            TryGetThumb(out _);
-            TrySetupThumbs();
-        }
-
         private void Thumb_OnDragDelta(Vector vector)
         {
             if (IsReadOnly)
                 return;
 
-            var change = Math.Ceiling(vector.X * (1.0d / Viewport.ZoomX) - 0.5d);
-            // 右側のクランプ
-            if (Value + change >= ActualWidth * (1.0d / Viewport.ZoomX))
+            var change = vector.X / (Viewport.ScaleX * Viewport.ZoomX);
+            if (Value + change < 0)
             {
-                change = ActualWidth * (1.0d / Viewport.ZoomX) - Value;
-            }
-            // 左側のクランプ
-            else if (Value + change <= 0)
-            {
-                change = -Value;
+                change = - Value;
             }
 
             Value += change;
@@ -72,11 +59,11 @@ namespace TsTimeline
             return _thumb != null;
         }
 
-        private void UpdateThumb()
+        private void updateThumb()
         {
             if (TryGetThumb(out var thumb))
             {
-                Canvas.SetLeft(thumb, Value * Viewport.ScaleX * Viewport.ZoomX - thumb.ActualWidth / 2);
+                Canvas.SetLeft(this, Value * Viewport.ScaleX * Viewport.ZoomX - this.ActualWidth / 2);
             }
         }
     }

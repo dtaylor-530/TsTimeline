@@ -35,13 +35,9 @@ namespace TsTimeline
         {
             if (value is Direction direction)
             {
-                //    return direction == Direction.Down ? VerticalAlignment.Bottom : VerticalAlignment.Top;
-
                 bool pinToBottom = direction == Direction.Up;
 
-                return pinToBottom
-                    ? 0.0
-                    : DependencyProperty.UnsetValue;
+                return pinToBottom ? 0.0 : DependencyProperty.UnsetValue;
             }
             return DependencyProperty.UnsetValue;
         }

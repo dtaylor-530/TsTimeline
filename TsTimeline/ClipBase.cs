@@ -3,15 +3,23 @@ using System.Windows.Controls;
 
 namespace TsTimeline
 {
-    public interface ISelectable
-    {
-        bool IsSelected { get; set; }
-    }
-    
-    public partial class ClipBase : TreeViewItem , ISelectable
+
+
+    public partial class ClipBase : TreeViewItem, ISelectable
     {
         protected Canvas _partCanvas;
-        private bool _dirty;
+        //private bool _dirty;
+
+
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new ClipBase();
+        }
+
+        protected override bool IsItemItsOwnContainerOverride(object item)
+        {
+            return item is ClipBase;
+        }
 
         static ClipBase()
         {
@@ -19,12 +27,22 @@ namespace TsTimeline
                 new FrameworkPropertyMetadata(typeof(ClipBase)));
         }
 
-        // 実装速度優先でstaticで扱う。将来的にはTimelineControlから注入する形にする
-        // こうしないとUIで2か所以上でTimeLineControlが使いづらくなる。
         public static SelectorService SelectorService => SelectorService.Default;
-                
+
         public static readonly DependencyProperty IsReadOnlyProperty =
             DepProp.Register<ClipBase, bool>(nameof(IsReadOnly));
+
+
+
+        public IUpdater Updater
+        {
+            get { return (IUpdater)GetValue(UpdaterProperty); }
+            set { SetValue(UpdaterProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Update.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty UpdaterProperty =
+            DependencyProperty.Register(nameof(Updater), typeof(IUpdater), typeof(ClipBase), new PropertyMetadata());
 
 
 
@@ -53,17 +71,27 @@ namespace TsTimeline
             if (e.NewValue is Viewport @new)
                 @new.PropertyChanged += self.OnViewportPropertyChanged;
 
-            self.UpdateWidth();
+            self.Update();
         }
 
-        private void UpdateWidth()
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            Update();
+        }
+
+        private void Update()
         {
             if (Viewport == null) return;
-            Width = Viewport.ViewportWidth * Viewport.ZoomX;
-            UpdateThumb();
-            updateThumbs();
-            UpdateBand();
-            //InvalidateVisual();
+            if (Updater is not null)
+                Updater.Update(this);
+            else
+            {
+                updateThumb();
+                updateThumbs();
+                updateBand();
+                updatePoint();
+            }
         }
 
         private void OnViewportPropertyChanged(
@@ -77,10 +105,11 @@ namespace TsTimeline
                 //case nameof(Viewport.OffsetX):
                 case nameof(Viewport.ZoomX):
                 case nameof(Viewport.ViewportWidth):
-                case nameof(Viewport.ScaleX):
-                //case nameof(Viewport.WorldStart):
-                //case nameof(Viewport.WorldEnd):
-                    MarkDirty();
+                case nameof(Viewport.ViewportHeight):
+                case nameof(Viewport.ScaleX):         
+                    //case nameof(Viewport.WorldStart):
+                    //case nameof(Viewport.WorldEnd):
+                    Update();
                     break;
             }
         }
@@ -89,21 +118,10 @@ namespace TsTimeline
         // Invalidation
         // =====================================================
 
-        private static void OnInvalidate(
-            DependencyObject d,
-            DependencyPropertyChangedEventArgs e) =>
-            ((ClipBase)d).MarkDirty();
-
-        private void MarkDirty()
-        {
-            _dirty = true;
-            UpdateWidth();
-        }
-
 
         public bool IsReadOnly
         {
-            get => (bool) GetValue(IsReadOnlyProperty);
+            get => (bool)GetValue(IsReadOnlyProperty);
             set => SetValue(IsReadOnlyProperty, value);
         }
 
@@ -112,7 +130,7 @@ namespace TsTimeline
             if (d is ClipBase t)
                 t.OnValueChanged();
         }
-        
+
         private static void IsSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is ClipBase t)
@@ -121,7 +139,7 @@ namespace TsTimeline
 
         protected virtual void OnValueChanged()
         {
-            this.UpdateThumb();
+            this.updateThumb();
             this.updateThumbs();
         }
 

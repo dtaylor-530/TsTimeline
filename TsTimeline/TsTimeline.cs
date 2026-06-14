@@ -24,13 +24,11 @@ namespace TsTimeline
         public static readonly DependencyProperty ValueProperty =
     DependencyProperty.Register(nameof(Value), typeof(double), typeof(TsTimeline), new PropertyMetadata(valueChanged));
 
+    //    public static readonly DependencyProperty MaximumProperty =
+    //        DepProp.Register<TsTimeline, double>(nameof(Maximum), 1000d, FrameworkPropertyMetadataOptions.AffectsMeasure);
 
-
-        public static readonly DependencyProperty MaximumProperty =
-            DepProp.Register<TsTimeline, double>(nameof(Maximum), 1000d, FrameworkPropertyMetadataOptions.AffectsMeasure);
-
-        public static readonly DependencyProperty MinimumProperty =
-    DepProp.Register<TsTimeline, double>(nameof(Minimum), 0d, FrameworkPropertyMetadataOptions.AffectsMeasure);
+    //    public static readonly DependencyProperty MinimumProperty =
+    //DepProp.Register<TsTimeline, double>(nameof(Minimum), 0d, FrameworkPropertyMetadataOptions.AffectsMeasure);
 
         public static readonly DependencyProperty TrackHeightProperty =
 DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
@@ -52,8 +50,7 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
 
         private MeasureRenderer? measureRenderer;
         private Timeline? timeLine;
-        private Grid? stretchGrid;
-
+        private ItemsPresenter? itemsPresenter;
 
         static TsTimeline()
         {
@@ -62,12 +59,12 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
 
         protected override DependencyObject GetContainerForItemOverride()
         {
-            return new ClipsControl();
+            return new ClipBase();
         }
 
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
-            return item is ClipsControl;
+            return item is ClipBase;
         }
 
         #region Properties
@@ -101,17 +98,17 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
             set { SetValue(ValueProperty, value); }
         }
 
-        public double Maximum
-        {
-            get => (double)GetValue(MaximumProperty);
-            set => SetValue(MaximumProperty, value);
-        }
+        //public double Maximum
+        //{
+        //    get => (double)GetValue(MaximumProperty);
+        //    set => SetValue(MaximumProperty, value);
+        //}
 
-        public double Minimum
-        {
-            get => (double)GetValue(MinimumProperty);
-            set => SetValue(MinimumProperty, value);
-        }
+        //public double Minimum
+        //{
+        //    get => (double)GetValue(MinimumProperty);
+        //    set => SetValue(MinimumProperty, value);
+        //}
 
 
         public double TrackHeight
@@ -171,25 +168,37 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
             ScrollViewer = GetTemplateChild("PART_SCROLL_VIEWER") as ScrollViewer;
             measureRenderer = GetTemplateChild("PART_MEASURE_RENDERER") as MeasureRenderer;
             timeLine = GetTemplateChild("PART_TIMELINE") as Timeline;
-            stretchGrid = GetTemplateChild("PART_STRETCH_GRID") as Grid;
+            itemsPresenter = GetTemplateChild("PART_ITEMSPRESENTER") as ItemsPresenter;
 
             LayoutUpdated += (s, e) =>
             {
-                Viewport.ViewportWidth = ScrollViewer.ViewportWidth;
-                Point position = ScrollViewer.TranslatePoint(new Point(0, 0), this);
-                OffsetX = position.X;
+                if(ScrollViewer is { } scrollViewer)
+                {
+                    Viewport.ViewportWidth = scrollViewer.ViewportWidth;
+                    Viewport.ViewportHeight = scrollViewer.ViewportHeight;
+                    Point position = scrollViewer.TranslatePoint(new Point(0, 0), this);
+                    OffsetX = position.X;
+                    Viewport.OffsetX = scrollViewer.HorizontalOffset;
+                    //ScrollViewer.Width = Viewport.ViewportWidth;
+                }
+            };
+
+            ScrollViewer.ScrollChanged += (s, e) =>
+            {
+                Viewport.OffsetX = ScrollViewer.HorizontalOffset;
             };
 
             timeLine.ValueChanged += (_, _) =>
             {
                 this.Value = timeLine.Value / Viewport.ZoomX / Viewport.ScaleX;
             };
-            var axisRenderer = new CombinationLayer();
-            axisRenderer.AddLayer(new XBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
-            axisRenderer.AddLayer(new XGridLayer());
-            axisRenderer.AddLayer(new XTickLayer());
-            axisRenderer.AddLayer(new XLabelLayer());
-            measureRenderer.Renderers = new CombinationLayer[] { axisRenderer };
+            var axisRenderer = new CombinationLayer(
+                new XBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke),
+                new XGridLayer(),
+                new XTickLayer(),
+                new XLabelLayer());
+            measureRenderer.Renderer = axisRenderer;
+            measureRenderer.AxisFactory = new X_AxisFactory(new TimelineTickGenerator());
         }
         private static void valueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

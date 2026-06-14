@@ -10,17 +10,17 @@ namespace TsTimeline
     {
         private FrameworkElement? center;
 
-        private void UpdateBand()
+        private void updateBand()
         {
             center ??= this.GetTemplateChild("PART_CENTER") as FrameworkElement;
             if (center == null)
                 return;
-            var w = EndValue * Viewport.ScaleX * Viewport.ZoomX - StartValue * Viewport.ScaleX * Viewport.ZoomX;
+            var width = (EndValue - StartValue) * Viewport.ScaleX * Viewport.ZoomX;
 
-            Canvas.SetLeft(center, StartValue * Viewport.ScaleX * Viewport.ZoomX);
+            Canvas.SetLeft(this, StartValue * Viewport.ScaleX * Viewport.ZoomX);
 
             //if (w > 0)
-                center.Width = w;
+            this.Width = width;
             {
 
             }

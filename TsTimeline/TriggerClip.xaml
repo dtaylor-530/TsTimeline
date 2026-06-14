@@ -30,13 +30,8 @@
         </Style.Resources>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate>
-                    <Canvas x:Name="PART_CANVAS"
-                            Width="{TemplateBinding Width}"
-                            Height="{TemplateBinding Height}"
-                            ClipToBounds="{TemplateBinding ClipToBounds}">
-                        <Thumb x:Name="PART_THUMB" Background="OrangeRed" Opacity="0.7" Padding="6,3"         Cursor="Hand"/>
-                    </Canvas>
+                <ControlTemplate>      
+                        <Thumb x:Name="PART_THUMB" Background="OrangeRed" Opacity="0.7" Padding="6,3"         Cursor="Hand"/>                  
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -7,14 +7,19 @@
     <timelineControl:MultiplyConverter x:Key="MultiplyConverter"/>
 
     <Style TargetType="{x:Type timelineControl:TsTimeline}">
+        
         <Setter Property="UseLayoutRounding" Value="True" />
-        <!--<Setter Property="ItemsPanel">
+        <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <StackPanel IsItemsHost="True"></StackPanel>
+                    <timelineControl:CustomPanel
+                        PanelType="ScrollAwareStackPanel"
+                        Direction="Down"
+                        Viewport="{Binding Viewport, RelativeSource={RelativeSource AncestorType=TreeView}}"  
+                        IsItemsHost="True"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
-        </Setter>-->
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type timelineControl:TsTimeline}">
@@ -22,9 +27,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Height="16" VerticalAlignment="Bottom" Background="#FFE3E3E3"
-                                BorderThickness="0" />
+                        </Grid.ColumnDefinitions>         
                         <ScrollViewer Grid.Column="0" Margin="0,15,0,0">
                             <ScrollViewer.Template>
                                 <ControlTemplate TargetType="ScrollViewer">
@@ -58,6 +61,7 @@
                             Alter0="{TemplateBinding Alter0}"
                             Alter1="{TemplateBinding Alter1}"
                             Viewport="{TemplateBinding Viewport}"
+                            ItemCount="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=Items.Count}"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top" />
 
@@ -78,7 +82,7 @@
                                       CanContentScroll="False"
                                       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                                       HorizontalContentAlignment="Left">
-                            <ItemsPresenter x:Name="ItemsPresenter" />
+                            <ItemsPresenter x:Name="PART_ITEMSPRESENTER" />
                         </ScrollViewer>
                     </Grid>
                 </ControlTemplate>

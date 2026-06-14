@@ -25,15 +25,15 @@ namespace TsTimeline
         {
             if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
             {
-                var parent = AssociatedObject.FindVisualParentWithType<ClipsControl>();
+                var parent = AssociatedObject.FindVisualParentWithType<ClipBase>();
 
-                var parameter = (int)(parent?.LastMouseDownX ?? e.GetPosition(AssociatedObject).X);
+                //var parameter = (int)(parent?.LastMouseDownX ?? e.GetPosition(AssociatedObject).X);
 
-                if (Command?.CanExecute(parameter) is true)
-                {
-                    Command.Execute(parameter);
-                    e.Handled = true;                    
-                }
+                //if (Command?.CanExecute(parameter) is true)
+                //{
+                //    Command.Execute(parameter);
+                //    e.Handled = true;                    
+                //}
             }
         }
 

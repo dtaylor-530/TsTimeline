@@ -20,9 +20,6 @@
 		<Compile Update="ClipBase.cs">
 			<DependentUpon>ClipBase.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="ClipsControl.cs">
-			<DependentUpon>ClipsControl.xaml</DependentUpon>
-		</Compile>
 
 		<Compile Update="TriggerClip.cs">
 			<DependentUpon>TriggerClip.xaml</DependentUpon>
@@ -33,6 +30,12 @@
 		</Compile>
 		<Compile Update="Timeline.cs">
 			<DependentUpon>Timeline.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="BandClip.cs">
+			<DependentUpon>BandClip.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="PointClip.cs">
+			<DependentUpon>PointClip.xaml</DependentUpon>
 		</Compile>
 	</ItemGroup>
 </Project>

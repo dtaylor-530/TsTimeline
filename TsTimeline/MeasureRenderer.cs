@@ -10,6 +10,12 @@ namespace TsTimeline
 {
     public class MeasureRenderer : Control
     {
+        public static readonly DependencyProperty RendererProperty =
+            DependencyProperty.Register(nameof(Renderer), typeof(IAxisLayer), typeof(MeasureRenderer), new PropertyMetadata());
+
+        public static readonly DependencyProperty AxisFactoryProperty =
+            DependencyProperty.Register(nameof(AxisFactory), typeof(IAxisFactory), typeof(MeasureRenderer), new PropertyMetadata());
+
         public static readonly DependencyProperty ViewportProperty =
             DependencyProperty.Register(
                 nameof(Viewport),
@@ -66,11 +72,8 @@ namespace TsTimeline
                 typeof(MeasureRenderer),
                 new PropertyMetadata(null, OnInvalidate));
 
-
-        public static readonly DependencyProperty RenderersProperty =
-    DependencyProperty.Register(nameof(Renderers), typeof(IEnumerable), typeof(MeasureRenderer), new PropertyMetadata());
-
         #region properties
+
         public Viewport Viewport
         {
             get => (Viewport)GetValue(ViewportProperty);
@@ -118,16 +121,20 @@ namespace TsTimeline
             set => SetValue(ValueConverterProperty, value);
         }
 
-        public IEnumerable Renderers
+        public IAxisLayer Renderer
         {
-            get { return (IEnumerable)GetValue(RenderersProperty); }
-            set { SetValue(RenderersProperty, value); }
+            get { return (IAxisLayer)GetValue(RendererProperty); }
+            set { SetValue(RendererProperty, value); }
         }
 
+        public IAxisFactory AxisFactory
+        {
+            get { return (IAxisFactory)GetValue(AxisFactoryProperty); }
+            set { SetValue(AxisFactoryProperty, value); }
+        }
 
         #endregion  properties
 
-        private readonly AxisFactory _axisFactory = new(new TimelineTickGenerator());
         private readonly AxisLabelCache _labelCache;
         private AxisModel? _cachedModel;
         private bool _dirty = true;
@@ -153,11 +160,13 @@ namespace TsTimeline
 
         private void OnViewportPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            //Console.WriteLine("OffsetX " + Viewport.OffsetX);
             switch (e.PropertyName)
             {
                 case nameof(Viewport.OffsetX):
                 case nameof(Viewport.ZoomX):
                 case nameof(Viewport.ViewportWidth):
+                case nameof(Viewport.ViewportHeight):
                 //case nameof(Viewport.WorldStart):
                 //case nameof(Viewport.WorldEnd):
                 case nameof(Viewport.MinPixelSpacing):
@@ -167,10 +176,7 @@ namespace TsTimeline
             }
         }
 
-        private static void OnInvalidate(
-            DependencyObject d,
-            DependencyPropertyChangedEventArgs e) =>
-            ((MeasureRenderer)d).MarkDirty();
+        private static void OnInvalidate(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((MeasureRenderer)d).MarkDirty();
 
         private void MarkDirty()
         {
@@ -179,13 +185,12 @@ namespace TsTimeline
             Width = Viewport.ViewportWidth * Viewport.ZoomX;
         }
 
-
         private void EnsureModel()
         {
             if (!_dirty && _cachedModel != null)
                 return;
 
-            _cachedModel = _axisFactory.Build(Viewport);
+            _cachedModel = AxisFactory.Build(Viewport);
             _dirty = false;
         }
 
@@ -195,7 +200,7 @@ namespace TsTimeline
 
             EnsureModel();
 
-            if (_cachedModel == null)
+            if (_cachedModel == null /*|| _dirty == false*/)
                 return;
 
             var formatter = ValueConverter != null
@@ -214,11 +219,7 @@ namespace TsTimeline
                 LabelFormatter = formatter,
                 LabelCache = _labelCache,
             };
-            foreach (var renderer in Renderers)
-                if (renderer is CombinationLayer axisRenderer)
-                    axisRenderer.Render(context);
-                else
-                    throw new Exception("Renderer must be of type AxisRenderer");
+            Renderer.Render(context);
         }
     }
 }
