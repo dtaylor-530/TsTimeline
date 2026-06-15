@@ -15,7 +15,8 @@
                     <timelineControl:CustomPanel
                         PanelType="ScrollAwareStackPanel"
                         Direction="Down"
-                        Viewport="{Binding Viewport, RelativeSource={RelativeSource AncestorType=TreeView}}"  
+                        ViewportX="{Binding ViewportX, RelativeSource={RelativeSource AncestorType=TreeView}}"  
+                        ViewportY="{Binding ViewportY, RelativeSource={RelativeSource AncestorType=TreeView}}"  
                         IsItemsHost="True"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
@@ -56,11 +57,12 @@
                             x:Name="PART_MEASURE_RENDERER"
                             Grid.Column="1"
                             ValueConverter="{TemplateBinding ValueConverter}"
-                            Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}"                                             
+                            Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}"
+                            Width="{Binding ActualWidth , ElementName=PART_SCROLL_VIEWER}"                                         
                             TickMargin="{TemplateBinding TickMargin}"
                             Alter0="{TemplateBinding Alter0}"
                             Alter1="{TemplateBinding Alter1}"
-                            Viewport="{TemplateBinding Viewport}"
+                            Viewport="{TemplateBinding ViewportX}"
                             ItemCount="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=Items.Count}"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top" />
@@ -70,7 +72,7 @@
                             Grid.Column="1"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
-                            Viewport="{TemplateBinding Viewport}"
+                            Viewport="{TemplateBinding ViewportX}"
                             Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}">
                         </timelineControl:Timeline>
 

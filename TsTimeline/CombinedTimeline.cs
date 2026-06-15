@@ -17,7 +17,7 @@ namespace TsTimeline
     DependencyProperty.Register(nameof(ValueConverter), typeof(IValueConverter), typeof(CombinedTimeline), new PropertyMetadata());
 
         public static readonly DependencyProperty TickMarginProperty =
-    DependencyProperty.Register(nameof(TickMargin), typeof(double), typeof(CombinedTimeline), new FrameworkPropertyMetadata(15d, FrameworkPropertyMetadataOptions.AffectsMeasure));
+    DependencyProperty.Register(nameof(TickMargin), typeof(double), typeof(CombinedTimeline), new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         public static readonly DependencyProperty LineIntervalProperty =
     DependencyProperty.Register(nameof(LineInterval), typeof(int), typeof(CombinedTimeline), new FrameworkPropertyMetadata(10, FrameworkPropertyMetadataOptions.AffectsMeasure));
@@ -43,8 +43,18 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
         public static readonly DependencyProperty Alter1Property =
     DepProp.Register<CombinedTimeline, Brush>(nameof(Alter1), Brushes.WhiteSmoke);
 
-        public static readonly DependencyProperty ViewportProperty =
-    DependencyProperty.Register(nameof(Viewport), typeof(Viewport), typeof(CombinedTimeline), new PropertyMetadata());
+        public static readonly DependencyProperty ViewportXProperty =
+    DependencyProperty.Register(nameof(ViewportX), typeof(Viewport), typeof(CombinedTimeline), new PropertyMetadata(_changedX));
+
+        public static readonly DependencyProperty ViewportYProperty =
+    DependencyProperty.Register(nameof(ViewportY), typeof(Viewport), typeof(CombinedTimeline), new PropertyMetadata(_changedY));
+
+        private static void _changedX(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+        }
+        private static void _changedY(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+        }
 
         public static readonly DependencyProperty OffsetXProperty =
     DependencyProperty.Register(nameof(OffsetX), typeof(double), typeof(CombinedTimeline), new PropertyMetadata(0d, offsetXChanged));
@@ -113,10 +123,16 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             set { SetValue(ChartTypeProperty, value); }
         }
 
-        public Viewport Viewport
+        public Viewport ViewportX
         {
-            get { return (Viewport)GetValue(ViewportProperty); }
-            set { SetValue(ViewportProperty, value); }
+            get { return (Viewport)GetValue(ViewportXProperty); }
+            set { SetValue(ViewportXProperty, value); }
+        }
+
+        public Viewport ViewportY
+        {
+            get { return (Viewport)GetValue(ViewportYProperty); }
+            set { SetValue(ViewportYProperty, value); }
         }
 
         public IValueConverter ValueConverter
@@ -162,13 +178,6 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             set => SetValue(TrackHeightProperty, value);
         }
 
-        //public ScrollViewer ScrollViewer
-        //{
-        //    get { return (ScrollViewer)GetValue(ScrollViewerProperty); }
-        //    private set => SetValue(ScrollViewerPropertyKey, value);
-        //}
-
-
         public Brush Alter0
         {
             get { return (Brush)GetValue(Alter0Property); }
@@ -199,9 +208,9 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
                 {
                     var delta = 1f + e.Delta * 0.001f;
 
-                    var ss = Viewport.ZoomX * delta;
+                    var ss = ViewportX.Zoom * delta;
 
-                    Viewport.ZoomX = Math.Min(Math.Max(0.125f, ss), 32.0f);
+                    ViewportX.Zoom = Math.Min(Math.Max(0.125f, ss), 32.0f);
                     e.Handled = true;
                 }
             };
@@ -223,13 +232,13 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             LayoutUpdated += (s, e) =>
             {
                 //Viewport.ViewportWidth = scrollViewer.ViewportWidth;
-                //Viewport.ViewportHeight = scrollViewer.ViewportHeight;
+                ViewportY.ViewportLength = scrollViewer.ViewportHeight;
             };
             var x_axisRenderer = new CombinationLayer();
             //x_axisRenderer.AddLayer(new XUpBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
-            x_axisRenderer.AddLayer(new XUpGridLayer());
-            x_axisRenderer.AddLayer(new XUpTickLayer());
-            x_axisRenderer.AddLayer(new XUpLabelLayer());
+            x_axisRenderer.AddLayer(new XBottomGridLayer());
+            x_axisRenderer.AddLayer(new XBottomTickLayer());
+            x_axisRenderer.AddLayer(new XBottomLabelLayer());
 
 
             var y_axisRenderer = new CombinationLayer();
@@ -251,16 +260,20 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
 
             timeLine.ValueChanged += (_, _) =>
             {
-                this.Value = timeLine.Value / Viewport.ZoomX / Viewport.ScaleX;
+                this.Value = timeLine.Value / ViewportX.Zoom / ViewportX.Scale;
             };
 
 
-            Viewport.PropertyChanged += (_, e) =>
+            scrollViewer.ScrollChanged += (s, e) =>
             {
-                if (e.PropertyName == nameof(Viewport.OffsetX))
+                ViewportY.Offset = -scrollViewer.VerticalOffset;
+            };
+
+            ViewportX.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(Viewport.Offset))
                 {
-                    //timeLine.Value = Value * Viewport.ZoomX * Viewport.ScaleX;
-                    scrollViewer.ScrollToHorizontalOffset(Viewport.OffsetX);
+                    scrollViewer.ScrollToHorizontalOffset(ViewportX.Offset);
                 }
             };
         }
@@ -269,7 +282,7 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
         {
             if (d is CombinedTimeline CombinedTimeline)
             {
-                CombinedTimeline.timeLine.Value = CombinedTimeline.Value * CombinedTimeline.Viewport.ZoomX * CombinedTimeline.Viewport.ScaleX; ;
+                CombinedTimeline.timeLine.Value = CombinedTimeline.Value * CombinedTimeline.ViewportX.Zoom * CombinedTimeline.ViewportX.Scale; ;
             }
         }
     }

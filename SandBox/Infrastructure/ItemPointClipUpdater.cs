@@ -19,9 +19,10 @@ namespace SandBox
             if (point == null)
                 return;
 
-            Canvas.SetLeft(clipBase, clipBase.X * clipBase.Viewport.ScaleX * clipBase.Viewport.ZoomX);
+            Canvas.SetLeft(clipBase, clipBase.X * clipBase.ViewportX.Scale * clipBase.ViewportX.Zoom);
             // TODO: value needs to be calculated based on height of container 
-            Canvas.SetTop(clipBase, 1);
+            var y = clipBase.ViewportY.ViewportLength - clipBase.Y * clipBase.ViewportY.ViewportLength / (clipBase.ViewportY.WorldEnd - clipBase.ViewportY.WorldStart);
+            Canvas.SetTop(clipBase, y); 
 
         }
     }

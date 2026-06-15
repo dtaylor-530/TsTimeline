@@ -36,16 +36,16 @@ namespace TsTimeline
             set => SetValue(EndValueProperty, value);
         }
 
-        private double MaxValue => (int)(ActualWidth * (1.0 / Viewport.ZoomX) + 0.5d);
+        private double MaxValue => (int)(ActualWidth * (1.0 / ViewportX.Zoom) + 0.5d);
 
         private void updateThumbs()
         {
             if (TrySetupThumbs() is false)
                 return;
 
-            Canvas.SetLeft(this, StartValue * Viewport.ScaleX * Viewport.ZoomX);
+            Canvas.SetLeft(this, StartValue * ViewportX.Scale * ViewportX.Zoom);
 
-            var pixelsPerUnit = Viewport.ScaleX * Viewport.ZoomX;
+            var pixelsPerUnit = ViewportX.Scale * ViewportX.Zoom;
             var width = (EndValue - StartValue) * pixelsPerUnit;
             if (width > 0)
             {
@@ -85,7 +85,7 @@ namespace TsTimeline
                 if (IsReadOnly)
                     return;
 
-                var change = vector.X / (Viewport.ScaleX * Viewport.ZoomX);
+                var change = vector.X / (ViewportX.Scale * ViewportX.Zoom);
                 // 右側のクランプ
                 if (EndValue + change > MaxValue)
                 {
@@ -101,7 +101,7 @@ namespace TsTimeline
 
             void center_OnDragDelta(Vector vector)
             {
-                var change = vector.X / (Viewport.ScaleX * Viewport.ZoomX);
+                var change = vector.X / (ViewportX.Scale * ViewportX.Zoom);
                 if (StartValue + change < 0)
                 {
                     change = 0 - StartValue;
@@ -116,7 +116,7 @@ namespace TsTimeline
                     return;
 
 
-                var change = vector.X / (Viewport.ScaleX * Viewport.ZoomX);
+                var change = vector.X / (ViewportX.Scale * ViewportX.Zoom);
 
                 if (StartValue + change >= EndValue)
                 {

@@ -46,11 +46,11 @@ namespace Renderers
         }
     }
 
-    public sealed class XUpTickLayer : IAxisLayer
+    public sealed class XBottomTickLayer : IAxisLayer
     {
         private readonly Pen _pen;
 
-        public XUpTickLayer()
+        public XBottomTickLayer()
         {
             _pen = new Pen(
                 Brushes.Gray,
@@ -120,7 +120,7 @@ namespace Renderers
 
                 dc.DrawLine(
                     _pen,
-                    new Point(width, tick.ScreenPosition),
+                    new Point(-width, tick.ScreenPosition),
                     new Point(0, tick.ScreenPosition));
             }
         }

@@ -36,12 +36,12 @@ namespace Renderers
             }
         }
     }
-    public sealed class XUpGridLayer : IAxisLayer
+    public sealed class XBottomGridLayer : IAxisLayer
     {
         private readonly Pen _majorPen;
         private readonly Pen _minorPen;
 
-        public XUpGridLayer()
+        public XBottomGridLayer()
         {
             _majorPen = new Pen(Brushes.LightGray, 1);
             _minorPen = new Pen(Brushes.Gainsboro, 0.5);

@@ -9,8 +9,6 @@ namespace TsTimeline
     public partial class ClipBase : TreeViewItem, ISelectable
     {
         protected Canvas _partCanvas;
-        //private bool _dirty;
-
 
         protected override DependencyObject GetContainerForItemOverride()
         {
@@ -47,17 +45,29 @@ namespace TsTimeline
 
 
 
-        public static readonly DependencyProperty ViewportProperty =
+        public static readonly DependencyProperty ViewportXProperty =
             DependencyProperty.Register(
-                nameof(Viewport),
+                nameof(ViewportX),
                 typeof(Viewport),
                 typeof(ClipBase),
                 new PropertyMetadata(null, OnViewportChanged));
 
-        public Viewport? Viewport
+        public static readonly DependencyProperty ViewportYProperty =
+            DependencyProperty.Register(
+                nameof(ViewportY),
+                typeof(Viewport),
+                typeof(ClipBase),
+                new PropertyMetadata(null, OnViewportChanged));
+
+        public Viewport? ViewportX
         {
-            get => (Viewport?)GetValue(ViewportProperty);
-            set => SetValue(ViewportProperty, value);
+            get => (Viewport?)GetValue(ViewportXProperty);
+            set => SetValue(ViewportXProperty, value);
+        }
+        public Viewport? ViewportY
+        {
+            get => (Viewport?)GetValue(ViewportYProperty);
+            set => SetValue(ViewportYProperty, value);
         }
 
         private static void OnViewportChanged(
@@ -83,7 +93,8 @@ namespace TsTimeline
 
         private void Update()
         {
-            if (Viewport == null) return;
+            if (ViewportX == null) return;
+            if (ViewportY == null) return;
             if (Updater is not null)
                 Updater.Update(this);
             else
@@ -103,12 +114,10 @@ namespace TsTimeline
             // CursorPosition changes are frequent and don't affect tick layout.
             switch (e.PropertyName)
             {
-                //case nameof(Viewport.OffsetX):
-                case nameof(Viewport.ZoomX):
-                case nameof(Viewport.ViewportWidth):
-                case nameof(Viewport.ViewportHeight):
-                case nameof(Viewport.ScaleX):         
-                case nameof(Viewport.OffsetX):         
+                case nameof(Viewport.Zoom):
+                case nameof(Viewport.ViewportLength):
+                case nameof(Viewport.Scale):         
+                case nameof(Viewport.Offset):         
                     //case nameof(Viewport.WorldStart):
                     //case nameof(Viewport.WorldEnd):
                     Update();

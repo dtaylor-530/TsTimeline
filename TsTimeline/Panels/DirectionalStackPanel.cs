@@ -37,7 +37,7 @@ namespace TsTimeline
                 height += child.DesiredSize.Height;
             }
 
-            return new Size(Viewport?.ViewportWidth * Viewport?.ScaleX * Viewport?.ZoomX ?? width, height);
+            return new Size(ViewportX?.ViewportLength * ViewportX?.Scale * ViewportX?.Zoom ?? width, height);
         }
 
         protected Size DirectionalStackPanel_ArrangeOverride(Size finalSize)

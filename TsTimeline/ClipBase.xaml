@@ -5,7 +5,8 @@
     <Style TargetType="{x:Type timelineControl:ClipBase}">
         <!--<Setter Property="UseLayoutRounding" Value="False" />
         <Setter Property="ClipToBounds" Value="False" />-->
-        <Setter Property="Viewport" Value="{Binding Viewport , RelativeSource={RelativeSource AncestorType=TreeView}}" />
+        <Setter Property="ViewportX" Value="{Binding ViewportX, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+        <Setter Property="ViewportY" Value="{Binding ViewportY, RelativeSource={RelativeSource AncestorType=TreeView}}" />
         <Setter Property="Height" Value="{Binding TrackHeight , RelativeSource={RelativeSource AncestorType=TreeView}}" />
         <Setter Property="ItemsPanel">
             <Setter.Value>

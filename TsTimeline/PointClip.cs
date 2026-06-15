@@ -37,10 +37,8 @@ namespace TsTimeline
             if (point == null)
                 return;
 
-            Canvas.SetLeft(this, X * Viewport.ScaleX * Viewport.ZoomX);
-            Canvas.SetTop(this, Viewport.ViewportHeight - Y * Viewport.ScaleY * Viewport.ZoomY);
-            //Canvas.SetLeft(this, X );
-            //Canvas.SetTop(this, Y );
+            Canvas.SetLeft(this, X * ViewportX.Scale * ViewportX.Zoom);
+            Canvas.SetTop(this, ViewportY.ViewportLength - Y * ViewportY.Scale * ViewportY.Zoom);
         }
     }
 }

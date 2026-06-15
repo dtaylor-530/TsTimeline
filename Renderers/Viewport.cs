@@ -8,130 +8,66 @@ namespace Renderers
 {
     public sealed class Viewport : Notification
     {
-        private double _offsetX;
-        private double _zoomX = 1.0;
-        private double _viewportWidth = 1000;
-        private double _viewportHeight = 1000;
+        private double _offset;
+        private double _zoom = 1.0;
+        private double _viewportLength = 1000;
         private double _worldStart;
         private double _worldEnd = 1000;
         private double _cursorPosition;
         private int _minPixelSpacing = 5;
-        private int _scaleX = 10;
-        private double _zoomY = 1.0;
-        private double _offsetY;
-        private int _scaleY = 1;
+        private int _scale = 10;
 
-        public double OffsetX
+        public double Offset
         {
-            get => _offsetX;
+            get => _offset;
             set
             {
                 //var clamped = clampOffset(value);
                 //if (_offsetX == clamped) return;
-                if (_offsetX == value) return;               
-                _offsetX = value;
+                if (_offset == value) return;               
+                _offset = value;
                 OnPropertyChanged();
             }
         }
 
-        public double ZoomX
+        public double Zoom
         {
-            get => _zoomX;
+            get => _zoom;
             set
             {
                 value = Math.Max(0.01, value);
-                if (Math.Abs(_zoomX - value) < 0.00001) return;
-                _zoomX = value;
+                if (Math.Abs(_zoom - value) < 0.00001) return;
+                _zoom = value;
                 // Re-clamp offset now that visible width has changed
-                _offsetX = clampOffset(_offsetX);
+                _offset = clampOffset(_offset);
                 OnPropertyChanged();
             }
         }
 
-        public double ViewportWidth
+        public double ViewportLength
         {
-            get => _viewportWidth;
+            get => _viewportLength;
             set
             {
-                if (_viewportWidth == value) return;
-                _viewportWidth = value;
+                if (_viewportLength == value) return;
+                _viewportLength = value;
                 // Re-clamp: a wider viewport may push OffsetX out of range
-                _offsetX = clampOffset(_offsetX);
+                _offset = clampOffset(_offset);
                 OnPropertyChanged();
             }
         }
 
-        public double ViewportHeight
+        public int Scale
         {
-            get => _viewportHeight;
+            get => _scale;
             set
             {
-                if (_viewportHeight == value) return;
-                _viewportHeight = value;
-                // Re-clamp: a wider viewport may push OffsetX out of range
-                _offsetY = clampOffset(_offsetY);
+                if (_scale == value) return;
+                _scale = value;
                 OnPropertyChanged();
             }
         }
 
-        public int ScaleX
-        {
-            get => _scaleX;
-            set
-            {
-                if (_scaleX == value) return;
-                _scaleX = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public int ScaleY
-        {
-            get => _scaleY;
-            set
-            {
-                if (_scaleY == value) return;
-                _scaleY = value;
-                OnPropertyChanged();
-            }
-        }
-                public double OffsetY
-        {
-            get => _offsetY;
-            set
-            {
-                if (_worldStart == value) return;
-                _worldStart = value;
-                _offsetX = clampOffset(_offsetX);
-                OnPropertyChanged();
-            }
-        }
-
-        public double ZoomY
-        {
-            get => _zoomY;
-            set
-            {
-                value = Math.Max(0.01, value);
-                if (Math.Abs(_zoomY - value) < 0.00001) return;
-                _zoomY = value;
-                // Re-clamp offset now that visible width has changed
-                _offsetY = clampOffset(_offsetY);
-                OnPropertyChanged();
-
-            }
-        }
-
-        public int RenderersY
-        {
-            get => _scaleY;
-            set
-            {
-                if (_scaleY == value) return;
-                _scaleY = value;
-                OnPropertyChanged();
-            }
-        }
 
         public double WorldStart
         {
@@ -140,7 +76,7 @@ namespace Renderers
             {
                 if (_worldStart == value) return;
                 _worldStart = value;
-                _offsetX = clampOffset(_offsetX);
+                _offset = clampOffset(_offset);
                 OnPropertyChanged();
             }
         }
@@ -152,21 +88,21 @@ namespace Renderers
             {
                 if (_worldEnd == value) return;
                 _worldEnd = value;
-                _offsetX = clampOffset(_offsetX);
+                _offset = clampOffset(_offset);
                 OnPropertyChanged();
             }
         }
 
-        public double CursorPosition
-        {
-            get => _cursorPosition;
-            set
-            {
-                if (_cursorPosition == value) return;
-                _cursorPosition = value;
-                OnPropertyChanged();
-            }
-        }
+        //public double CursorPosition
+        //{
+        //    get => _cursorPosition;
+        //    set
+        //    {
+        //        if (_cursorPosition == value) return;
+        //        _cursorPosition = value;
+        //        OnPropertyChanged();
+        //    }
+        //}
 
         public int MinPixelSpacing
         {
@@ -181,9 +117,9 @@ namespace Renderers
 
 
         //public double WorldLength => WorldEnd - WorldStart;
-        public double VisibleWorldWidth => ViewportWidth / ZoomX;
-        public double VisibleStart => OffsetX;
-        public double VisibleEnd => OffsetX + VisibleWorldWidth;
+        public double VisibleWorldWidth => ViewportLength / Zoom;
+        public double VisibleStart => Offset;
+        public double VisibleEnd => Offset + VisibleWorldWidth;
 
         // --- coordinate transforms ---
           
@@ -191,31 +127,31 @@ namespace Renderers
         //public double DomainToScreen(double value)
         //        => value * PixelsPerUnit - Offset;
 
-        public double WorldToXScreen(double world) =>
-            (world - OffsetX) * ZoomX * ScaleX;
+        public double WorldToScreen(double world) =>
+            (world - Offset) * Zoom * Scale;
 
-        public double WorldToYScreen(double world) =>
-            (world - OffsetY) * ZoomY * ScaleY;
+        //public double WorldToYScreen(double world) =>
+        //    (world - Offset) * Zoom * Scale;
 
         public double ScreenToWorld(double screen) =>
-            OffsetX + screen / ZoomX;
+            Offset + screen / Zoom;
 
         // --- navigation ---
 
         public void Pan(double deltaWorld) =>
-            OffsetX += deltaWorld;
+            Offset += deltaWorld;
 
         public void CenterOn(double worldPosition) =>
-            OffsetX = worldPosition - VisibleWorldWidth * 0.5;
+            Offset = worldPosition - VisibleWorldWidth * 0.5;
 
         /// <summary>Zoom by <paramref name="factor"/> keeping the world position
         /// under <paramref name="screenX"/> stationary.</summary>
         public void ZoomAt(double factor, double screenX)
         {
             var worldAnchor = ScreenToWorld(screenX);
-            ZoomX *= factor;
+            Zoom *= factor;
             // Shift offset so the anchor point stays under the cursor
-            OffsetX += worldAnchor - ScreenToWorld(screenX);
+            Offset += worldAnchor - ScreenToWorld(screenX);
         }
 
         // --- helpers ---

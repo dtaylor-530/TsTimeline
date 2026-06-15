@@ -49,7 +49,7 @@ namespace TsTimeline
                 nameof(TickMargin),
                 typeof(double),
                 typeof(MeasureRenderer),
-                new PropertyMetadata(15d, OnInvalidate));
+                new PropertyMetadata(0d, OnInvalidate));
 
         public static readonly DependencyProperty Alter0Property =
             DependencyProperty.Register(
@@ -163,14 +163,13 @@ namespace TsTimeline
             //Console.WriteLine("OffsetX " + Viewport.OffsetX);
             switch (e.PropertyName)
             {
-                case nameof(Viewport.OffsetX):
-                case nameof(Viewport.ZoomX):
-                case nameof(Viewport.ViewportWidth):
-                case nameof(Viewport.ViewportHeight):
+                case nameof(Viewport.Offset):
+                case nameof(Viewport.Zoom):
+                case nameof(Viewport.ViewportLength):
                 //case nameof(Viewport.WorldStart):
                 //case nameof(Viewport.WorldEnd):
                 case nameof(Viewport.MinPixelSpacing):
-                case nameof(Viewport.ScaleX):
+                case nameof(Viewport.Scale):
                     MarkDirty();
                     break;
             }
@@ -182,7 +181,6 @@ namespace TsTimeline
         {
             _dirty = true;
             InvalidateVisual();
-            Width = Viewport.ViewportWidth * Viewport.ZoomX;
         }
 
         private void EnsureModel()

@@ -17,7 +17,7 @@ namespace TsTimeline
     DependencyProperty.Register(nameof(ValueConverter), typeof(IValueConverter), typeof(TsTimeline), new PropertyMetadata());
 
         public static readonly DependencyProperty TickMarginProperty =
-    DependencyProperty.Register(nameof(TickMargin), typeof(double), typeof(TsTimeline), new FrameworkPropertyMetadata(15d, FrameworkPropertyMetadataOptions.AffectsMeasure));
+    DependencyProperty.Register(nameof(TickMargin), typeof(double), typeof(TsTimeline), new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         public static readonly DependencyProperty LineIntervalProperty =
     DependencyProperty.Register(nameof(LineInterval), typeof(int), typeof(TsTimeline), new FrameworkPropertyMetadata(10, FrameworkPropertyMetadataOptions.AffectsMeasure));
@@ -43,8 +43,11 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
         public static readonly DependencyProperty Alter1Property =
     DepProp.Register<TsTimeline, Brush>(nameof(Alter1), Brushes.WhiteSmoke);
 
-        public static readonly DependencyProperty ViewportProperty =
-    DependencyProperty.Register(nameof(Viewport), typeof(Viewport), typeof(TsTimeline), new PropertyMetadata());
+        public static readonly DependencyProperty ViewportXProperty =
+    DependencyProperty.Register(nameof(ViewportX), typeof(Viewport), typeof(TsTimeline), new PropertyMetadata());
+
+        public static readonly DependencyProperty ViewportYProperty =
+    DependencyProperty.Register(nameof(ViewportY), typeof(Viewport), typeof(TsTimeline), new PropertyMetadata());
 
         public static readonly DependencyProperty OffsetXProperty =
     DependencyProperty.Register(nameof(OffsetX), typeof(double), typeof(TsTimeline), new PropertyMetadata(0d));
@@ -69,10 +72,15 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
         }
 
         #region Properties
-        public Viewport Viewport
+        public Viewport ViewportX
         {
-            get { return (Viewport)GetValue(ViewportProperty); }
-            set { SetValue(ViewportProperty, value); }
+            get { return (Viewport)GetValue(ViewportXProperty); }
+            set { SetValue(ViewportXProperty, value); }
+        }
+        public Viewport ViewportY
+        {
+            get { return (Viewport)GetValue(ViewportYProperty); }
+            set { SetValue(ViewportYProperty, value); }
         }
 
         public IValueConverter ValueConverter
@@ -152,9 +160,9 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
                 {
                     var delta = 1f + e.Delta * 0.001f;
 
-                    var ss = Viewport.ZoomX * delta;
+                    var ss = ViewportX.Zoom * delta;
 
-                    Viewport.ZoomX = Math.Min(Math.Max(0.125f, ss), 32.0f);
+                    ViewportX.Zoom = Math.Min(Math.Max(0.125f, ss), 32.0f);
                     e.Handled = true;
                 }
             };
@@ -175,23 +183,22 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
             {
                 if(ScrollViewer is { } scrollViewer)
                 {
-                    Viewport.ViewportWidth = scrollViewer.ViewportWidth;
-                    Viewport.ViewportHeight = scrollViewer.ViewportHeight;
+                    ViewportX.ViewportLength = scrollViewer.ViewportWidth;
+                    //Viewport.ViewportHeight = scrollViewer.ViewportHeight;
                     Point position = scrollViewer.TranslatePoint(new Point(0, 0), this);
                     OffsetX = position.X;
-                    Viewport.OffsetX = scrollViewer.HorizontalOffset;
                     //ScrollViewer.Width = Viewport.ViewportWidth;
                 }
             };
 
             ScrollViewer.ScrollChanged += (s, e) =>
             {
-                Viewport.OffsetX = ScrollViewer.HorizontalOffset;
+                ViewportX.Offset = ScrollViewer.HorizontalOffset;
             };
 
             timeLine.ValueChanged += (_, _) =>
             {
-                this.Value = timeLine.Value / Viewport.ZoomX / Viewport.ScaleX;
+                this.Value = timeLine.Value / ViewportX.Zoom / ViewportX.Scale;
             };
             var axisRenderer = new CombinationLayer(
                 new XBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke),
@@ -205,7 +212,7 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
         {
             if (d is TsTimeline tsTimeLine)
             {
-                tsTimeLine.timeLine.Value = tsTimeLine.Value * tsTimeLine.Viewport.ZoomX * tsTimeLine.Viewport.ScaleX; ;
+                tsTimeLine.timeLine.Value = tsTimeLine.Value * tsTimeLine.ViewportX.Zoom * tsTimeLine.ViewportX.Scale; ;
             }
         }
     }

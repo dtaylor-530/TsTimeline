@@ -34,7 +34,7 @@ namespace Renderers
             }
         }
     }
-    public sealed class XUpLabelLayer : IAxisLayer
+    public sealed class XBottomLabelLayer : IAxisLayer
     {
         public void Render(AxisRenderContext context)
         {
@@ -87,7 +87,7 @@ namespace Renderers
 
                 var formatted = context.LabelCache.Get(text);
 
-                dc.DrawText(formatted, new Point(0, tick.ScreenPosition + 2));
+                dc.DrawText(formatted, new Point(-30, tick.ScreenPosition + 2));
             }
         }
     }

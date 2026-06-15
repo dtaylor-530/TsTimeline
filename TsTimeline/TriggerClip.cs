@@ -25,7 +25,7 @@ namespace TsTimeline
             if (IsReadOnly)
                 return;
 
-            var change = vector.X / (Viewport.ScaleX * Viewport.ZoomX);
+            var change = vector.X / (ViewportX.Scale * ViewportX.Zoom);
             if (Value + change < 0)
             {
                 change = - Value;
@@ -63,7 +63,7 @@ namespace TsTimeline
         {
             if (TryGetThumb(out var thumb))
             {
-                Canvas.SetLeft(this, Value * Viewport.ScaleX * Viewport.ZoomX - this.ActualWidth / 2);
+                Canvas.SetLeft(this, Value * ViewportX.Scale * ViewportX.Zoom - this.ActualWidth / 2);
             }
         }
     }

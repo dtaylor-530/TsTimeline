@@ -106,16 +106,16 @@ namespace TsTimeline
         {
             switch (e.PropertyName)
             {
-                case nameof(Viewport.ZoomX):
-                case nameof(Viewport.ViewportWidth):
-                case nameof(Viewport.ScaleX):
+                case nameof(Viewport.Zoom):
+                case nameof(Viewport.ViewportLength):
+                case nameof(Viewport.Scale):
                     {
                        
                         UpdateWidth();
                         UpdateVisuals(_smoothValue);
                         break;
                     }
-                case nameof(Viewport.OffsetX):
+                case nameof(Viewport.Offset):
                     // Offset changes don't affect total canvas width,
                     // but the cursor screen position needs to move.
                     UpdateVisuals(_smoothValue);
@@ -197,14 +197,14 @@ namespace TsTimeline
         private void UpdateWidth()
         {
             if (Viewport == null) return;
-            Width = Viewport.ViewportWidth;
+            Width = Viewport.ViewportLength;
         }
 
         private void UpdateVisuals(double worldValue)
         {
-            if (Viewport == null || Viewport.ZoomX <= 0) return;
+            if (Viewport == null || Viewport.Zoom <= 0) return;
 
-            double screenX = worldValue - Viewport.OffsetX;
+            double screenX = worldValue - Viewport.Offset;
 
             if (TryGetThumb(out var thumb))
                 Canvas.SetLeft(thumb, screenX - thumb.ActualWidth / 2);
@@ -221,7 +221,7 @@ namespace TsTimeline
             if (Viewport == null) return;
 
             // Convert pixel delta to world units
-            double worldDelta = vector.X / Viewport.ZoomX;
+            double worldDelta = vector.X / Viewport.Zoom;
 
             // Clamp to world bounds
             Value = Math.Clamp(

@@ -10,8 +10,7 @@
         </Setter>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}" >
-
+                <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
                         <Border
                                         x:Name="PART_CENTER" 
                                         Background="{TemplateBinding Background}"

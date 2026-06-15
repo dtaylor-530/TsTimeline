@@ -5,19 +5,39 @@ namespace SandBox
     public class MainWindowViewModel : Notification
     {
         private PlayerViewModel player;
-        private Viewport viewport;
+        private Viewport viewportX;
+        private Viewport viewportY;
+        private Viewport viewportItemY;
         private SpeedViewModel speed;
         private ProgressViewModel progress;
         private ConfigurationViewModel configuration;
 
-        public Viewport Viewport
+        public Viewport ViewportX
         {
-            get => viewport; set
+            get => viewportX; set
             {
-                viewport = value;
+                viewportX = value;
                 OnPropertyChanged();
             }
         }
+
+        public Viewport ViewportY
+        {
+            get => viewportY; set
+            {
+                viewportY = value;
+                OnPropertyChanged();
+            }
+        }
+        public Viewport ViewportItemY
+        {
+            get => viewportItemY; set
+            {
+                viewportItemY = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ConfigurationViewModel Configuration
         {
             get => configuration; set
@@ -26,6 +46,7 @@ namespace SandBox
                 OnPropertyChanged();
             }
         }
+
         public SpeedViewModel Speed
         {
             get => speed; set

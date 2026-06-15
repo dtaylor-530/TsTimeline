@@ -15,9 +15,9 @@
                 <ItemsPanelTemplate>
                     <timelineControl:CustomPanel 
                         PanelType="{Binding ChartType, RelativeSource={RelativeSource AncestorType=TreeView}, Converter={StaticResource PanelConverter}}" 
-                            Viewport="{Binding Viewport, RelativeSource={RelativeSource AncestorType=TreeView}}"  
+                        ViewportX="{Binding ViewportX, RelativeSource={RelativeSource AncestorType=TreeView}}"  
+                        ViewportY="{Binding ViewportY, RelativeSource={RelativeSource AncestorType=TreeView}}"  
                         Direction="Up"/>
-                    <!--<Canvas></Canvas>-->
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
@@ -30,10 +30,10 @@
                                 Grid.Column="1"
                                 ValueConverter="{TemplateBinding ValueConverter}"
                                 Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}"
-                                TickMargin="{TemplateBinding TickMargin}"
+                                Width="{Binding ActualWidth , ElementName=PART_SCROLL_VIEWER}"
                                 Alter0="{TemplateBinding Alter0}"
                                 Alter1="{TemplateBinding Alter1}"
-                                Viewport="{TemplateBinding Viewport}"
+                                Viewport="{TemplateBinding ViewportX}"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Bottom" />
                         
@@ -43,10 +43,11 @@
                                 Grid.Column="1"
                                 ValueConverter="{TemplateBinding ValueConverter}"
                                 Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}"
+                                Width="{Binding ActualWidth , ElementName=PART_SCROLL_VIEWER}"
                                 TickMargin="{TemplateBinding TickMargin}"
                                 Alter0="{TemplateBinding Alter0}"
                                 Alter1="{TemplateBinding Alter1}"
-                                Viewport="{TemplateBinding Viewport}"
+                                Viewport="{TemplateBinding ViewportY}"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Bottom" />
 
@@ -56,7 +57,7 @@
                                 Direction="Up"
                                 VerticalAlignment="Bottom"
                                 HorizontalAlignment="Left"
-                                Viewport="{TemplateBinding Viewport}"
+                                Viewport="{TemplateBinding ViewportX}"
                                 Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}">
                             </timelineControl:Timeline>
 

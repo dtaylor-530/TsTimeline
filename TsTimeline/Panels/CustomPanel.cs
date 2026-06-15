@@ -7,18 +7,28 @@ namespace TsTimeline
 {
     public partial class CustomPanel : Canvas
     {
-        public static readonly DependencyProperty ViewportProperty =
-            DependencyProperty.Register(nameof(Viewport), typeof(Viewport), typeof(CustomPanel), 
+        public static readonly DependencyProperty ViewportXProperty =
+            DependencyProperty.Register(nameof(ViewportX), typeof(Viewport), typeof(CustomPanel), 
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
+        
+        public static readonly DependencyProperty ViewportYProperty =
+            DependencyProperty.Register(nameof(ViewportY), typeof(Viewport), typeof(CustomPanel), 
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
 
         public static readonly DependencyProperty PanelTypeProperty =
             DependencyProperty.Register(nameof(PanelType), typeof(PanelType), typeof(CustomPanel), 
                 new FrameworkPropertyMetadata(PanelType.None, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
 
-        public Viewport Viewport
+        public Viewport ViewportX
         {
-            get { return (Viewport)GetValue(ViewportProperty); }
-            set { SetValue(ViewportProperty, value); }
+            get { return (Viewport)GetValue(ViewportXProperty); }
+            set { SetValue(ViewportXProperty, value); }
+        }
+
+        public Viewport ViewportY
+        {
+            get { return (Viewport)GetValue(ViewportYProperty); }
+            set { SetValue(ViewportYProperty, value); }
         }
 
         public PanelType PanelType
@@ -30,39 +40,33 @@ namespace TsTimeline
         protected override Size MeasureOverride(Size constraint)
         {
             var size = base.MeasureOverride(constraint);
-            switch (PanelType)
+            return PanelType switch
             {
-                case PanelType.Canvas:
-                    return Custom_MeasureOverride(constraint);
-                case PanelType.DirectionalStackPanel:
-                    return DirectionalStackPanel_MeasureOverride(constraint);
-                case PanelType.ScrollAwareStackPanel:
-                    return ScrollAwareStackPanel_MeasureOverride(constraint);
-                default:
-                    return base.MeasureOverride(constraint);
-            }
+                PanelType.Canvas => Custom_MeasureOverride(constraint),
+                PanelType.DirectionalStackPanel => DirectionalStackPanel_MeasureOverride(constraint),
+                PanelType.ScrollAwareStackPanel => ScrollAwareStackPanel_MeasureOverride(constraint),
+                _ => base.MeasureOverride(constraint),
+            };
         }
 
         protected override Size ArrangeOverride(Size arrangeSize)
         {
-            switch (PanelType)
+            return PanelType switch
             {
-                case PanelType.Canvas:
-                    return base.ArrangeOverride(arrangeSize);
-                case PanelType.DirectionalStackPanel:
-                    return DirectionalStackPanel_ArrangeOverride(arrangeSize);
-                case PanelType.ScrollAwareStackPanel:
-                    return DirectionalStackPanel_ArrangeOverride(arrangeSize);
-                default:
-                    return base.ArrangeOverride(arrangeSize);
-            }
+                PanelType.Canvas => base.ArrangeOverride(arrangeSize),
+                PanelType.DirectionalStackPanel => DirectionalStackPanel_ArrangeOverride(arrangeSize),
+                PanelType.ScrollAwareStackPanel => DirectionalStackPanel_ArrangeOverride(arrangeSize),
+                _ => base.ArrangeOverride(arrangeSize),
+            };
         }
 
         protected Size Custom_MeasureOverride(Size availableSize)
         {
             var size = base.MeasureOverride(availableSize);
 
-            return new Size(Viewport?.ViewportWidth * Viewport?.ScaleX * Viewport?.ZoomX ?? size.Width, size.Height); ;
+            return new Size(
+                ViewportX?.ViewportLength * ViewportX?.Scale * ViewportX?.Zoom ?? size.Width,
+                ViewportY?.ViewportLength * ViewportY?.Scale * ViewportY?.Zoom ?? size.Height); ;
         }
     }
 }

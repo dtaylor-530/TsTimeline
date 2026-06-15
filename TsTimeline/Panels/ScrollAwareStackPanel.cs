@@ -13,7 +13,7 @@ namespace TsTimeline
                 child.Measure(new Size(availableSize.Width, double.PositiveInfinity));
                 sumHeight += child.DesiredSize.Height;
             }
-            return new Size(Viewport?.ViewportWidth * Viewport?.ScaleX * Viewport?.ZoomX ?? size.Width, sumHeight); ;
+            return new Size(ViewportX?.ViewportLength * ViewportX?.Scale * ViewportX?.Zoom ?? size.Width, sumHeight); ;
         }
     }
 }

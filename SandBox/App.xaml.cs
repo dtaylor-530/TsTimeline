@@ -22,17 +22,19 @@ namespace SandBox
                     }
                 },
                 Configuration = new() { ChartType = TsTimeline.ChartType.Points },
-                Viewport = new() { },
+                ViewportX = new() { },
+                ViewportY = new() { },
+                ViewportItemY = new() { WorldEnd = 100, WorldStart = 0, ViewportLength = 15 },
                 Speed = new(),
                 Progress = new()
             };
 
             var timeSimulation = new TimeSimulationService();
-            timeSimulation.Load(vm.Player, vm.Progress, vm.Viewport);
+            timeSimulation.Load(vm.Player, vm.Progress);
             timeSimulation.Load(vm.Speed);
 
             reloadData();
-            vm.Configuration.PropertyChanged += (s,e)=> reloadData();
+            vm.Configuration.PropertyChanged += (s, e) => reloadData();
 
             new Window { Content = vm }.Show();
             base.OnStartup(e);
