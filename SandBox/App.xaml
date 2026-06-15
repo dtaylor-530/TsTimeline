@@ -22,8 +22,8 @@
             </Style>
 
             <Style x:Key="_HoldClipStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource HoldClipStyle}">
-                <Setter Property="StartValue" Value="{Binding StartValue}"></Setter>
-                <Setter Property="EndValue" Value="{Binding EndValue}"></Setter>
+                <Setter Property="StartValue" Value="{Binding StartValue, Mode=TwoWay}"></Setter>
+                <Setter Property="EndValue" Value="{Binding EndValue,  Mode=TwoWay}"></Setter>
             </Style>
 
             <Style x:Key="_BandClipStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource BandClipStyle}">
@@ -104,16 +104,32 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <ContentControl Content="{Binding Viewport}" Grid.Column="0"/>
-                        <ContentControl Content="{Binding Player}" Grid.Column="1"/>
-                        <ContentControl Content="{Binding Speed}" Grid.Column="2"/>
-                        <ContentControl Content="{Binding Progress}" Grid.Column="3"/>
-                        <ContentControl Content="{Binding Configuration}" Grid.Column="4"/>
+                        
+                        <StackPanel>
+                            <TextBlock Text="X" FontWeight="DemiBold"  HorizontalAlignment="Center"></TextBlock>
+                            <ContentControl Content="{Binding ViewportX}"/>
+                        </StackPanel>
+                        
+                        <StackPanel  Grid.Column="1">
+                            <TextBlock Text="Y" FontWeight="DemiBold"  HorizontalAlignment="Center"></TextBlock>
+                            <ContentControl Content="{Binding ViewportY}" Grid.Column="0"/>
+                        </StackPanel>
+
+                        <StackPanel  Grid.Column="2">
+                            <TextBlock Text="Y_" FontWeight="DemiBold" HorizontalAlignment="Center"></TextBlock>
+                            <ContentControl Content="{Binding ViewportItemY}" Grid.Column="0"/>
+                        </StackPanel>
+                        <ContentControl Content="{Binding Player}" Grid.Column="3"/>
+                        <ContentControl Content="{Binding Speed}" Grid.Column="4"/>
+                        <ContentControl Content="{Binding Progress}" Grid.Column="5"/>
+                        <ContentControl Content="{Binding Configuration}" Grid.Column="6"/>
                     </Grid>
 
                     <tsTimeline:CombinedTimeline 
@@ -122,7 +138,8 @@
                         Grid.Row="1"
                         ChartType="{Binding Configuration.ChartType}"
                         Value="{Binding Progress.Progress, Mode=TwoWay}"
-                        Viewport="{Binding Viewport}"
+                        ViewportX="{Binding ViewportX}"
+                        ViewportY="{Binding ViewportY}"
                         ItemsSource="{Binding Player.PlayList.Stacks}"
                         OffsetX="{Binding ElementName=TsTimeline, Path=OffsetX, Mode=OneWay}"
                         ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
@@ -134,13 +151,14 @@
                         ValueConverter="{StaticResource ValueConverter}"
                         Grid.Row="2"
                         Value="{Binding Progress.Progress, Mode=TwoWay}"
-                        Viewport="{Binding Viewport}"
+                        ViewportX="{Binding ViewportX}"
+                        ViewportY="{Binding ViewportItemY}"
                         ItemsSource="{Binding Player.PlayList.Tracks}"
                         ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
                         ItemContainerStyleSelector="{StaticResource CustomStyleSelector}">
                     </tsTimeline:TsTimeline>
 
-                    <StackPanel VerticalAlignment="Bottom" Grid.Row="1">
+                    <!--<StackPanel VerticalAlignment="Bottom" Grid.Row="1">
                         <Grid >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -168,7 +186,7 @@
 
                             </StackPanel>
                         </Grid>
-                    </StackPanel>
+                    </StackPanel>-->
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>

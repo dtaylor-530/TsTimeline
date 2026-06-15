@@ -4,7 +4,26 @@ namespace SandBox
 {
     public class HoldClipViewModel : Notification
     {
-        public double StartValue { get; set; }
-        public double EndValue { get; set; }
+        private double startValue;
+        private double endValue;
+
+        public double StartValue
+        {
+            get => startValue;
+            set
+            {
+                startValue = value;
+                OnPropertyChanged();
+            }
+        }
+        public double EndValue
+        {
+            get => endValue;
+            set
+            {
+                endValue = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

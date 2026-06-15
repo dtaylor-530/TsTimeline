@@ -11,23 +11,24 @@ namespace SandBox
         {
             var maximum = 100;
             var rand = new Random();
-    
+
 
             foreach (var i in Enumerable.Range(0, 200))
             {
                 var start = rand.Next(maximum);
                 var end = start + rand.Next(maximum - start);
+                var holdClip = new HoldClipViewModel()
+                {
+                    StartValue = start,
+                    EndValue = end,
+                };
                 var track = new TrackViewModel()
                 {
                     Name = $"Track {i}",
                     Order = i,
                     Clips =
                     [
-                        new HoldClipViewModel()
-                        {
-                            StartValue = start,
-                            EndValue = end,
-                        },
+                        holdClip,
                         new TriggerClipViewModel()
                         {
                             Value = rand.Next(maximum),
@@ -38,12 +39,21 @@ namespace SandBox
                         }
                     ]
                 };
-
+                holdClip.PropertyChanged += (s, e) =>
+                {
+                    refreshStacks();
+                };
                 playList.Tracks.Add(track);
             }
-            foreach (var item in toStacks())
+            refreshStacks();
+
+            void refreshStacks()
             {
-                playList.Stacks.Add(item);
+                playList.Stacks.Clear();
+                foreach (var item in toStacks())
+                {
+                    playList.Stacks.Add(item);
+                }
             }
 
             IEnumerable<TrackViewModel> toStacks()
@@ -113,7 +123,7 @@ namespace SandBox
                         }
                         return acc;
                     })
-                    .Aggregate(new Dictionary<int, List<int>>(), 
+                    .Aggregate(new Dictionary<int, List<int>>(),
                     (min_max, kvp) =>
                     {
                         for (int i = 0; i < kvp.Value + 1; i++)

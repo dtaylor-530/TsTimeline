@@ -15,7 +15,7 @@ namespace SandBox
 
         }
 
-        public void Load(PlayerViewModel playerViewModel, ProgressViewModel progressViewModel, Viewport viewport)
+        public void Load(PlayerViewModel playerViewModel, ProgressViewModel progressViewModel)
         {
             var _timer = new DispatcherTimer
             {
