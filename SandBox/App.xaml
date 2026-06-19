@@ -243,7 +243,7 @@
                         Direction="{Binding Configuration.TimelineDirection}"
                         ViewportX="{Binding ViewportX}"
                         ViewportY="{Binding ViewportItemY}"
-                        ItemsSource="{Binding Player.PlayList.Tracks}"
+                        ItemsSource="{Binding Player.Slaves.Tracks}"
                         ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
                         ItemContainerStyleSelector="{StaticResource CustomStyleSelector}">
                     </tsTimeline:TsTimeline>
