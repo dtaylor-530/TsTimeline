@@ -7,6 +7,7 @@ namespace SandBox
 {
     public class TimeSimulationService : Notification
     {
+        private double rate;
         private double progress;
         private const int MilliSecondInterval = 10;
         public TimeSimulationService()
@@ -52,7 +53,15 @@ namespace SandBox
                 long current = stopwatch.ElapsedMilliseconds;
                 long delta = current - lastElapsed;
                 lastElapsed = current;
-                progressViewModel.Progress += (progress * delta / 1000.0); 
+
+
+                progress += (rate * delta / 1000.0);
+
+                //progressViewModel.Progress = Math.Round(progress / 1) * 150;
+
+                progressViewModel.Progress = progress;
+
+
 
                 //if (playerViewModel.Progress >= 100)
                 //{
@@ -63,12 +72,12 @@ namespace SandBox
 
         internal void Load(SpeedViewModel speed)
         {
-            progress = speed.Value;
+            rate = speed.Value;
             speed.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(SpeedViewModel.Value))
                 {
-                    progress = speed.Value;
+                    rate = speed.Value;
                 }
             };
         }

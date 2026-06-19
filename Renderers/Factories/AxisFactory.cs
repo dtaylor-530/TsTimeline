@@ -8,7 +8,7 @@
             {
                 VisibleStart = viewport.VisibleStart,
                 VisibleEnd = viewport.VisibleEnd,
-                PixelsPerUnit = viewport.Scale * viewport.Zoom
+                PixelsPerUnit = viewport.Zoom
             };
 
             model.Ticks.AddRange(tickGenerator.Generate(viewport));
@@ -25,7 +25,7 @@
             {
                 VisibleStart = 0,
                 VisibleEnd = 10,
-                PixelsPerUnit = viewport.Scale * viewport.Zoom
+                PixelsPerUnit = viewport.Zoom
             };
 
             model.Ticks.AddRange(tickGenerator.Generate(viewport));

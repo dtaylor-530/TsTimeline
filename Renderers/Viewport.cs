@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
-using Sandbox;
 
 namespace Renderers
 {
@@ -11,8 +10,8 @@ namespace Renderers
         private double _offset;
         private double _zoom = 1.0;
         private double _viewportLength = 1000;
-        private double _worldStart;
-        private double _worldEnd = 1000;
+        private double _start;
+        private double _End = 1000;
         private double _cursorPosition;
         private int _minPixelSpacing = 5;
         private int _scale = 10;
@@ -35,7 +34,7 @@ namespace Renderers
             get => _zoom;
             set
             {
-                value = Math.Max(0.01, value);
+                value = Math.Max(0.0001, value);
                 if (Math.Abs(_zoom - value) < 0.00001) return;
                 _zoom = value;
                 // Re-clamp offset now that visible width has changed
@@ -69,25 +68,25 @@ namespace Renderers
         }
 
 
-        public double WorldStart
+        public double Start
         {
-            get => _worldStart;
+            get => _start;
             set
             {
-                if (_worldStart == value) return;
-                _worldStart = value;
+                if (_start == value) return;
+                _start = value;
                 _offset = clampOffset(_offset);
                 OnPropertyChanged();
             }
         }
 
-        public double WorldEnd
+        public double End
         {
-            get => _worldEnd;
+            get => _End;
             set
             {
-                if (_worldEnd == value) return;
-                _worldEnd = value;
+                if (_End == value) return;
+                _End = value;
                 _offset = clampOffset(_offset);
                 OnPropertyChanged();
             }
@@ -116,7 +115,7 @@ namespace Renderers
         }
 
 
-        //public double WorldLength => WorldEnd - WorldStart;
+        //public double WorldLength => End - Start;
         public double VisibleWorldWidth => ViewportLength / Zoom;
         public double VisibleStart => Offset;
         public double VisibleEnd => Offset + VisibleWorldWidth;
@@ -128,7 +127,7 @@ namespace Renderers
         //        => value * PixelsPerUnit - Offset;
 
         public double WorldToScreen(double world) =>
-            (world - Offset) * Zoom * Scale;
+            (world - Offset) * Zoom;
 
         //public double WorldToYScreen(double world) =>
         //    (world - Offset) * Zoom * Scale;
@@ -158,9 +157,9 @@ namespace Renderers
 
         private double clampOffset(double offset)
         {
-            // When the visible range is wider than the world, pin to WorldStart
-            double maxOffset = Math.Max(WorldStart, WorldEnd - VisibleWorldWidth);
-            return Math.Clamp(offset, WorldStart, maxOffset);
+            // When the visible range is wider than the world, pin to Start
+            double maxOffset = Math.Max(Start, End - VisibleWorldWidth);
+            return Math.Clamp(offset, Start, maxOffset);
         }
     }
 }

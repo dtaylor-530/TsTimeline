@@ -166,8 +166,8 @@ namespace TsTimeline
                 case nameof(Viewport.Offset):
                 case nameof(Viewport.Zoom):
                 case nameof(Viewport.ViewportLength):
-                //case nameof(Viewport.WorldStart):
-                //case nameof(Viewport.WorldEnd):
+                case nameof(Viewport.Start):
+                case nameof(Viewport.End):
                 case nameof(Viewport.MinPixelSpacing):
                 case nameof(Viewport.Scale):
                     MarkDirty();

@@ -11,7 +11,7 @@ namespace Renderers
                 yield break;
 
             double unitStep =
-                (viewport.MinPixelSpacing / viewport.Zoom) / viewport.Scale;
+                (viewport.MinPixelSpacing / viewport.Zoom);
 
             double majorStep =
                 NiceNumber(unitStep * 5);
@@ -20,11 +20,11 @@ namespace Renderers
                 majorStep / 5;
 
             double start =
-                Math.Floor(viewport.VisibleStart / minorStep)
+                Math.Floor(viewport.Start + viewport.Offset / minorStep)
                 * minorStep;
 
             double end =
-                viewport.VisibleEnd;
+                viewport.End;
 
             int count = (int)Math.Round((end - start) / minorStep);
 
@@ -69,7 +69,7 @@ namespace Renderers
                 yield break;
 
             double unitStep =
-                (viewport.MinPixelSpacing / viewport.Zoom) / viewport.Scale;
+                (viewport.MinPixelSpacing / viewport.Zoom);
 
             double majorStep =
                 NiceNumber(unitStep * 5);

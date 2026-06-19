@@ -39,7 +39,6 @@ namespace TsTimeline
             set { SetValue(UpdaterProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Update.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UpdaterProperty =
             DependencyProperty.Register(nameof(Updater), typeof(IUpdater), typeof(ClipBase), new PropertyMetadata());
 
@@ -115,11 +114,10 @@ namespace TsTimeline
             switch (e.PropertyName)
             {
                 case nameof(Viewport.Zoom):
-                case nameof(Viewport.ViewportLength):
-                case nameof(Viewport.Scale):         
+                case nameof(Viewport.ViewportLength):       
                 case nameof(Viewport.Offset):         
-                    //case nameof(Viewport.WorldStart):
-                    //case nameof(Viewport.WorldEnd):
+                    //case nameof(Viewport.Start):
+                    //case nameof(Viewport.End):
                     Update();
                     break;
             }
