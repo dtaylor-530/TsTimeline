@@ -8,12 +8,12 @@
              d:DataContext="{d:DesignInstance tl:Viewport}"
              mc:Ignorable="d" 
              d:Background="White"
-             d:DesignHeight="500" d:DesignWidth="80">
+              d:DesignWidth="80">
     <FrameworkElement.Resources>
 
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                     <ResourceDictionary Source="/Resources/Paths.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/Resources/Paths.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type Slider}">
                 <Setter Property="Width" Value="40"></Setter>
@@ -28,6 +28,8 @@
             <Style TargetType="{x:Type Grid}">
                 <Setter Property="Margin" Value="1"></Setter>
             </Style>
+
+            <local:LogConverter x:Key="LogConverter"/>
         </ResourceDictionary>
   
     </FrameworkElement.Resources>
@@ -49,12 +51,11 @@
                 <StackPanel Grid.Column="1"
                  Orientation="Horizontal">
 
-                    <Slider Minimum="1"
-                 Maximum="4"
-                 TickFrequency="0.1"
-
+                    <Slider Minimum="-4"
+                 Maximum="4"        
+                     TickFrequency="0.5"
                  Value="{Binding Zoom,
-                                 Mode=TwoWay}"/>
+                                 Mode=TwoWay, Converter={StaticResource LogConverter}}"/>
 
                     <TextBlock Margin="10,0,0,0"
                     VerticalAlignment="Center"
@@ -107,12 +108,12 @@
                     <Slider Minimum="1"
                  Maximum="2000"
                  TickFrequency="10"
-                 Value="{Binding WorldStart,
+                 Value="{Binding Start,
                                  Mode=TwoWay}"/>
 
                     <TextBlock Margin="4,0,0,0"
                     VerticalAlignment="Center"
-                    Text="{Binding WorldStart, StringFormat={}{0:F2}}"/>
+                    Text="{Binding Start, StringFormat={}{0:F2}}"/>
                 </StackPanel>
             </Grid>
             <Grid >
@@ -131,14 +132,38 @@
                     <Slider Minimum="1"
                  Maximum="2000"
                  TickFrequency="10"
-                 Value="{Binding WorldEnd,
+                 Value="{Binding End,
                                  Mode=TwoWay}"/>
 
                     <TextBlock Margin="10,0,0,0"
                     VerticalAlignment="Center"
-                    Text="{Binding WorldEnd, StringFormat={}{0:F2}}"/>
+                    Text="{Binding End, StringFormat={}{0:F2}}"/>
                 </StackPanel>
             </Grid>
+            <!--<Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Path Data="{StaticResource Current}" ToolTip="End" ></Path>
+
+
+
+                <StackPanel Grid.Column="1"
+                 Orientation="Horizontal">
+
+                    <Slider Minimum="1"
+                 Maximum="2000"
+                 TickFrequency="10"
+                 Value="{Binding Current,
+                                 Mode=TwoWay}"/>
+
+                    <TextBlock Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    Text="{Binding Current, StringFormat={}{0:F2}}"/>
+                </StackPanel>
+            </Grid>-->
             
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -174,25 +199,25 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Path Data="{StaticResource Scale}" ToolTip="Scale" ></Path>
+                <Path Data="{StaticResource Offset}" ToolTip="Scale" ></Path>
 
 
 
                 <StackPanel Grid.Column="1"
                  Orientation="Horizontal">
 
-                    <Slider Minimum="1"
-                 Maximum="100"
-                 Ticks="0.1, 0.5, 1, 2, 5, 10, 20, 50"
+                    <Slider Minimum="0"
+                 Maximum="1000"
+              
                             IsSnapToTickEnabled="True"
                             TickPlacement="BottomRight"
          
-                 Value="{Binding Scale,
+                 Value="{Binding Offset,
                                  Mode=TwoWay}"/>
 
                     <TextBlock Margin="10,0,0,0"
                     VerticalAlignment="Center"
-                    Text="{Binding Scale,                             
+                    Text="{Binding Offset,                             
                                    StringFormat={}{0:F2} x}"/>
                 </StackPanel>
             </Grid>
