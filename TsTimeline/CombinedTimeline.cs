@@ -14,40 +14,84 @@ namespace TsTimeline
     public class CombinedTimeline : TreeView
     {
         public static readonly DependencyProperty ValueConverterProperty =
-    DependencyProperty.Register(nameof(ValueConverter), typeof(IValueConverter), typeof(CombinedTimeline), new PropertyMetadata());
+            DependencyProperty.Register(nameof(ValueConverter), typeof(IValueConverter), typeof(CombinedTimeline), new PropertyMetadata());
 
         public static readonly DependencyProperty TickMarginProperty =
-    DependencyProperty.Register(nameof(TickMargin), typeof(double), typeof(CombinedTimeline), new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsMeasure));
+            DependencyProperty.Register(nameof(TickMargin), typeof(double), typeof(CombinedTimeline), new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         public static readonly DependencyProperty LineIntervalProperty =
-    DependencyProperty.Register(nameof(LineInterval), typeof(int), typeof(CombinedTimeline), new FrameworkPropertyMetadata(10, FrameworkPropertyMetadataOptions.AffectsMeasure));
+            DependencyProperty.Register(nameof(LineInterval), typeof(int), typeof(CombinedTimeline), new FrameworkPropertyMetadata(10, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         public static readonly DependencyProperty ValueProperty =
     DependencyProperty.Register(nameof(Value), typeof(double), typeof(CombinedTimeline), new PropertyMetadata(valueChanged));
 
-        //    public static readonly DependencyProperty MaximumProperty =
-        //        DepProp.Register<CombinedTimeline, double>(nameof(Maximum), 1000d, FrameworkPropertyMetadataOptions.AffectsMeasure);
-
-        //    public static readonly DependencyProperty MinimumProperty =
-        //DepProp.Register<CombinedTimeline, double>(nameof(Minimum), 0d, FrameworkPropertyMetadataOptions.AffectsMeasure);
-
         public static readonly DependencyProperty TrackHeightProperty =
-DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
+            DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
 
-        internal static readonly DependencyPropertyKey ScrollViewerPropertyKey =
-            DepProp.RegisterReadOnly<CombinedTimeline, ScrollViewer>(nameof(ScrollViewer));
-
-        public static readonly DependencyProperty ScrollViewerProperty = ScrollViewerPropertyKey.DependencyProperty;
         public static readonly DependencyProperty Alter0Property =
             DepProp.Register<CombinedTimeline, Brush>(nameof(Alter0), Brushes.FloralWhite);
+
         public static readonly DependencyProperty Alter1Property =
-    DepProp.Register<CombinedTimeline, Brush>(nameof(Alter1), Brushes.WhiteSmoke);
+            DepProp.Register<CombinedTimeline, Brush>(nameof(Alter1), Brushes.WhiteSmoke);
 
         public static readonly DependencyProperty ViewportXProperty =
-    DependencyProperty.Register(nameof(ViewportX), typeof(Viewport), typeof(CombinedTimeline), new PropertyMetadata(_changedX));
+            DependencyProperty.Register(nameof(ViewportX), typeof(Viewport), typeof(CombinedTimeline), new PropertyMetadata(_changedX));
 
         public static readonly DependencyProperty ViewportYProperty =
-    DependencyProperty.Register(nameof(ViewportY), typeof(Viewport), typeof(CombinedTimeline), new PropertyMetadata(_changedY));
+            DependencyProperty.Register(nameof(ViewportY), typeof(Viewport), typeof(CombinedTimeline), new PropertyMetadata(_changedY));
+
+
+        public static readonly DependencyProperty OffsetXProperty =
+            DependencyProperty.Register(nameof(OffsetX), typeof(double), typeof(CombinedTimeline), new PropertyMetadata(0d, offsetXChanged));
+
+        public static readonly DependencyProperty PanelTypeProperty =
+            DependencyProperty.Register(nameof(PanelType), typeof(PanelType), typeof(CombinedTimeline), new PropertyMetadata(chartTypeChanged));
+
+
+        public static readonly DependencyProperty DirectionProperty =
+            DependencyProperty.Register(nameof(Direction), typeof(Direction), typeof(CombinedTimeline), new PropertyMetadata(changed));
+
+
+        public static readonly DependencyProperty XRendererProperty =
+        DependencyProperty.Register(nameof(XRenderer), typeof(IAxisLayer), typeof(CombinedTimeline), new PropertyMetadata(changedX));
+
+        private static void changedX(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is CombinedTimeline combined)
+                if (combined.x_measureRenderer != null)
+                {
+                    if (e.NewValue is IAxisFactory axisFactory)
+                        combined.x_measureRenderer.AxisFactory = axisFactory;
+                    else if (e.NewValue is IAxisLayer axisLayer)
+                        combined.x_measureRenderer.Renderer = axisLayer;
+                }
+        }
+
+        public static readonly DependencyProperty XAxisFactoryProperty =
+        DependencyProperty.Register(nameof(XAxisFactory), typeof(IAxisFactory), typeof(CombinedTimeline), new PropertyMetadata(changedX));
+
+        public static readonly DependencyProperty YRendererProperty =
+        DependencyProperty.Register(nameof(YRenderer), typeof(IAxisLayer), typeof(CombinedTimeline), new PropertyMetadata(changedY));
+
+        private static void changedY(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is CombinedTimeline combined)
+                if (combined.y_measureRenderer != null)
+                {
+                    if (e.NewValue is IAxisFactory axisFactory)
+                        combined.y_measureRenderer.AxisFactory = axisFactory;
+                    else if (e.NewValue is IAxisLayer axisLayer)
+                        combined.y_measureRenderer.Renderer = axisLayer;
+                }
+        }
+
+        public static readonly DependencyProperty YAxisFactoryProperty =
+        DependencyProperty.Register(nameof(YAxisFactory), typeof(IAxisFactory), typeof(CombinedTimeline), new PropertyMetadata(changedY));
+
+        private static void changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+
+        }
 
         private static void _changedX(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -55,12 +99,6 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
         private static void _changedY(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
         }
-
-        public static readonly DependencyProperty OffsetXProperty =
-    DependencyProperty.Register(nameof(OffsetX), typeof(double), typeof(CombinedTimeline), new PropertyMetadata(0d, offsetXChanged));
-
-        public static readonly DependencyProperty ChartTypeProperty =
-    DependencyProperty.Register(nameof(ChartType), typeof(ChartType), typeof(CombinedTimeline), new PropertyMetadata(chartTypeChanged));
 
         private static void chartTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -83,8 +121,8 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
                         combinedTimeline.itemsPresenter.Margin = new Thickness(offsetX, combinedTimeline.itemsPresenter.Margin.Top, 0, combinedTimeline.itemsPresenter.Margin.Bottom);
                     }
 
-                    if (combinedTimeline.x_measureRenderer != null) 
-                    combinedTimeline.x_measureRenderer.Margin = new Thickness(offsetX, 0, 0, 0);
+                    if (combinedTimeline.x_measureRenderer != null)
+                        combinedTimeline.x_measureRenderer.Margin = new Thickness(offsetX, 0, 0, 0);
 
                     if (combinedTimeline.y_measureRenderer != null)
                         combinedTimeline.y_measureRenderer.Margin = new Thickness(offsetX, 0, 0, 0);
@@ -117,10 +155,39 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
 
         #region Properties
 
-        public ChartType ChartType
+        public IAxisLayer XRenderer
         {
-            get { return (ChartType)GetValue(ChartTypeProperty); }
-            set { SetValue(ChartTypeProperty, value); }
+            get { return (IAxisLayer)GetValue(XRendererProperty); }
+            set { SetValue(XRendererProperty, value); }
+        }
+
+        public IAxisFactory XAxisFactory
+        {
+            get { return (IAxisFactory)GetValue(XAxisFactoryProperty); }
+            set { SetValue(XAxisFactoryProperty, value); }
+        }
+        public IAxisLayer YRenderer
+        {
+            get { return (IAxisLayer)GetValue(YRendererProperty); }
+            set { SetValue(YRendererProperty, value); }
+        }
+
+        public IAxisFactory YAxisFactory
+        {
+            get { return (IAxisFactory)GetValue(YAxisFactoryProperty); }
+            set { SetValue(YAxisFactoryProperty, value); }
+        }
+
+        public Direction Direction
+        {
+            get { return (Direction)GetValue(DirectionProperty); }
+            set { SetValue(DirectionProperty, value); }
+        }
+
+        public PanelType PanelType
+        {
+            get { return (PanelType)GetValue(PanelTypeProperty); }
+            set { SetValue(PanelTypeProperty, value); }
         }
 
         public Viewport ViewportX
@@ -229,33 +296,21 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             y_measureRenderer = GetTemplateChild("PART_Y_MEASURE_RENDERER") as MeasureRenderer;
             timeLine = GetTemplateChild("PART_TIMELINE") as Timeline;
             itemsPresenter = GetTemplateChild("PART_ITEMS_PRESENTER") as ItemsPresenter;
+
             LayoutUpdated += (s, e) =>
             {
-                //Viewport.ViewportWidth = scrollViewer.ViewportWidth;
-                ViewportY.ViewportLength = scrollViewer.ViewportHeight;
+                ViewportY.ViewportLength = scrollViewer?.ViewportHeight ?? ViewportY.ViewportLength;
             };
-            var x_axisRenderer = new CombinationLayer();
-            //x_axisRenderer.AddLayer(new XUpBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
-            x_axisRenderer.AddLayer(new XBottomGridLayer());
-            x_axisRenderer.AddLayer(new XBottomTickLayer());
-            x_axisRenderer.AddLayer(new XBottomLabelLayer());
-
-
-            var y_axisRenderer = new CombinationLayer();
-            //y_axisRenderer.AddLayer(new YBackgroundLayer(Brushes.FloralWhite, Brushes.WhiteSmoke));
-            y_axisRenderer.AddLayer(new YGridLayer());
-            y_axisRenderer.AddLayer(new YTickLayer());
-            y_axisRenderer.AddLayer(new YLabelLayer());
 
             if (x_measureRenderer != null)
             {
-                x_measureRenderer.Renderer = x_axisRenderer;
-                x_measureRenderer.AxisFactory = new X_AxisFactory(new TimelineTickGenerator());
+                x_measureRenderer.Renderer = XRenderer;
+                x_measureRenderer.AxisFactory = XAxisFactory;
             }
-            if (y_axisRenderer != null)
+            if (y_measureRenderer != null)
             {
-                y_measureRenderer.Renderer = y_axisRenderer;
-                y_measureRenderer.AxisFactory = new Y_AxisFactory(new YUp_TimelineTickGenerator());
+                y_measureRenderer.Renderer = YRenderer;
+                y_measureRenderer.AxisFactory = YAxisFactory;
             }
 
             timeLine.ValueChanged += (_, _) =>
@@ -264,7 +319,7 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             };
 
 
-            scrollViewer.ScrollChanged += (s, e) =>
+            scrollViewer?.ScrollChanged += (s, e) =>
             {
                 ViewportY.Offset = -scrollViewer.VerticalOffset;
             };
@@ -273,7 +328,7 @@ DepProp.Register<CombinedTimeline, double>(nameof(TrackHeight), 2d);
             {
                 if (e.PropertyName == nameof(Viewport.Offset))
                 {
-                    scrollViewer.ScrollToHorizontalOffset(ViewportX.Offset);
+                    scrollViewer?.ScrollToHorizontalOffset(ViewportX.Offset);
                 }
             };
         }

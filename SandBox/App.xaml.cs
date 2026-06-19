@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using Renderers;
+using TsTimeline;
 
 namespace SandBox
 {
@@ -7,7 +9,13 @@ namespace SandBox
     /// </summary>
     public partial class App : Application
     {
-
+        static IAxisLayer xBottomGridLayer = new XBottomGridLayer();
+        static IAxisLayer xBottomTickLayer = new XBottomTickLayer();
+        static IAxisLayer xBottomLabelLayer = new XBottomLabelLayer();
+        static IAxisLayer yGridLayer = new YGridLayer();
+        static IAxisLayer yTickLayer = new YTickLayer();
+        static IAxisLayer yLabelLayer = new YLabelLayer();
+  
         protected override void OnStartup(StartupEventArgs e)
         {
             var vm = new MainWindowViewModel
@@ -21,10 +29,17 @@ namespace SandBox
                         Stacks = []
                     }
                 },
-                Configuration = new() { ChartType = TsTimeline.ChartType.Points },
+
+            Configuration = new() {
+                    ChartType = ChartType.Points,
+                    XAxisRenderer = new CombinationLayer(xBottomGridLayer, xBottomTickLayer, xBottomLabelLayer),
+                    XAxisFactory = new X_AxisFactory(new TimelineTickGenerator()),
+                    YAxisRenderer = new CombinationLayer(yGridLayer, yTickLayer, yLabelLayer),
+                    YAxisFactory = new Y_AxisFactory(new YUp_TimelineTickGenerator()),
+                },
                 ViewportX = new() { },
                 ViewportY = new() { },
-                ViewportItemY = new() { WorldEnd = 100, WorldStart = 0, ViewportLength = 15 },
+                ViewportItemY = new() { End = 100, Start = 0, ViewportLength = 1000 },
                 Speed = new(),
                 Progress = new()
             };
@@ -34,7 +49,11 @@ namespace SandBox
             timeSimulation.Load(vm.Speed);
 
             reloadData();
-            vm.Configuration.PropertyChanged += (s, e) => reloadData();
+            vm.Configuration.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(ConfigurationViewModel.ChartType))
+                    reloadData();
+            };
 
             new Window { Content = vm }.Show();
             base.OnStartup(e);
@@ -47,10 +66,52 @@ namespace SandBox
                 if (vm.Configuration.ChartType == TsTimeline.ChartType.Points)
                 {
                     new ChartSimulationService().Load(vm.Player.PlayList);
+                    vm.ViewportY.Zoom = 2;
+                    vm.ViewportX.Zoom = 10;
+                    vm.Configuration.CombinedTimelineDirection = TsTimeline.Direction.Up;
+                    vm.Configuration.TimelineDirection = TsTimeline.Direction.Down;
+                    if (vm.Configuration.XAxisRenderer is CombinationLayer layer)
+                    {
+                        layer.AddLayer(xBottomLabelLayer);
+                    }
+                    if (vm.Configuration.YAxisRenderer is CombinationLayer ylayer)
+                    {
+                        ylayer.AddLayer(yLabelLayer);
+                    }
                 }
                 else if (vm.Configuration.ChartType == TsTimeline.ChartType.Bands)
                 {
                     new TrackSimulationService().Load(vm.Player.PlayList);
+                    vm.ViewportY.Zoom = 2;
+                    vm.ViewportX.Zoom = 10;
+                    vm.Configuration.CombinedTimelineDirection = TsTimeline.Direction.Up;
+                    vm.Configuration.TimelineDirection = TsTimeline.Direction.Down;
+                    if (vm.Configuration.XAxisRenderer is CombinationLayer layer)
+                    {
+                        layer.AddLayer(xBottomLabelLayer);
+                    }
+                    if (vm.Configuration.YAxisRenderer is CombinationLayer ylayer)
+                    {
+                        ylayer.AddLayer(yLabelLayer);
+                    }
+                }
+                else if (vm.Configuration.ChartType == TsTimeline.ChartType.Map)
+                {
+                    new MapSimulationService().Load(vm.Player.PlayList);
+                    vm.ViewportY.Zoom = 0.1;
+                    vm.ViewportX.Zoom = 0.1;
+                    vm.ViewportItemY.End = 10000;
+                    vm.ViewportX.End = 10000;
+                    vm.Configuration.CombinedTimelineDirection = TsTimeline.Direction.None;
+                    vm.Configuration.TimelineDirection = TsTimeline.Direction.Right;
+                    if(vm.Configuration.XAxisRenderer is CombinationLayer layer)
+                    {
+                        layer.RemoveLayer(xBottomLabelLayer);
+                    }
+                    if(vm.Configuration.YAxisRenderer is CombinationLayer ylayer)
+                    {
+                        ylayer.RemoveLayer(yLabelLayer);
+                    }
                 }
                 else
                 {
