@@ -22,11 +22,15 @@ namespace SandBox
             {
                 Player = new()
                 {
-                    PlayList = new PlayListViewModel
+                    Master = new PlayListViewModel
                     {
                         Name = "My PlayList",
-                        Tracks = [],
-                        Stacks = []
+                        Tracks = [],      
+                    },
+                    Slaves = new PlayListViewModel
+                    {
+                        Name = "My PlayList",
+                        Tracks = [],      
                     }
                 },
 
@@ -60,12 +64,12 @@ namespace SandBox
 
             void reloadData()
             {
-                vm.Player.PlayList.Stacks?.Clear();
-                vm.Player.PlayList.Tracks?.Clear();
+                vm.Player.Master.Tracks?.Clear();
+                vm.Player.Slaves.Tracks?.Clear();
 
                 if (vm.Configuration.ChartType == TsTimeline.ChartType.Points)
                 {
-                    new ChartSimulationService().Load(vm.Player.PlayList);
+                    new ChartSimulationService().Load(vm.Player.Master, vm.Player.Slaves);
                     vm.ViewportY.Zoom = 2;
                     vm.ViewportX.Zoom = 10;
                     vm.Configuration.CombinedTimelineDirection = TsTimeline.Direction.Up;
@@ -81,7 +85,7 @@ namespace SandBox
                 }
                 else if (vm.Configuration.ChartType == TsTimeline.ChartType.Bands)
                 {
-                    new TrackSimulationService().Load(vm.Player.PlayList);
+                    new TrackSimulationService().Load(vm.Player.Master, vm.Player.Slaves);
                     vm.ViewportY.Zoom = 2;
                     vm.ViewportX.Zoom = 10;
                     vm.Configuration.CombinedTimelineDirection = TsTimeline.Direction.Up;
@@ -97,7 +101,7 @@ namespace SandBox
                 }
                 else if (vm.Configuration.ChartType == TsTimeline.ChartType.Map)
                 {
-                    new MapSimulationService().Load(vm.Player.PlayList);
+                    new MapSimulationService().Load(vm.Player.Master, vm.Player.Slaves);
                     vm.ViewportY.Zoom = 0.1;
                     vm.ViewportX.Zoom = 0.1;
                     vm.ViewportItemY.End = 10000;

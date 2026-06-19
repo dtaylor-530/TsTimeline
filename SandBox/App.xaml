@@ -50,6 +50,20 @@
                 <Setter Property="Updater" Value="{StaticResource ClipUpdater}"></Setter>
             </Style>
             
+            <Style x:Key="ContentStyle" TargetType="{x:Type tsTimeline:ClipBase}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
+                            <Border Name="Bd" Background="{TemplateBinding Background}">
+                                <ContentPresenter Name="PART_Header" 
+                                                       ContentSource="Header" 
+                                                       HorizontalAlignment="Left" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <Style x:Key="CountryStyle" TargetType="{x:Type tsTimeline:ClipBase}">
                 <Setter Property="Updater" Value="{StaticResource ClipUpdater}"></Setter>
                 <Setter Property="Template">
@@ -80,30 +94,7 @@
                         </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>
-                <Setter Property="ItemContainerStyle">
-                    <Setter.Value>
-                        <Style TargetType="{x:Type tsTimeline:ClipBase}">              
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
-                                        <Border Name="Bd" Background="{TemplateBinding Background}">
-                                            <ContentPresenter Name="PART_Header" 
-                                                              ContentSource="Header" 
-                                                              HorizontalAlignment="Left" />
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Setter.Value>
-                </Setter>                
-                <!--<Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">                 
-                             <ItemsPresenter/>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>-->
+
             </Style>
 
             <local:CustomStyleSelector x:Key="CustomStyleSelector" 
@@ -112,6 +103,7 @@
                                        BandStyle="{StaticResource _BandClipStyle}"
                                        PointStyle="{StaticResource ItemPointClipStyle}"
                                        CountryStyle="{StaticResource CountryItemStyle}"
+                                       ContentStyle="{StaticResource ContentStyle}"
                                        >    
             </local:CustomStyleSelector>
 
@@ -121,6 +113,7 @@
                                        BandStyle="{StaticResource _BandClipStyle}"
                                        PointStyle="{StaticResource _PointClipStyle}"
                                        CountryStyle="{StaticResource CountryStyle}"
+                                       ContentStyle="{StaticResource ContentStyle}"
                                        >   
             </local:CustomStyleSelector>
 
