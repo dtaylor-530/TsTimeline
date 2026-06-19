@@ -229,7 +229,7 @@
                         Direction="{Binding Configuration.CombinedTimelineDirection, Mode=OneWay}"
                         ViewportX="{Binding ViewportX}"
                         ViewportY="{Binding ViewportY}"
-                        ItemsSource="{Binding Player.PlayList.Stacks}"
+                        ItemsSource="{Binding Player.Master.Tracks}"
                         OffsetX="{Binding ElementName=TsTimeline, Path=OffsetX, Mode=OneWay}"
                         ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
                         ItemContainerStyleSelector="{StaticResource CustomCombinedStyleSelector}">
