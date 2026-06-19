@@ -13,7 +13,7 @@ namespace SandBox
 {
     internal class MapSimulationService
     {
-        public void Load(PlayListViewModel playList)
+        public void Load(PlayListViewModel master, PlayListViewModel slaves)
         {
             var assembly = Assembly.GetExecutingAssembly();
             using Stream stream = assembly.GetManifestResourceStream("SandBox.Resources.Countries.csv");
@@ -24,8 +24,8 @@ namespace SandBox
                 foreach (var record in records)
                 {
                     Geometry.Parse(record.Data);
-                    playList.Tracks.Add(record);
-                    playList.Stacks.Add(record);
+                    master.Tracks.Add(record);
+                    slaves.Tracks.Add(record);
 
                 }
             }        

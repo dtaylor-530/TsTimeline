@@ -9,7 +9,7 @@ namespace SandBox
 {
     public class ChartSimulationService
     {
-        public void Load(PlayListViewModel playList)
+        public void Load(PlayListViewModel master, PlayListViewModel slaves)
         {
             var maximum = 100;
             var rand = new Random();
@@ -32,11 +32,11 @@ namespace SandBox
                     ]
                 };
 
-                playList.Tracks.Add(track);
+                slaves.Tracks.Add(track);
             }
 
-            foreach (var stack in playList.Tracks.OfType<TrackViewModel>().SelectMany(t => t.Clips.OfType<PointViewModel>()))
-                playList.Stacks.Add(stack);
+            foreach (var stack in slaves.Tracks.OfType<TrackViewModel>().SelectMany(t => t.Clips.OfType<PointViewModel>()))
+                master.Tracks.Add(stack);
         }
     }
 }

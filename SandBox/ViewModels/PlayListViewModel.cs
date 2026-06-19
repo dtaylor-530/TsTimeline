@@ -7,6 +7,6 @@ namespace SandBox
         public string Name { get; set; } 
 
         public ObservableCollection<Notification> Tracks { get; set; } 
-        public ObservableCollection<Notification> Stacks { get; set; } 
+
     }
 }

@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 
 namespace SandBox
 {
     public class TrackSimulationService
     {
-        public void Load(PlayListViewModel playList)
+        public void Load(PlayListViewModel master, PlayListViewModel slaves)
         {
             var maximum = 100;
             var rand = new Random();
-
+            System.Timers.Timer _refreshTimer = new System.Timers.Timer(300) { AutoReset = false};
+            _refreshTimer.Elapsed += (s, e) => Application.Current.Dispatcher.BeginInvoke(()=> refreshStacks());
 
             foreach (var i in Enumerable.Range(0, 200))
             {
@@ -19,8 +22,8 @@ namespace SandBox
                 var end = start + rand.Next(maximum - start);
                 var holdClip = new HoldClipViewModel()
                 {
-                    StartValue = start,
-                    EndValue = end,
+                    X = start,
+                    Width = end - start,
                 };
                 var track = new TrackViewModel()
                 {
@@ -39,29 +42,34 @@ namespace SandBox
                         }
                     ]
                 };
-                holdClip.PropertyChanged += (s, e) =>
-                {
-                    refreshStacks();
-                };
-                playList.Tracks.Add(track);
+                Setup(holdClip);
+                slaves.Tracks.Add(track);
             }
             refreshStacks();
 
             void refreshStacks()
             {
-                playList.Stacks.Clear();
+                master.Tracks.Clear();
                 foreach (var item in toStacks())
                 {
-                    playList.Stacks.Add(item);
+                    master.Tracks.Add(item);
                 }
+            }
+            void Setup(INotifyPropertyChanged holdClip)
+            {    
+                holdClip.PropertyChanged += (s, e) =>
+                {
+                    _refreshTimer.Stop();
+                    _refreshTimer.Start();
+                };
             }
 
             IEnumerable<TrackViewModel> toStacks()
             {
                 return toRanges(
-                    playList.Tracks.OfType<TrackViewModel>(),
+                    slaves.Tracks.OfType<TrackViewModel>(),
                     a => a.Clips.OfType<HoldClipViewModel>()
-                    .Select(a => ((int)a.StartValue, (int)a.EndValue)))
+                    .Select(a => ((int)a.X, (int)(a.X + a.Width))))
                     .Select(kvp => new TrackViewModel()
                     {
                         Order = kvp.Key,
@@ -69,8 +77,8 @@ namespace SandBox
                             groupContiguousNumbers([.. kvp.Value])
                             .Select(group => new HoldClipViewModel()
                             {
-                                StartValue = group.First(),
-                                EndValue = group.Last(),
+                                X = group.First(),
+                                Width = group.Last() - group.First(),
                             })
                             .Cast<Notification>())
                     })

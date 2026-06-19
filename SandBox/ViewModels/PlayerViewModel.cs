@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Metrics;
 
 namespace SandBox
 {
@@ -9,17 +10,19 @@ namespace SandBox
         private int _currentIndex = 0;
         private double _progress;
         private bool _isPlaying;
-        private PlayListViewModel playList;
+        private PlayListViewModel master, slaves;
 
         public PlayerViewModel()
         {
         }
-        public PlayListViewModel PlayList { get => playList; set { playList = value; OnPropertyChanged(); } }
+        public PlayListViewModel Master { get => master; set { master = value; OnPropertyChanged(); } }
+
+        public PlayListViewModel Slaves { get => slaves; set { slaves = value; OnPropertyChanged(); } }
 
 
         public event Action<PlayState> PlayStateChanged;
 
-        public TrackViewModel CurrentTrack => PlayList.Tracks.Count > 0 ? (TrackViewModel)PlayList.Tracks[CurrentIndex] : null;
+        public TrackViewModel CurrentTrack => Master.Tracks.Count > 0 ? (TrackViewModel)Master.Tracks[CurrentIndex] : null;
 
         public int CurrentIndex
         {
@@ -66,7 +69,7 @@ namespace SandBox
 
         public void Next()
         {
-            CurrentIndex = (CurrentIndex + 1) % PlayList.Tracks.Count;
+            CurrentIndex = (CurrentIndex + 1) % Master.Tracks.Count;
             ResetProgress();
         }
 
@@ -75,7 +78,7 @@ namespace SandBox
             CurrentIndex--;
 
             if (CurrentIndex < 0)
-                CurrentIndex = PlayList.Tracks.Count - 1;
+                CurrentIndex = Master.Tracks.Count - 1;
 
             ResetProgress();
         }
