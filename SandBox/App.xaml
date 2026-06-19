@@ -18,27 +18,34 @@
             <SolidColorBrush x:Key="LandFill" Color="#FFFF00A2" />
             <SolidColorBrush x:Key="LandStroke" Color="#FF020202" />
             <SolidColorBrush x:Key="WaterFill" Color="#FF303030" />
-            
+
             <!--<local:ValueConverter x:Key="ValueConverter"/>-->
             <local:BasicValueConverter x:Key="ValueConverter"/>
             <local:PanelTypeConverter x:Key="PanelTypeConverter"/>
             <local:ChildrenConverter x:Key="ChildrenConverter"/>
-   
-            
+            <local:WidthConverter x:Key="WidthConverter"/>
+
+
             <flags:CountryIdToFlagImageSourceConverter x:Key="CountryIdToFlagImageSourceConverter" />
 
             <Style x:Key="_TriggerClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource TriggerClipStyle}">
-                <Setter Property="Value" Value="{Binding Value}"></Setter>
+                <Setter Property="X" Value="{Binding Value}"></Setter>
             </Style>
 
             <Style x:Key="_HoldClipStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource HoldClipStyle}">
-                <Setter Property="StartValue" Value="{Binding StartValue, Mode=TwoWay}"></Setter>
-                <Setter Property="EndValue" Value="{Binding EndValue,  Mode=TwoWay}"></Setter>
+            
+                <Setter Property="X" Value="{Binding X, Mode=TwoWay}">
+                </Setter>
+                <Setter Property="Size" Value="{Binding Width, Mode=TwoWay, Converter={StaticResource WidthConverter}}">
+                </Setter> 
+                
             </Style>
 
             <Style x:Key="_BandClipStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource BandClipStyle}">
-                <Setter Property="StartValue" Value="{Binding StartValue}"></Setter>
-                <Setter Property="EndValue" Value="{Binding EndValue}"></Setter>
+                <Setter Property="X" Value="{Binding X, Mode=TwoWay}">
+                </Setter>
+                <Setter Property="Size" Value="{Binding Width, Mode=TwoWay, Converter={StaticResource WidthConverter}}">
+                </Setter>
             </Style>
 
             <Style x:Key="_PointClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource PointClipStyle}">
@@ -49,7 +56,7 @@
             <Style x:Key="ItemPointClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource _PointClipStyle}">
                 <Setter Property="Updater" Value="{StaticResource ClipUpdater}"></Setter>
             </Style>
-            
+
             <Style x:Key="ContentStyle" TargetType="{x:Type tsTimeline:ClipBase}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -70,14 +77,14 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
                             <Path x:Name="PART_PATH">
-                                <Path.Style>             
+                                <Path.Style>
                                     <Style TargetType="{x:Type Path}">
                                         <!--<Setter Property="Data" Value="M19.375 36.7818V100.625C19.375 102.834 21.1659 104.625 23.375 104.625H87.2181C90.7818 104.625 92.5664 100.316 90.0466 97.7966L26.2034 33.9534C23.6836 31.4336 19.375 33.2182 19.375 36.7818Z"></Setter>-->
                                         <Setter Property="Fill" Value="{StaticResource LandFill}"/>
                                         <Setter Property="Stroke" Value="{StaticResource LandStroke}"/>
                                         <Setter Property="StrokeThickness" Value="0.5"/>
                                         <Setter Property="StrokeLineJoin" Value="Round"/>
-                                        <Setter Property="Stretch" Value="Fill" />                                     
+                                        <Setter Property="Stretch" Value="Fill" />
                                     </Style>
                                 </Path.Style>
                             </Path>
@@ -87,7 +94,7 @@
             </Style>
 
             <Style x:Key="CountryItemStyle" TargetType="{x:Type tsTimeline:ClipBase}" >
-                 <Setter Property="ItemsPanel">
+                <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
                             <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
@@ -104,7 +111,7 @@
                                        PointStyle="{StaticResource ItemPointClipStyle}"
                                        CountryStyle="{StaticResource CountryItemStyle}"
                                        ContentStyle="{StaticResource ContentStyle}"
-                                       >    
+                                       >
             </local:CustomStyleSelector>
 
             <local:CustomStyleSelector x:Key="CustomCombinedStyleSelector" 
@@ -114,7 +121,7 @@
                                        PointStyle="{StaticResource _PointClipStyle}"
                                        CountryStyle="{StaticResource CountryStyle}"
                                        ContentStyle="{StaticResource ContentStyle}"
-                                       >   
+                                       >
             </local:CustomStyleSelector>
 
             <local:ClipTemplateSelector x:Key="ClipTemplateSelector">
@@ -137,18 +144,18 @@
                     <HierarchicalDataTemplate ItemsSource="{Binding Converter={StaticResource ChildrenConverter}}"/>
                 </local:ClipTemplateSelector.CountryTemplate>
                 <local:ClipTemplateSelector.CountryNameTemplate>
-               
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" FontWeight="DemiBold"/>
-                        </DataTemplate>
+
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" FontWeight="DemiBold"/>
+                    </DataTemplate>
                 </local:ClipTemplateSelector.CountryNameTemplate>
                 <local:ClipTemplateSelector.CountryFlagTemplate>
-                        <DataTemplate>
-                            <Image Source="{Binding Name, Converter={StaticResource CountryIdToFlagImageSourceConverter}}"
+                    <DataTemplate>
+                        <Image Source="{Binding Name, Converter={StaticResource CountryIdToFlagImageSourceConverter}}"
                                    Opacity="0.9"
                           Stretch="Uniform" Width="60" Height="15" RenderOptions.BitmapScalingMode="HighQuality" />
-                        </DataTemplate>
-                    </local:ClipTemplateSelector.CountryFlagTemplate>     
+                    </DataTemplate>
+                </local:ClipTemplateSelector.CountryFlagTemplate>
             </local:ClipTemplateSelector>
 
             <DataTemplate DataType="{x:Type local:PlayerViewModel}">
@@ -188,12 +195,12 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        
+
                         <StackPanel>
                             <TextBlock Text="X" FontWeight="DemiBold"  HorizontalAlignment="Center"></TextBlock>
                             <ContentControl Content="{Binding ViewportX}"/>
                         </StackPanel>
-                        
+
                         <StackPanel  Grid.Column="1">
                             <TextBlock Text="Y" FontWeight="DemiBold"  HorizontalAlignment="Center"></TextBlock>
                             <ContentControl Content="{Binding ViewportY}" Grid.Column="0"/>

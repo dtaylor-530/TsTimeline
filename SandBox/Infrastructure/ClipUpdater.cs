@@ -15,7 +15,7 @@ namespace SandBox
         private FrameworkElement point;
         private Path path;
 
-        public void Update(ClipBase clipBase)
+        public void UpdateX(ClipBase clipBase)
         {
             if (clipBase.DataContext is Country country)
             {
@@ -54,15 +54,25 @@ namespace SandBox
 
                 return;
             }
+
+            {
+                point ??= clipBase.GetType().GetMethod("GetTemplateChild", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(clipBase, ["PART_POINT"]) as FrameworkElement;
+                if (point == null)
+                    return;
+
+                Canvas.SetLeft(clipBase, clipBase.X * clipBase.ViewportX.Zoom);
+            }
+        }
+
+        public void UpdateY(ClipBase clipBase)
+        {
             point ??= clipBase.GetType().GetMethod("GetTemplateChild", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(clipBase, ["PART_POINT"]) as FrameworkElement;
             if (point == null)
                 return;
 
-            Canvas.SetLeft(clipBase, clipBase.X * clipBase.ViewportX.Zoom);
             // TODO: value needs to be calculated based on height of container 
             var y = clipBase.ViewportY.ViewportLength - clipBase.Y * clipBase.ViewportY.ViewportLength / (clipBase.ViewportY.End - clipBase.ViewportY.Start);
             Canvas.SetTop(clipBase, y);
-
         }
     }
 }

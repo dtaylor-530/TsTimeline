@@ -2,6 +2,7 @@
 {
     public interface IUpdater
     {
-        void Update(ClipBase clipBase);
+        void UpdateX(ClipBase clipBase);
+        void UpdateY(ClipBase clipBase);
     }
 }

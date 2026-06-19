@@ -15,8 +15,8 @@ namespace SandBox
         {
             return $"{min}/{max}";
 
-            double min() => Clips.OfType<HoldClipViewModel>().Min(x => x.StartValue);
-            double max() => Clips.OfType<HoldClipViewModel>().Max(x => x.EndValue);
+            double min() => Clips.OfType<HoldClipViewModel>().Min(x => x.X);
+            double max() => Clips.OfType<HoldClipViewModel>().Max(x => x.X + x.Width);
         }
     }
 }

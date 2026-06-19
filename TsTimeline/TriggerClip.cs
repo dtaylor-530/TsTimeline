@@ -8,17 +8,6 @@ namespace TsTimeline
     [TemplatePart(Name = "PART_THUMB", Type = typeof(Thumb))]
     public partial class ClipBase
     {
-        public static readonly DependencyProperty ValueProperty =
-            DepProp.Register<ClipBase, double>(
-                nameof(Value),
-                FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                ValueChanged);
-
-        public double Value
-        {
-            get => (double)GetValue(ValueProperty);
-            set => SetValue(ValueProperty, value);
-        }
 
         private void Thumb_OnDragDelta(Vector vector)
         {
@@ -26,12 +15,12 @@ namespace TsTimeline
                 return;
 
             var change = vector.X / ViewportX.Zoom;
-            if (Value + change < 0)
+            if (X + change < 0)
             {
-                change = - Value;
+                change = - X;
             }
 
-            Value += change;
+            X += change;
         }
 
         private Thumb _thumb;
@@ -63,7 +52,7 @@ namespace TsTimeline
         {
             if (TryGetThumb(out var thumb))
             {
-                Canvas.SetLeft(this, Value * ViewportX.Zoom - this.ActualWidth / 2);
+                Canvas.SetLeft(this, X * ViewportX.Zoom - this.ActualWidth / 2);
             }
         }
     }

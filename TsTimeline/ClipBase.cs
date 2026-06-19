@@ -49,14 +49,14 @@ namespace TsTimeline
                 nameof(ViewportX),
                 typeof(Viewport),
                 typeof(ClipBase),
-                new PropertyMetadata(null, OnViewportChanged));
+                new PropertyMetadata(null, OnViewportXChanged));
 
         public static readonly DependencyProperty ViewportYProperty =
             DependencyProperty.Register(
                 nameof(ViewportY),
                 typeof(Viewport),
                 typeof(ClipBase),
-                new PropertyMetadata(null, OnViewportChanged));
+                new PropertyMetadata(null, OnViewportYChanged));
 
         public Viewport? ViewportX
         {
@@ -69,7 +69,7 @@ namespace TsTimeline
             set => SetValue(ViewportYProperty, value);
         }
 
-        private static void OnViewportChanged(
+        private static void OnViewportXChanged(
             DependencyObject d,
             DependencyPropertyChangedEventArgs e)
         {
@@ -81,27 +81,52 @@ namespace TsTimeline
             if (e.NewValue is Viewport @new)
                 @new.PropertyChanged += self.OnViewportPropertyChanged;
 
-            self.Update();
+            self.updateX();
+        }
+        private static void OnViewportYChanged(
+            DependencyObject d,
+            DependencyPropertyChangedEventArgs e)
+        {
+            var self = (ClipBase)d;
+
+            if (e.OldValue is Viewport old)
+                old.PropertyChanged -= self.OnViewportPropertyChanged;
+
+            if (e.NewValue is Viewport @new)
+                @new.PropertyChanged += self.OnViewportPropertyChanged;
+
+            self.updateY();
         }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            Update();
+            updateX();
+            updateY();
         }
 
-        private void Update()
+        private void updateX()
         {
-            if (ViewportX == null) return;
-            if (ViewportY == null) return;
+            if (ViewportX == null) return;   
             if (Updater is not null)
-                Updater.Update(this);
+                Updater.UpdateX(this);
             else
             {
                 updateThumb();
+                updatePointX();
                 updateThumbs();
                 updateBand();
-                updatePoint();
+            
+            }
+        }
+        private void updateY()
+        {
+            if (ViewportY == null) return;   
+            if (Updater is not null)
+                Updater.UpdateY(this);
+            else
+            {
+                updatePointY();
             }
         }
 
@@ -118,15 +143,10 @@ namespace TsTimeline
                 case nameof(Viewport.Offset):         
                     //case nameof(Viewport.Start):
                     //case nameof(Viewport.End):
-                    Update();
+                    updateX();
                     break;
             }
         }
-
-        // =====================================================
-        // Invalidation
-        // =====================================================
-
 
         public bool IsReadOnly
         {
@@ -134,22 +154,10 @@ namespace TsTimeline
             set => SetValue(IsReadOnlyProperty, value);
         }
 
-        private static void ValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is ClipBase t)
-                t.OnValueChanged();
-        }
-
         private static void IsSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is ClipBase t)
                 t.OnSelectedChanged();
-        }
-
-        protected virtual void OnValueChanged()
-        {
-            this.updateThumb();
-            this.updateThumbs();
         }
 
         protected virtual void OnSelectedChanged()

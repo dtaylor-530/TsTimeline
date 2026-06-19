@@ -7,20 +7,24 @@ namespace SandBox
         private double startValue;
         private double endValue;
 
-        public double StartValue
+        public double X
         {
             get => startValue;
             set
             {
+                if (value == startValue)
+                    return;
                 startValue = value;
                 OnPropertyChanged();
             }
         }
-        public double EndValue
+        public double Width
         {
             get => endValue;
             set
             {
+                if (value == endValue)
+                    return;
                 endValue = value;
                 OnPropertyChanged();
             }

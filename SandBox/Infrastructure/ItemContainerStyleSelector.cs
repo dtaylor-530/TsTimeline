@@ -24,6 +24,14 @@ namespace SandBox
             {
                 return CountryStyle;
             }
+            if (item is ChildrenConverter.CountryName)
+            {
+                return ContentStyle;
+            }
+            if (item is ChildrenConverter.Flag)
+            {
+                return ContentStyle;
+            }
 
             if (item is HoldClipViewModel)
             {
@@ -43,5 +51,6 @@ namespace SandBox
         public Style BandStyle { get; set; }
         public Style PointStyle { get; set; }
         public Style CountryStyle { get; set; }
+        public Style ContentStyle { get; set; }
     }
 }

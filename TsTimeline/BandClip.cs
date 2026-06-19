@@ -15,9 +15,9 @@ namespace TsTimeline
             center ??= this.GetTemplateChild("PART_CENTER") as FrameworkElement;
             if (center == null)
                 return;
-            var width = (EndValue - StartValue) * ViewportX.Zoom;
+            var width = Size.Width * ViewportX.Zoom;
 
-            Canvas.SetLeft(this, StartValue * ViewportX.Zoom);
+            Canvas.SetLeft(this, startValue * ViewportX.Zoom);
 
             //if (w > 0)
             this.Width = width;        

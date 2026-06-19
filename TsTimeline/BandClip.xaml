@@ -17,7 +17,7 @@
                                         BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         Width="{TemplateBinding Width}"
-                                        Height="{TemplateBinding Height}" ToolTip="{TemplateBinding EndValue}"/>
+                                        Height="{TemplateBinding Height}" ToolTip="{TemplateBinding X}"/>
              
                 </ControlTemplate>
             </Setter.Value>
