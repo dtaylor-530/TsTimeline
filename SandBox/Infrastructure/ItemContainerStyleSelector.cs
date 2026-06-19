@@ -20,6 +20,10 @@ namespace SandBox
             {
                 return PointStyle;
             }
+            if (item is Country)
+            {
+                return CountryStyle;
+            }
 
             if (item is HoldClipViewModel)
             {
@@ -38,5 +42,6 @@ namespace SandBox
         public Style TriggerStyle { get; set; }
         public Style BandStyle { get; set; }
         public Style PointStyle { get; set; }
+        public Style CountryStyle { get; set; }
     }
 }

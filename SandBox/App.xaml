@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:SandBox"
              xmlns:renderers="clr-namespace:Renderers;assembly=Renderers"
+             xmlns:flags="clr-namespace:FamFamFam.Flags.Wpf;assembly=FamFamFam.Flags.Wpf"
              xmlns:tsTimeline="clr-namespace:TsTimeline;assembly=TsTimeline">
 
     <Application.Resources>
@@ -12,10 +13,19 @@
 
             </ResourceDictionary.MergedDictionaries>
 
-            <local:ItemPointClipUpdater x:Key="ItemPointClipUpdater"/>
+            <local:ClipUpdater x:Key="ClipUpdater"/>
 
+            <SolidColorBrush x:Key="LandFill" Color="#FFFF00A2" />
+            <SolidColorBrush x:Key="LandStroke" Color="#FF020202" />
+            <SolidColorBrush x:Key="WaterFill" Color="#FF303030" />
+            
             <!--<local:ValueConverter x:Key="ValueConverter"/>-->
             <local:BasicValueConverter x:Key="ValueConverter"/>
+            <local:PanelTypeConverter x:Key="PanelTypeConverter"/>
+            <local:ChildrenConverter x:Key="ChildrenConverter"/>
+   
+            
+            <flags:CountryIdToFlagImageSourceConverter x:Key="CountryIdToFlagImageSourceConverter" />
 
             <Style x:Key="_TriggerClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource TriggerClipStyle}">
                 <Setter Property="Value" Value="{Binding Value}"></Setter>
@@ -37,7 +47,63 @@
             </Style>
 
             <Style x:Key="ItemPointClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource _PointClipStyle}">
-                <Setter Property="Updater" Value="{StaticResource ItemPointClipUpdater}"></Setter>
+                <Setter Property="Updater" Value="{StaticResource ClipUpdater}"></Setter>
+            </Style>
+            
+            <Style x:Key="CountryStyle" TargetType="{x:Type tsTimeline:ClipBase}">
+                <Setter Property="Updater" Value="{StaticResource ClipUpdater}"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
+                            <Path x:Name="PART_PATH">
+                                <Path.Style>             
+                                    <Style TargetType="{x:Type Path}">
+                                        <!--<Setter Property="Data" Value="M19.375 36.7818V100.625C19.375 102.834 21.1659 104.625 23.375 104.625H87.2181C90.7818 104.625 92.5664 100.316 90.0466 97.7966L26.2034 33.9534C23.6836 31.4336 19.375 33.2182 19.375 36.7818Z"></Setter>-->
+                                        <Setter Property="Fill" Value="{StaticResource LandFill}"/>
+                                        <Setter Property="Stroke" Value="{StaticResource LandStroke}"/>
+                                        <Setter Property="StrokeThickness" Value="0.5"/>
+                                        <Setter Property="StrokeLineJoin" Value="Round"/>
+                                        <Setter Property="Stretch" Value="Fill" />                                     
+                                    </Style>
+                                </Path.Style>
+                            </Path>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="CountryItemStyle" TargetType="{x:Type tsTimeline:ClipBase}" >
+                 <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemContainerStyle">
+                    <Setter.Value>
+                        <Style TargetType="{x:Type tsTimeline:ClipBase}">              
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
+                                        <Border Name="Bd" Background="{TemplateBinding Background}">
+                                            <ContentPresenter Name="PART_Header" 
+                                                              ContentSource="Header" 
+                                                              HorizontalAlignment="Left" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Setter.Value>
+                </Setter>                
+                <!--<Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">                 
+                             <ItemsPresenter/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>-->
             </Style>
 
             <local:CustomStyleSelector x:Key="CustomStyleSelector" 
@@ -45,6 +111,7 @@
                                        HoldStyle="{StaticResource _HoldClipStyle}"
                                        BandStyle="{StaticResource _BandClipStyle}"
                                        PointStyle="{StaticResource ItemPointClipStyle}"
+                                       CountryStyle="{StaticResource CountryItemStyle}"
                                        >    
             </local:CustomStyleSelector>
 
@@ -53,6 +120,7 @@
                                        HoldStyle="{StaticResource _HoldClipStyle}"
                                        BandStyle="{StaticResource _BandClipStyle}"
                                        PointStyle="{StaticResource _PointClipStyle}"
+                                       CountryStyle="{StaticResource CountryStyle}"
                                        >   
             </local:CustomStyleSelector>
 
@@ -72,6 +140,22 @@
                         </Grid>
                     </HierarchicalDataTemplate>
                 </local:ClipTemplateSelector.TrackTemplate>
+                <local:ClipTemplateSelector.CountryTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Converter={StaticResource ChildrenConverter}}"/>
+                </local:ClipTemplateSelector.CountryTemplate>
+                <local:ClipTemplateSelector.CountryNameTemplate>
+               
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" FontWeight="DemiBold"/>
+                        </DataTemplate>
+                </local:ClipTemplateSelector.CountryNameTemplate>
+                <local:ClipTemplateSelector.CountryFlagTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding Name, Converter={StaticResource CountryIdToFlagImageSourceConverter}}"
+                                   Opacity="0.9"
+                          Stretch="Uniform" Width="60" Height="15" RenderOptions.BitmapScalingMode="HighQuality" />
+                        </DataTemplate>
+                    </local:ClipTemplateSelector.CountryFlagTemplate>     
             </local:ClipTemplateSelector>
 
             <DataTemplate DataType="{x:Type local:PlayerViewModel}">
@@ -136,7 +220,6 @@
                         x:Name="CombinedTimeline"
                         ValueConverter="{StaticResource ValueConverter}"
                         Grid.Row="1"
-                        ChartType="{Binding Configuration.ChartType}"
                         Value="{Binding Progress.Progress, Mode=TwoWay}"
                         XAxisFactory="{Binding Configuration.XAxisFactory}"
                         XRenderer="{Binding Configuration.XAxisRenderer}"
@@ -155,7 +238,7 @@
                     <tsTimeline:TsTimeline 
                             x:Name="TsTimeline"
                         ValueConverter="{StaticResource ValueConverter}"
-                        Grid.Row="2"
+                        Grid.Row="2"     
                         Value="{Binding Progress.Progress, Mode=TwoWay}"
                         Direction="{Binding Configuration.TimelineDirection}"
                         ViewportX="{Binding ViewportX}"
@@ -165,35 +248,6 @@
                         ItemContainerStyleSelector="{StaticResource CustomStyleSelector}">
                     </tsTimeline:TsTimeline>
 
-                    <!--<StackPanel VerticalAlignment="Bottom" Grid.Row="1">
-                        <Grid >
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Text="Tick Margin"
-                       VerticalAlignment="Center"
-                       Margin="0,0,10,0"/>
-
-                            <StackPanel Grid.Column="1"
-                        Orientation="Horizontal">
-
-                                <Slider Minimum="1"
-                        Maximum="100"
-                        TickFrequency="0.1"
-                        Width="150"
-                        Value="{Binding ElementName=TsTimeline, Path=TickMargin,
-                                        Mode=TwoWay}"/>
-
-                                <TextBlock Margin="10,0,0,0"
-                           VerticalAlignment="Center"
-                           Text="{Binding ElementName=TsTimeline, Path=TickMargin}"></TextBlock>
-
-
-                            </StackPanel>
-                        </Grid>
-                    </StackPanel>-->
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>

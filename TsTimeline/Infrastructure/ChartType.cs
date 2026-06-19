@@ -4,7 +4,8 @@
     {
         None, 
         Points,
-        Bands
+        Bands,
+        Map
     }
 
 }
