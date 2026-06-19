@@ -157,6 +157,7 @@
                         ValueConverter="{StaticResource ValueConverter}"
                         Grid.Row="2"
                         Value="{Binding Progress.Progress, Mode=TwoWay}"
+                        Direction="{Binding Configuration.TimelineDirection}"
                         ViewportX="{Binding ViewportX}"
                         ViewportY="{Binding ViewportItemY}"
                         ItemsSource="{Binding Player.PlayList.Tracks}"

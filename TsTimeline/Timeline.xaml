@@ -2,8 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                        xmlns:timelineControl="clr-namespace:TsTimeline">
 
-    <timelineControl:DirectionConverter x:Key="DirectionConverter"/>
-    <timelineControl:DirectionVerticalAlignmentConverter x:Key="DirectionVerticalAlignmentConverter"/>
 
     <Style TargetType="{x:Type timelineControl:Timeline}" >
         <Style.Resources>
@@ -14,11 +12,10 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Thumb">
                             <Path  x:Name="PART_Path" 
-                                   Path.RenderTransformOrigin="0.5,0.5"
-                                            HorizontalAlignment="Center" Margin="0,-5,0,0"
-                                           VerticalAlignment="Top"        
+                                   RenderTransformOrigin="0.5,0.5"
+                                   HorizontalAlignment="Center"                                       
                                            SnapsToDevicePixels="True"
-                                           UseLayoutRounding="True"
+                                           UseLayoutRounding="True"                                   
                                            Data="M10,0 
                                            H50 V40 
                                            H50 L30,65 
@@ -27,9 +24,16 @@
                                            Stretch="Uniform" Height="15" Stroke="Gray">
                                 <Path.Fill>
                                     <SolidColorBrush Opacity="0.3" Color="Gray"></SolidColorBrush>
-                                </Path.Fill>
-                                <Path.RenderTransform >
-                                    <ScaleTransform ScaleY="{Binding Direction, RelativeSource={RelativeSource  AncestorType=timelineControl:Timeline}, Converter={StaticResource DirectionConverter}}"/>
+                                </Path.Fill>                               
+                                <Path.RenderTransform>
+                                    <TransformGroup>                                    
+                                        <RotateTransform
+                                            Angle="{Binding Direction,
+                            RelativeSource={RelativeSource AncestorType=timelineControl:Timeline},
+                                            ConverterParameter=Angle,
+                            Converter={x:Static timelineControl:DirectionConverter.Instance}}" />
+
+                                    </TransformGroup>
                                 </Path.RenderTransform>
                             </Path>
                             <ControlTemplate.Triggers>
@@ -43,7 +47,7 @@
                                     <Setter TargetName="PART_Path"
                                                                 Property="Fill"
                                                                 Value="BlueViolet"/>
-                                </Trigger>
+                                </Trigger>                                
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
@@ -60,26 +64,22 @@
                 <ControlTemplate>
                     <Canvas x:Name="PART_CANVAS"
                             Width="{TemplateBinding Width}"
-                            Height="{TemplateBinding Height}"
-                            ClipToBounds="{TemplateBinding ClipToBounds}">
+                            Height="1000">
                         <Rectangle x:Name="PART_AREA" 
                                    Fill="Plum"
                                    Margin="0,0,0,0"
                                    HorizontalAlignment="Left"
                                    Opacity="0.3"
+                                   Width="{TemplateBinding Width}"
                                    Height="{TemplateBinding Height}"></Rectangle>
                         <Rectangle Fill="Plum"
                                    x:Name="PART_LINE" 
-                                   Margin="0,0,0,0"
-                                   Height="{TemplateBinding Height}"
-                                   Width="1">
+                                   Height="100" Width="200"
+                                   Margin="0,0,0,0">                           
                         </Rectangle>
                         <Thumb x:Name="PART_THUMB" 
                                Margin="0,0,0,0"
-                               Cursor="Hand"                               
-                               Canvas.Bottom="{Binding Direction, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource DirectionVerticalAlignmentConverter}}"
-                             
-                               Width="30" />
+                               Cursor="Hand" />
                     </Canvas>
                 </ControlTemplate>
             </Setter.Value>

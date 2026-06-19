@@ -6,7 +6,6 @@
 
     <timelineControl:WidthToMarginConverter x:Key="WidthToMarginConverter"></timelineControl:WidthToMarginConverter>
     <timelineControl:MultiplyConverter x:Key="MultiplyConverter"/>
-    <timelineControl:PanelConverter x:Key="PanelConverter"/>
 
     <Style TargetType="{x:Type timelineControl:CombinedTimeline}">
         <Setter Property="UseLayoutRounding" Value="True" />
@@ -14,7 +13,7 @@
             <Setter.Value>
                 <ItemsPanelTemplate>
                     <timelineControl:CustomPanel 
-                        PanelType="{Binding ChartType, RelativeSource={RelativeSource AncestorType=TreeView}, Converter={StaticResource PanelConverter}}" 
+                        PanelType="{Binding PanelType, RelativeSource={RelativeSource AncestorType=TreeView}}" 
                         ViewportX="{Binding ViewportX, RelativeSource={RelativeSource AncestorType=TreeView}}"  
                         ViewportY="{Binding ViewportY, RelativeSource={RelativeSource AncestorType=TreeView}}"  
                         Direction="Up"/>
@@ -51,15 +50,6 @@
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Bottom" />
 
-                            <timelineControl:Timeline 
-                                x:Name="PART_TIMELINE"
-                                Grid.Column="1"
-                                Direction="Up"
-                                VerticalAlignment="Bottom"
-                                HorizontalAlignment="Left"
-                                Viewport="{TemplateBinding ViewportX}"
-                                Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}">
-                            </timelineControl:Timeline>
 
                             <ScrollViewer HorizontalAlignment="Stretch" 
                                           VerticalAlignment="Stretch"
@@ -72,8 +62,19 @@
                                       HorizontalContentAlignment="Left">
                                 <ItemsPresenter x:Name="PART_ITEMS_PRESENTER" HorizontalAlignment="Left"/>
                             </ScrollViewer>
-                        </Grid>
-                    
+
+
+                        <timelineControl:Timeline 
+                                x:Name="PART_TIMELINE"
+                                Grid.Column="1"
+                                Direction="{TemplateBinding Direction}"
+                                VerticalAlignment="Bottom"
+                                HorizontalAlignment="Left"                            
+                                Viewport="{TemplateBinding ViewportX}"
+                            Width="{Binding ActualWidth , ElementName=PART_SCROLL_VIEWER}"
+                            Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}">
+                            </timelineControl:Timeline>
+                    </Grid>                  
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

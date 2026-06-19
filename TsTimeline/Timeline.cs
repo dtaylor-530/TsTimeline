@@ -49,7 +49,11 @@ namespace TsTimeline
             DependencyProperty.Register(nameof(Direction), typeof(Direction), typeof(Timeline), new PropertyMetadata(Direction.Down, changed));
 
         private static void changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
+            var timeline = (Timeline)d;
+            var self = (Timeline)d;
+            self._smoothValue = 0;
+            timeline.UpdateVisuals(self._smoothValue);
         }
 
         public Direction Direction
@@ -89,14 +93,13 @@ namespace TsTimeline
             DependencyPropertyChangedEventArgs e)
         {
             var self = (Timeline)d;
-
+            self._smoothValue = 0;
             if (e.OldValue is Viewport old)
                 old.PropertyChanged -= self.OnViewportPropertyChanged;
 
             if (e.NewValue is Viewport @new)
                 @new.PropertyChanged += self.OnViewportPropertyChanged;
 
-            self.UpdateWidth();
             self.UpdateVisuals(self._smoothValue);
         }
 
@@ -108,16 +111,7 @@ namespace TsTimeline
             {
                 case nameof(Viewport.Zoom):
                 case nameof(Viewport.ViewportLength):
-                case nameof(Viewport.Scale):
-                    {
-                       
-                        UpdateWidth();
-                        UpdateVisuals(_smoothValue);
-                        break;
-                    }
                 case nameof(Viewport.Offset):
-                    // Offset changes don't affect total canvas width,
-                    // but the cursor screen position needs to move.
                     UpdateVisuals(_smoothValue);
                     break;
             }
@@ -160,8 +154,6 @@ namespace TsTimeline
             TryGetThumb(out _);
             TryGetRectangle(out _);
             TryGetLine(out _);
-
-            UpdateWidth();
             UpdateVisuals(_smoothValue);
         }
 
@@ -193,41 +185,125 @@ namespace TsTimeline
             }
         }
 
-
-        private void UpdateWidth()
-        {
-            if (Viewport == null) return;
-            Width = Viewport.ViewportLength;
-        }
-
         private void UpdateVisuals(double worldValue)
         {
-            if (Viewport == null || Viewport.Zoom <= 0) return;
+            if (Direction == Direction.None)
+            {
+                Visibility = Visibility.Collapsed;
+                return;
+            }
+            Visibility = Visibility.Visible;
+            if (Viewport == null || Viewport.Zoom <= 0)
+                return;
 
-            double screenX = worldValue - Viewport.Offset;
+            double position = worldValue - Viewport.Offset;
+
+            if (position < 0)
+            {
+                this.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                this.Visibility = Visibility.Visible;
+            }
+            // Reverse position for Up/Left directions
+            //if (IsReversed)
+            //{
+            //    position = IsHorizontal
+            //        ? ActualWidth - position
+            //        : ActualHeight - position;
+            //}
+
+            if (ActualWidth == 0 || ActualHeight == 0)
+                return;
 
             if (TryGetThumb(out var thumb))
-                Canvas.SetLeft(thumb, screenX - thumb.ActualWidth / 2);
+            {
+         
+                if (IsHorizontal)
+                {
+                    Canvas.SetLeft(thumb, position - thumb.ActualWidth / 2);
+                    //Canvas.SetBottom(thumb, 0);
+                    if (IsReversed)
+                        Canvas.SetTop(thumb, ActualHeight - 15);
+                    else
+                        Canvas.SetTop(thumb, 0);
+                }
+                else
+                {
+                    Canvas.SetTop(thumb, position - thumb.ActualHeight / 2);
+                    Canvas.SetLeft(thumb, 0);
+                }
+            }
 
             if (TryGetRectangle(out var rectangle))
-                rectangle.Width = Math.Max(0, screenX);
+            {    
+                if (IsHorizontal)
+                {
+                    rectangle.Width = Math.Max(0, position);
+                    rectangle.Height = ActualHeight;
+                    //if (IsReversed)
+                    //    Canvas.SetLeft(rectangle, ActualWidth - rectangle.Width);
+                    //else
+                    Canvas.SetLeft(rectangle, 0);
+                }
+                else if (ActualWidth > 0)
+                {
+                    rectangle.Height = Math.Max(0, position);
+                    rectangle.Width = ActualWidth - 16;
+                    //if (IsReversed)
+                    //    Canvas.SetTop(rectangle, ActualHeight - rectangle.Height);
+                    //else
+                    Canvas.SetTop(rectangle, 0);
+                }
+            }
 
             if (TryGetLine(out var line))
-                Canvas.SetLeft(line, screenX - line.ActualWidth / 2);
+            {
+                if (IsHorizontal)
+                {
+                    line.Width = 1;
+                    line.Height = ActualHeight;
+                    Canvas.SetLeft(line, position);
+                    if (IsReversed)
+                    {
+                        Canvas.SetTop(line, 0);
+                        line.Margin = new(0, 0, 0, 15);
+                    }
+                    else
+                        Canvas.SetTop(line, 15);
+
+                }
+                else if (ActualWidth > 0)
+                {
+                    line.Height = 1;
+                    line.Width = ActualWidth - 16;
+                    Canvas.SetTop(line, position);
+                    if (IsReversed)
+                        Canvas.SetRight(line, 15);
+                    else
+                        Canvas.SetLeft(line, 15);
+                }
+            }
         }
 
         private void Thumb_OnDragDelta(Vector vector)
         {
-            if (Viewport == null) return;
+            if (Viewport == null)
+                return;
 
-            // Convert pixel delta to world units
-            double worldDelta = vector.X / Viewport.Zoom;
+            double worldDelta = IsHorizontal
+                ? vector.X
+                : vector.Y;
 
-            // Clamp to world bounds
+            //if (IsReversed)
+            //    worldDelta = -worldDelta;
+
             Value = Math.Clamp(
                 Value + worldDelta,
-                Viewport.WorldStart,
-                Viewport.WorldEnd);
+                Viewport.Start,
+                Viewport.End);
+
             OnMyClick();
         }
 
@@ -270,6 +346,12 @@ namespace TsTimeline
                 as System.Windows.Shapes.Rectangle;
             return _line != null;
         }
+
+        private bool IsHorizontal =>
+    Direction == Direction.Up ||
+    Direction == Direction.Down;
+
+        private bool IsReversed => Direction == Direction.Up || Direction == Direction.Left;
 
         protected void OnMouseDownSelectedChanged()
         {

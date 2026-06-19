@@ -52,6 +52,10 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
         public static readonly DependencyProperty OffsetXProperty =
     DependencyProperty.Register(nameof(OffsetX), typeof(double), typeof(TsTimeline), new PropertyMetadata(0d));
 
+        public static readonly DependencyProperty DirectionProperty =
+    DependencyProperty.Register(nameof(Direction), typeof(Direction), typeof(TsTimeline), new PropertyMetadata(Direction.Down));
+
+
         private MeasureRenderer? measureRenderer;
         private Timeline? timeLine;
         private ItemsPresenter? itemsPresenter;
@@ -113,12 +117,11 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
         //    set => SetValue(MaximumProperty, value);
         //}
 
-        //public double Minimum
-        //{
-        //    get => (double)GetValue(MinimumProperty);
-        //    set => SetValue(MinimumProperty, value);
-        //}
-
+        public Direction Direction
+        {
+            get { return (Direction)GetValue(DirectionProperty); }
+            set { SetValue(DirectionProperty, value); }
+        }
 
         public double TrackHeight
         {
