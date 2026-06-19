@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Channels;
 using System.Windows;
 using System.Windows.Controls;
 using Renderers;
@@ -9,11 +10,26 @@ namespace TsTimeline
     {
         public static readonly DependencyProperty ViewportXProperty =
             DependencyProperty.Register(nameof(ViewportX), typeof(Viewport), typeof(CustomPanel), 
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
-        
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange, change));
+
+        private static void change(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if(d is CustomPanel panel && e.NewValue is Viewport viewport)
+            {
+                viewport.PropertyChanged += (s, e) =>
+                {
+                    if (
+                    e.PropertyName == nameof(Viewport.Start) || 
+                    e.PropertyName == nameof(Viewport.End) ||
+                    e.PropertyName == nameof(Viewport.Zoom))
+                        panel.InvalidateMeasure();
+                };
+            }
+        }
+
         public static readonly DependencyProperty ViewportYProperty =
             DependencyProperty.Register(nameof(ViewportY), typeof(Viewport), typeof(CustomPanel), 
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange, change));
 
         public static readonly DependencyProperty PanelTypeProperty =
             DependencyProperty.Register(nameof(PanelType), typeof(PanelType), typeof(CustomPanel), 
@@ -45,7 +61,7 @@ namespace TsTimeline
                 PanelType.Canvas => Custom_MeasureOverride(constraint),
                 PanelType.DirectionalStackPanel => DirectionalStackPanel_MeasureOverride(constraint),
                 PanelType.ScrollAwareStackPanel => ScrollAwareStackPanel_MeasureOverride(constraint),
-                _ => base.MeasureOverride(constraint),
+                _ => Custom_MeasureOverride(constraint),
             };
         }
 
@@ -65,8 +81,8 @@ namespace TsTimeline
             var size = base.MeasureOverride(availableSize);
 
             return new Size(
-                ViewportX?.ViewportLength * ViewportX?.Scale * ViewportX?.Zoom ?? size.Width,
-                ViewportY?.ViewportLength * ViewportY?.Scale * ViewportY?.Zoom ?? size.Height); ;
+                (ViewportX?.End - ViewportX?.Start) * ViewportX?.Zoom ?? size.Width,
+                (ViewportY?.End - ViewportY?.Start) * ViewportY?.Zoom ?? size.Height); ;
         }
     }
 }

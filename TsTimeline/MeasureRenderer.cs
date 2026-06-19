@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,7 +12,18 @@ namespace TsTimeline
     public class MeasureRenderer : Control
     {
         public static readonly DependencyProperty RendererProperty =
-            DependencyProperty.Register(nameof(Renderer), typeof(IAxisLayer), typeof(MeasureRenderer), new PropertyMetadata());
+            DependencyProperty.Register(nameof(Renderer), typeof(IAxisLayer), typeof(MeasureRenderer), new PropertyMetadata(changed));
+
+        private static void changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if(d is MeasureRenderer measureRenderer && e.NewValue is INotifyCollectionChanged changed)
+            {
+                changed.CollectionChanged += (s, e) =>
+                {
+                    measureRenderer.InvalidateVisual();
+                };
+            }
+        }
 
         public static readonly DependencyProperty AxisFactoryProperty =
             DependencyProperty.Register(nameof(AxisFactory), typeof(IAxisFactory), typeof(MeasureRenderer), new PropertyMetadata());
@@ -160,7 +172,6 @@ namespace TsTimeline
 
         private void OnViewportPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            //Console.WriteLine("OffsetX " + Viewport.OffsetX);
             switch (e.PropertyName)
             {
                 case nameof(Viewport.Offset):
@@ -169,7 +180,6 @@ namespace TsTimeline
                 case nameof(Viewport.Start):
                 case nameof(Viewport.End):
                 case nameof(Viewport.MinPixelSpacing):
-                case nameof(Viewport.Scale):
                     MarkDirty();
                     break;
             }

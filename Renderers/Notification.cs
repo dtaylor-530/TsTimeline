@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Sandbox
+namespace Renderers
 {
     public class Notification : INotifyPropertyChanged
     {

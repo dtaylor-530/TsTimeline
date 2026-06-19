@@ -25,19 +25,12 @@ namespace TsTimeline
         public static readonly DependencyProperty ValueProperty =
     DependencyProperty.Register(nameof(Value), typeof(double), typeof(TsTimeline), new PropertyMetadata(valueChanged));
 
-    //    public static readonly DependencyProperty MaximumProperty =
-    //        DepProp.Register<TsTimeline, double>(nameof(Maximum), 1000d, FrameworkPropertyMetadataOptions.AffectsMeasure);
-
-    //    public static readonly DependencyProperty MinimumProperty =
-    //DepProp.Register<TsTimeline, double>(nameof(Minimum), 0d, FrameworkPropertyMetadataOptions.AffectsMeasure);
-
         public static readonly DependencyProperty TrackHeightProperty =
 DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
 
         internal static readonly DependencyPropertyKey ScrollViewerPropertyKey =
             DepProp.RegisterReadOnly<TsTimeline, ScrollViewer>(nameof(ScrollViewer));
 
-        public static readonly DependencyProperty ScrollViewerProperty = ScrollViewerPropertyKey.DependencyProperty;
         public static readonly DependencyProperty Alter0Property =
             DepProp.Register<TsTimeline, Brush>(nameof(Alter0), Brushes.FloralWhite);
         public static readonly DependencyProperty Alter1Property =
@@ -56,6 +49,7 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
     DependencyProperty.Register(nameof(Direction), typeof(Direction), typeof(TsTimeline), new PropertyMetadata(Direction.Down));
 
 
+        private ScrollViewer? scrollViewer;
         private MeasureRenderer? measureRenderer;
         private Timeline? timeLine;
         private ItemsPresenter? itemsPresenter;
@@ -113,8 +107,8 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
 
         //public double Maximum
         //{
-        //    get => (double)GetValue(MaximumProperty);
-        //    set => SetValue(MaximumProperty, value);
+        //    get { return (double)GetValue(ValueProperty); }
+        //    set { SetValue(ValueProperty, value); }
         //}
 
         public Direction Direction
@@ -129,12 +123,7 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
             set => SetValue(TrackHeightProperty, value);
         }
 
-        public ScrollViewer ScrollViewer
-        {
-            get { return (ScrollViewer)GetValue(ScrollViewerProperty); }
-            private set => SetValue(ScrollViewerPropertyKey, value);
-        }
-        
+
         public Brush Alter0
         {
             get { return (Brush)GetValue(Alter0Property); }
@@ -177,16 +166,17 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            ScrollViewer = GetTemplateChild("PART_SCROLL_VIEWER") as ScrollViewer;
+            scrollViewer = GetTemplateChild("PART_SCROLL_VIEWER") as ScrollViewer;
             measureRenderer = GetTemplateChild("PART_MEASURE_RENDERER") as MeasureRenderer;
             timeLine = GetTemplateChild("PART_TIMELINE") as Timeline;
             itemsPresenter = GetTemplateChild("PART_ITEMSPRESENTER") as ItemsPresenter;
 
             LayoutUpdated += (s, e) =>
             {
-                if(ScrollViewer is { } scrollViewer)
+                if(scrollViewer is { } )
                 {
                     ViewportX.ViewportLength = scrollViewer.ViewportWidth;
+                    ViewportY.ViewportLength = scrollViewer.ViewportHeight;
                     //Viewport.ViewportHeight = scrollViewer.ViewportHeight;
                     Point position = scrollViewer.TranslatePoint(new Point(0, 0), this);
                     OffsetX = position.X;
@@ -194,11 +184,18 @@ DepProp.Register<TsTimeline, double>(nameof(TrackHeight), 15d);
                 }
             };
 
-            ScrollViewer.ScrollChanged += (s, e) =>
+            scrollViewer.ScrollChanged += (s, e) =>
             {
-                ViewportX.Offset = ScrollViewer.HorizontalOffset;
+                ViewportX.Offset = scrollViewer.HorizontalOffset;
+                ViewportY.Offset = scrollViewer.VerticalOffset;
             };
-
+            ViewportX.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(Viewport.Offset))
+                {
+                    scrollViewer.ScrollToHorizontalOffset(ViewportX.Offset);
+                }
+            };
             timeLine.ValueChanged += (_, _) =>
             {
                 this.Value = timeLine.Value / ViewportX.Zoom / ViewportX.Scale;

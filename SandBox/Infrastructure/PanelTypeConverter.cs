@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
+using TsTimeline;
 
-namespace TsTimeline
+namespace SandBox
 {
-    internal class PanelConverter : IValueConverter
+    internal class PanelTypeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is ChartType chartType)
+            if (value is ChartType chartType)
             {
                 switch (chartType)
                 {
@@ -32,3 +34,5 @@ namespace TsTimeline
         }
     }
 }
+
+

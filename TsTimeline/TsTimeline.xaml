@@ -5,9 +5,10 @@
 
     <timelineControl:WidthToMarginConverter x:Key="WidthToMarginConverter"></timelineControl:WidthToMarginConverter>
     <timelineControl:MultiplyConverter x:Key="MultiplyConverter"/>
+    <timelineControl:ViewportDirectionConverter x:Key="ViewportDirectionConverter"/>
 
     <Style TargetType="{x:Type timelineControl:TsTimeline}">
-        
+
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="ItemsPanel">
             <Setter.Value>
@@ -28,7 +29,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>         
+                        </Grid.ColumnDefinitions>
                         <ScrollViewer Grid.Column="0" Margin="0,15,0,0">
                             <ScrollViewer.Template>
                                 <ControlTemplate TargetType="ScrollViewer">
@@ -67,14 +68,7 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top" />
 
-                        <timelineControl:Timeline 
-                            x:Name="PART_TIMELINE"
-                            Grid.Column="1"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Left"
-                            Viewport="{TemplateBinding ViewportX}"
-                            Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}">
-                        </timelineControl:Timeline>
+                      
 
                         <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                       Grid.Column="1"
@@ -86,7 +80,25 @@
                                       HorizontalContentAlignment="Left">
                             <ItemsPresenter x:Name="PART_ITEMSPRESENTER" />
                         </ScrollViewer>
+
+                        <timelineControl:Timeline 
+      x:Name="PART_TIMELINE"
+      Direction="{TemplateBinding Direction}"      
+      Grid.Column="1"
+      VerticalAlignment="Top"
+      HorizontalAlignment="Left"                      
+      Width="{Binding ActualWidth , ElementName=PART_SCROLL_VIEWER}"
+      Height="{Binding ActualHeight , ElementName=PART_SCROLL_VIEWER}">
+                            <timelineControl:Timeline.Viewport>
+                                <MultiBinding Converter="{StaticResource ViewportDirectionConverter}">
+                                    <Binding Path="Direction" RelativeSource="{RelativeSource Mode=TemplatedParent}"></Binding>
+                                    <Binding Path="ViewportX" RelativeSource="{RelativeSource Mode=TemplatedParent}"></Binding>
+                                    <Binding Path="ViewportY" RelativeSource="{RelativeSource Mode=TemplatedParent}"></Binding>
+                                </MultiBinding>
+                            </timelineControl:Timeline.Viewport>
+                        </timelineControl:Timeline>
                     </Grid>
+                  
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
