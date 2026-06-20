@@ -1,24 +1,46 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Threading;
-using Renderers;
 
 namespace SandBox
 {
+    public interface IProgressService
+    {
+        double Progress(ref double progress, long delta, double rate);
+    }
+
+    public class ProgressService : Notification, IProgressService
+    {
+        public double Progress(ref double progress, long delta, double rate)
+        {
+            progress += (rate * delta / 1000.0);
+            return progress;
+        }
+    }
+
+    public class StaggeredProgressService : Notification, IProgressService
+    {
+        public double Progress(ref double progress, long delta, double rate)
+        {
+            progress += rate * delta / 1000.0;
+            return Math.Round(progress) * 15;
+        }
+    }
+
     public class TimeSimulationService : Notification
     {
         private double rate;
         private double progress;
+        private DispatcherTimer _timer;
         private const int MilliSecondInterval = 10;
+
         public TimeSimulationService()
         {
-
-
         }
 
-        public void Load(PlayerViewModel playerViewModel, ProgressViewModel progressViewModel)
+        public void Load(PlayerViewModel playerViewModel, ProgressViewModel progressViewModel, IProgressService progressService)
         {
-            var _timer = new DispatcherTimer
+            _timer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromMilliseconds(MilliSecondInterval)
             };
@@ -39,35 +61,27 @@ namespace SandBox
                 }
                 else if (s == PlayState.Reset)
                 {
-                    progressViewModel.Progress = 0;
+                    progressViewModel.Progress = progress = 0;
 
                 }
                 else
                     throw new NotImplementedException();
             };
 
-            _timer.Tick += OnTick;
+            _timer.Tick += onTick;
 
-            void OnTick(object? sender, EventArgs e)
+            void onTick(object? sender, EventArgs e)
             {
                 long current = stopwatch.ElapsedMilliseconds;
                 long delta = current - lastElapsed;
                 lastElapsed = current;
-
-
-                progress += (rate * delta / 1000.0);
-
-                //progressViewModel.Progress = Math.Round(progress / 1) * 150;
-
-                progressViewModel.Progress = progress;
-
-
-
-                //if (playerViewModel.Progress >= 100)
-                //{
-                //    playerViewModel.Next();
-                //}
+                progressViewModel.Progress = progressService.Progress(ref progress, delta, rate);
             }
+        }
+
+        public void Unload()
+        {
+            _timer?.Stop();
         }
 
         internal void Load(SpeedViewModel speed)

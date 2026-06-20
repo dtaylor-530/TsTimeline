@@ -49,7 +49,7 @@ namespace SandBox
             };
 
             var timeSimulation = new TimeSimulationService();
-            timeSimulation.Load(vm.Player, vm.Progress);
+     
             timeSimulation.Load(vm.Speed);
 
             reloadData();
@@ -66,9 +66,10 @@ namespace SandBox
             {
                 vm.Player.Master.Tracks?.Clear();
                 vm.Player.Slaves.Tracks?.Clear();
-
+                timeSimulation.Unload();
                 if (vm.Configuration.ChartType == TsTimeline.ChartType.Points)
                 {
+                    timeSimulation.Load(vm.Player, vm.Progress, new ProgressService());
                     new ChartSimulationService().Load(vm.Player.Master, vm.Player.Slaves);
                     vm.ViewportY.Zoom = 2;
                     vm.ViewportX.Zoom = 10;
@@ -85,6 +86,7 @@ namespace SandBox
                 }
                 else if (vm.Configuration.ChartType == TsTimeline.ChartType.Bands)
                 {
+                    timeSimulation.Load(vm.Player, vm.Progress, new ProgressService());
                     new TrackSimulationService().Load(vm.Player.Master, vm.Player.Slaves);
                     vm.ViewportY.Zoom = 2;
                     vm.ViewportX.Zoom = 10;
@@ -101,6 +103,7 @@ namespace SandBox
                 }
                 else if (vm.Configuration.ChartType == TsTimeline.ChartType.Map)
                 {
+                    timeSimulation.Load(vm.Player, vm.Progress, new StaggeredProgressService());
                     new MapSimulationService().Load(vm.Player.Master, vm.Player.Slaves);
                     vm.ViewportY.Zoom = 0.1;
                     vm.ViewportX.Zoom = 0.1;
