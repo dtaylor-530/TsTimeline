@@ -6,6 +6,5 @@ namespace TsTimeline
     {
         bool CanUpdate(object control);
         void Update(FrameworkElement control, object context);
-        //void UpdateY(ClipBase clipBase);
     }
 }
