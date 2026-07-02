@@ -15,12 +15,13 @@ namespace Renderers
             _majorPen.Freeze();
             _minorPen.Freeze();
         }
+        public double TickMargin { get; init; }
 
         public void Render(AxisRenderContext context)
         {
             var dc = context.DrawingContext;
 
-            foreach (var tick in context.Model.Ticks)
+            foreach (var tick in context.Ticks)
             {
                 if (tick.ScreenPosition < -100)
                     continue;
@@ -31,7 +32,7 @@ namespace Renderers
                 var pen = tick.Level == TickLevel.Major ? _majorPen : _minorPen;
 
                 dc.DrawLine(pen,
-                    new Point(tick.ScreenPosition, context.TickMargin),
+                    new Point(tick.ScreenPosition, TickMargin),
                     new Point(tick.ScreenPosition, context.Bounds.Height));
             }
         }
@@ -48,12 +49,13 @@ namespace Renderers
             _majorPen.Freeze();
             _minorPen.Freeze();
         }
+        public double TickMargin { get; init; }
 
         public void Render(AxisRenderContext context)
         {
             var dc = context.DrawingContext;
 
-            foreach (var tick in context.Model.Ticks)
+            foreach (var tick in context.Ticks)
             {
                 if (tick.ScreenPosition < -100)
                     continue;
@@ -64,7 +66,7 @@ namespace Renderers
                 var pen = tick.Level == TickLevel.Major ? _majorPen : _minorPen;
 
                 dc.DrawLine(pen,
-                    new Point(tick.ScreenPosition, context.TickMargin),
+                    new Point(tick.ScreenPosition, TickMargin),
                     new Point(tick.ScreenPosition, context.Bounds.Height));
             }
         }
@@ -82,12 +84,13 @@ namespace Renderers
             _majorPen.Freeze();
             _minorPen.Freeze();
         }
+        public double TickMargin { get; init; }
 
         public void Render(AxisRenderContext context)
         {
             var dc = context.DrawingContext;
 
-            foreach (var tick in context.Model.Ticks)
+            foreach (var tick in context.Ticks)
             {
                 if (tick.ScreenPosition < -100)
                     continue;
@@ -99,7 +102,7 @@ namespace Renderers
 
                 dc.DrawLine(
                     pen,
-                    new Point(context.TickMargin, tick.ScreenPosition),
+                    new Point(TickMargin, tick.ScreenPosition),
                     new Point(context.Bounds.Width, tick.ScreenPosition));
             }
         }

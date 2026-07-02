@@ -3,12 +3,13 @@ using System.Collections.Generic;
 
 namespace Renderers
 {
-    public sealed class TimelineTickGenerator : ITickGenerator
+    public sealed class ReverseTimelineTickGenerator : ITickGenerator
     {
         public IEnumerable<AxisTick> Generate(object context)
         {
             if (context is not Viewport viewport)
                 throw new Exception("EF sdf4");
+
             if (viewport.Zoom <= 0)
                 yield break;
 
@@ -22,23 +23,23 @@ namespace Renderers
                 majorStep / 5;
 
             double start =
-                Math.Floor(viewport.Start + viewport.Offset / minorStep)
+                Math.Floor(0 / minorStep)
                 * minorStep;
 
             double end =
-                viewport.End;
+                viewport.VisibleEnd;
 
             int count = (int)Math.Round((end - start) / minorStep);
 
             for (int i = 0; i <= count; i++)
             {
                 double v = start + i * minorStep;
-                yield return new AxisTick(
-                    v,
-                    viewport.WorldToScreen(v),
-                    IsMultiple(v, majorStep)
-                        ? TickLevel.Major
-                        : TickLevel.Minor);
+                var y = viewport.Length - viewport.WorldToScreen(v);
+                if (y > 0)
+                    yield return new AxisTick(v, y,
+                        IsMultiple(v, majorStep)
+                            ? TickLevel.Major
+                            : TickLevel.Minor);
             }
         }
 

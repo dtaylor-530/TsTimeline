@@ -3,64 +3,57 @@ using System.Windows;
 
 namespace Renderers
 {
-    public sealed class XLabelLayer : IAxisLayer
+    public sealed class XTopLabelLayer : IAxisLayer
     {
-        public void Render(AxisRenderContext context)
-        {
-            var dc = context.DrawingContext;
+        public IFormatter Formatter { get; set; }
 
-            foreach (var tick in context.Model.Ticks)
+        public double Offset { get; set; } = - 2;
+        public void Render(AxisRenderContext context)
+        {     
+            foreach (var tick in context.Ticks)
             {
                 if (tick.Level != TickLevel.Major)
                     continue;
-
-                if (tick.ScreenPosition < -100)
-                    continue;
-
-                if (tick.ScreenPosition > context.Bounds.Width + 100)
-                    continue;
+     
                 string text =
-                    context.LabelFormatter.Format(
+                    Formatter.Format(
                         tick.Value);
 
                 var formatted =
                     context.LabelCache.Get(text);
 
-                dc.DrawText(
+                context.DrawingContext.DrawText(
                     formatted,
                     new Point(
-                        tick.ScreenPosition + 2,
+                        tick.ScreenPosition + Offset,
                         0));
             }
         }
     }
+
     public sealed class XBottomLabelLayer : IAxisLayer
     {
+        public IFormatter Formatter { get; set; }
+
+        public double Offset { get; set; } = 2;
         public void Render(AxisRenderContext context)
         {
-            var dc = context.DrawingContext;
-
-            foreach (var tick in context.Model.Ticks)
+            foreach (var tick in context.Ticks)
             {
                 if (tick.Level != TickLevel.Major)
                     continue;
-
-                if (tick.ScreenPosition < -100)
-                    continue;
-
-                if (tick.ScreenPosition > context.Bounds.Width + 100)
-                    continue;
+                     
                 string text =
-                    context.LabelFormatter.Format(
+                    Formatter.Format(
                         tick.Value);
 
                 var formatted =
                     context.LabelCache.Get(text);
 
-                dc.DrawText(
+                context.DrawingContext.DrawText(
                     formatted,
                     new Point(
-                        tick.ScreenPosition + 2,
+                        tick.ScreenPosition + Offset,
                         context.Bounds.Height));
             }
         }
@@ -68,26 +61,22 @@ namespace Renderers
 
     public sealed class YLabelLayer : IAxisLayer
     {
+        public IFormatter Formatter { get; set; }
+
+        public double Offset { get; set; } = -30;
+
         public void Render(AxisRenderContext context)
         {
-            var dc = context.DrawingContext;
-
-            foreach (var tick in context.Model.Ticks)
+            foreach (var tick in context.Ticks)
             {
                 if (tick.Level != TickLevel.Major)
                     continue;
 
-                if (tick.ScreenPosition < -100)
-                    continue;
-
-                if (tick.ScreenPosition > context.Bounds.Height + 100)
-                    continue;
-
-                string text = context.LabelFormatter.Format(tick.Value);
+                string text = Formatter.Format(tick.Value);
 
                 var formatted = context.LabelCache.Get(text);
 
-                dc.DrawText(formatted, new Point(-30, tick.ScreenPosition + 2));
+                context.DrawingContext.DrawText(formatted, new Point(Offset, tick.ScreenPosition ));
             }
         }
     }

@@ -5,9 +5,9 @@ using System.Windows.Data;
 
 namespace Renderers
 {
-    public sealed class ConverterFormatter(IValueConverter _converter) : ILabelFormatter
+    public sealed class ConverterFormatter(IValueConverter _converter) : IFormatter
     {
-        public string Format(double value)
+        public string Format(object value)
         {
             return
                 _converter.Convert(

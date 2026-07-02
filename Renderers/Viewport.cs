@@ -5,16 +5,21 @@ using System.Windows.Controls;
 
 namespace Renderers
 {
+    public enum Axis
+    {
+        X, Y, Z
+    }
+
     public sealed class Viewport : Notification
     {
         private double _offset;
         private double _zoom = 1.0;
-        private double _viewportLength = 1000;
+        private double _viewportLength = 0;
         private double _start;
-        private double _End = 1000;
-        private double _cursorPosition;
-        private int _minPixelSpacing = 5;
-        private int _scale = 10;
+        private double _end = 100;
+        private int _MinimumSpacing = 5;
+
+        public Axis Axis { get; set; }
 
         public double Offset
         {
@@ -43,7 +48,7 @@ namespace Renderers
             }
         }
 
-        public double ViewportLength
+        public double Length
         {
             get => _viewportLength;
             set
@@ -56,16 +61,16 @@ namespace Renderers
             }
         }
 
-        public int Scale
-        {
-            get => _scale;
-            set
-            {
-                if (_scale == value) return;
-                _scale = value;
-                OnPropertyChanged();
-            }
-        }
+        //public int Scale
+        //{
+        //    get => _scale;
+        //    set
+        //    {
+        //        if (_scale == value) return;
+        //        _scale = value;
+        //        OnPropertyChanged();
+        //    }
+        //}
 
 
         public double Start
@@ -82,11 +87,11 @@ namespace Renderers
 
         public double End
         {
-            get => _End;
+            get => _end;
             set
             {
-                if (_End == value) return;
-                _End = value;
+                if (_end == value) return;
+                _end = value;
                 _offset = clampOffset(_offset);
                 OnPropertyChanged();
             }
@@ -103,20 +108,20 @@ namespace Renderers
         //    }
         //}
 
-        public int MinPixelSpacing
+        public int MinimumSpacing
         {
-            get => _minPixelSpacing;
+            get => _MinimumSpacing;
             set
             {
-                if (_minPixelSpacing == value) return;
-                _minPixelSpacing = value;
+                if (_MinimumSpacing == value) return;
+                _MinimumSpacing = value;
                 OnPropertyChanged();
             }
         }
 
 
         //public double WorldLength => End - Start;
-        public double VisibleWorldWidth => ViewportLength / Zoom;
+        public double VisibleWorldWidth => Length / Zoom;
         public double VisibleStart => Offset;
         public double VisibleEnd => Offset + VisibleWorldWidth;
 

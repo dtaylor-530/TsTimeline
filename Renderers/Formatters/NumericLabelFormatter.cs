@@ -5,11 +5,13 @@ using System.Text;
 
 namespace Renderers
 {
-    public sealed class NumericLabelFormatter : ILabelFormatter
+    public sealed class NumericLabelFormatter : IFormatter
     {
-        public string Format(double value)
+        public string Format(object value)
         {
-            return value.ToString("0.###", CultureInfo.InvariantCulture);
+            if (value is double _value)
+                return _value.ToString("0.###", CultureInfo.InvariantCulture);
+            throw new Exception("DS sd3 g");
         }
     }
 }

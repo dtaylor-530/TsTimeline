@@ -3,11 +3,11 @@ using System.Windows.Media;
 
 namespace Renderers
 {
-    public sealed class XTickLayer : IAxisLayer
+    public sealed class XTopTickLayer : IAxisLayer
     {
         private readonly Pen _pen;
 
-        public XTickLayer()
+        public XTopTickLayer()
         {
             _pen = new Pen(
                 Brushes.Gray,
@@ -21,7 +21,7 @@ namespace Renderers
             var dc = context.DrawingContext;
 
 
-            foreach (var tick in context.Model.Ticks)
+            foreach (var tick in context.Ticks)
             {
                 if (tick.ScreenPosition < -100)
                     continue;
@@ -64,7 +64,7 @@ namespace Renderers
             var dc = context.DrawingContext;
 
 
-            foreach (var tick in context.Model.Ticks)
+            foreach (var tick in context.Ticks)
             {
                 if (tick.ScreenPosition < -100)
                     continue;
@@ -102,7 +102,7 @@ namespace Renderers
         {
             var dc = context.DrawingContext;
 
-            foreach (var tick in context.Model.Ticks)
+            foreach (var tick in context.Ticks)
             {
                 if (tick.ScreenPosition < -100)
                     continue;

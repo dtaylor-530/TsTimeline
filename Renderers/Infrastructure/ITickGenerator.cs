@@ -4,6 +4,6 @@ namespace Renderers
 {
     public interface ITickGenerator
     {
-        IEnumerable<AxisTick> Generate(Viewport viewport);
+        IEnumerable<AxisTick> Generate(object context);
     }
 }

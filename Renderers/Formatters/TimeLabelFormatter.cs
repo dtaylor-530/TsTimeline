@@ -4,11 +4,16 @@ using System.Text;
 
 namespace Renderers
 {
-    public sealed class TimeLabelFormatter : ILabelFormatter
+    public sealed class TimeLabelFormatter : IFormatter
     {
-        public string Format(double value)
+        public string Format(object value)
         {
-            var ts = TimeSpan.FromSeconds(value);
+            if (value is not double _value)
+            { 
+                throw new Exception("DS sd3 g"); 
+            }
+
+            var ts = TimeSpan.FromSeconds(_value);
 
             if (ts.TotalHours >= 1)
                 return ts.ToString(@"hh\:mm\:ss");

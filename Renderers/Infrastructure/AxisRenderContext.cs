@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 
 namespace Renderers
@@ -7,20 +8,11 @@ namespace Renderers
     {
         public required DrawingContext DrawingContext { get; init; }
 
-        public required AxisModel Model { get; init; }
+        public IEnumerable<AxisTick> Ticks { get; set; }
 
         public required Rect Bounds { get; init; }
 
-        public required ILabelFormatter LabelFormatter { get; init; }
-
         public required AxisLabelCache LabelCache { get; init; }
 
-        public double TickMargin { get; init; }
-
-        public int TrackCount { get; init; }
-
-        public double TrackHeight { get; init; }
-
-        public double TrackWidth { get; init; }
     }
 }
