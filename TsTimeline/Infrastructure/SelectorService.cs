@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using Sandbox2.Models;
 
 namespace TsTimeline
 {
@@ -73,12 +72,12 @@ namespace TsTimeline
         public void MouseDownSelectionChanged(ISelectable selectable)
         {
             // Add Select
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            if (Keyboard.IsKeyDown(System.Windows.Input.Key.LeftShift) || Keyboard.IsKeyDown(System.Windows.Input.Key.RightShift))
             {
                 selectable.IsSelected = true;
             }
             // Toggle Select
-            else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            else if (Keyboard.IsKeyDown(System.Windows.Input.Key.LeftCtrl) || Keyboard.IsKeyDown(System.Windows.Input.Key.RightCtrl))
             {
                 selectable.IsSelected ^= true;
             }

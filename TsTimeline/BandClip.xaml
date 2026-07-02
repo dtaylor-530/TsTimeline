@@ -11,14 +11,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
-                        <Border
-                                        x:Name="PART_CENTER" 
+                    <Border
+                                        x:Name="PART_CENTER"        
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         Width="{TemplateBinding Width}"
-                                        Height="{TemplateBinding Height}" ToolTip="{TemplateBinding X}"/>
-             
+                                        Height="{TemplateBinding Height}" ToolTip="{TemplateBinding X}">
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

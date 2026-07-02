@@ -5,5 +5,8 @@ public enum PanelType
     None,
     Canvas,
     DirectionalStackPanel,
-    ScrollAwareStackPanel,
+    Top,
+    Horizontal,
+    AutoGrid,
+    Map
 }

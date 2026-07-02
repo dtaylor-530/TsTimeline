@@ -25,7 +25,7 @@ namespace TsTimeline
         {
             if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
             {
-                var parent = AssociatedObject.FindVisualParentWithType<ClipBase>();
+                var parent = AssociatedObject.FindParent<ClipBase>();
 
                 //var parameter = (int)(parent?.LastMouseDownX ?? e.GetPosition(AssociatedObject).X);
 

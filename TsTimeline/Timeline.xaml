@@ -3,7 +3,7 @@
                        xmlns:timelineControl="clr-namespace:TsTimeline">
 
 
-    <Style TargetType="{x:Type timelineControl:Timeline}" >
+    <Style x:Key="Timeline_Thumb"  TargetType="{x:Type timelineControl:ClipBase}">
         <Style.Resources>
             <Style TargetType="Thumb">
                 <!--<Setter Property="Height"
@@ -21,7 +21,9 @@
                                            H50 L30,65 
                                            L10,40 
                                            Z"
-                                           Stretch="Uniform" Height="15" Stroke="Gray">
+                                   Stretch="Uniform" 
+                                   Height="{TemplateBinding Height}" 
+                                   Stroke="Gray">
                                 <Path.Fill>
                                     <SolidColorBrush Opacity="0.3" Color="Gray"></SolidColorBrush>
                                 </Path.Fill>                               
@@ -29,7 +31,7 @@
                                     <TransformGroup>                                    
                                         <RotateTransform
                                             Angle="{Binding Direction,
-                            RelativeSource={RelativeSource AncestorType=timelineControl:Timeline},
+                            RelativeSource={RelativeSource AncestorType=timelineControl:ClipBase},
                                             ConverterParameter=Angle,
                             Converter={x:Static timelineControl:DirectionConverter.Instance}}" />
 
@@ -61,29 +63,82 @@
         </Style.Resources>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate>
-                    <Canvas x:Name="PART_CANVAS"
+                <ControlTemplate TargetType="{x:Type timelineControl:ClipBase}">
+                    <!--<Canvas x:Name="PART_CANVAS"
                             Width="{TemplateBinding Width}"
-                            Height="1000">
-                        <Rectangle x:Name="PART_AREA" 
+                            Height="{TemplateBinding ActualHeight}"
+                            >-->
+                    <!--<Rectangle x:Name="PART_AREA" 
                                    Fill="Plum"
                                    Margin="0,0,0,0"
-                                   HorizontalAlignment="Left"
-                                   Opacity="0.3"
+                               
+                                   Opacity="0.3"                                       
                                    Width="{TemplateBinding Width}"
-                                   Height="{TemplateBinding Height}"></Rectangle>
-                        <Rectangle Fill="Plum"
-                                   x:Name="PART_LINE" 
-                                   Height="100" Width="200"
+                                   Height="{TemplateBinding ActualHeight}"></Rectangle>-->
+                    <!--<Rectangle Fill="Plum"
+                                   x:Name="PART_LINE"                                  
+                                   Width="1"
+                                   Height="{TemplateBinding ActualHeight}"
                                    Margin="0,0,0,0">                           
-                        </Rectangle>
-                        <Thumb x:Name="PART_THUMB" 
-                               Margin="0,0,0,0"
+                        </Rectangle>-->
+                    <Thumb x:Name="PART_THUMB" 
+                              
                                Cursor="Hand" />
-                    </Canvas>
+                    <!--</Canvas>-->
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--<Style x:Key="Timeline_Line"  TargetType="{x:Type timelineControl:ClipBase}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Rectangle Fill="Plum"
+                               x:Name="PART_LINE"  
+                               Width="{TemplateBinding Width}"
+                               Height="{TemplateBinding Height}"          
+                               Margin="0,0,0,0">                             
+                    </Rectangle>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>-->
+
+    <SolidColorBrush Color="#FF3BE400" Opacity="0.5" x:Key="Color"/>
+
+    <Style x:Key="LineStyle"  TargetType="{x:Type timelineControl:ClipBase}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type timelineControl:ClipBase}">
+                    <Rectangle 
+                               x:Name="PART_LINE" 
+                               Fill="{TemplateBinding Background}"
+                               Opacity="{TemplateBinding Opacity}"
+                               Width="{TemplateBinding Width}"
+                               Height="{TemplateBinding Height}"          
+                               Margin="0,0,0,0">                             
+                    </Rectangle>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="AreaStyle"  TargetType="{x:Type timelineControl:ClipBase}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type timelineControl:ClipBase}">
+                    <Rectangle 
+                               x:Name="PART_AREA" 
+                               Fill="{Binding Background, RelativeSource={RelativeSource Mode=TemplatedParent}, FallbackValue={StaticResource Color}}"
+                               Opacity="{TemplateBinding Opacity}"
+                               Width="{TemplateBinding Width}"
+                               Height="{TemplateBinding Height}"          
+                               Margin="0,0,0,0">                             
+                    </Rectangle>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
     
 </ResourceDictionary>
+    

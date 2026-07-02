@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Renderers;
 
 namespace TsTimeline
@@ -12,7 +13,9 @@ namespace TsTimeline
 
         protected override DependencyObject GetContainerForItemOverride()
         {
-            return new ClipBase();
+            return new ClipBase() 
+            {   
+            };
         }
 
         protected override bool IsItemItsOwnContainerOverride(object item)
@@ -26,127 +29,73 @@ namespace TsTimeline
                 new FrameworkPropertyMetadata(typeof(ClipBase)));
         }
 
+        public static readonly DependencyProperty XProperty =
+DependencyProperty.Register(nameof(X), typeof(double), typeof(ClipBase), new PropertyMetadata(0d));
+
+
+
+        public static readonly DependencyProperty YProperty =
+    DependencyProperty.Register(nameof(Y), typeof(double), typeof(ClipBase), new PropertyMetadata(0d, updateY));
+
+
+
+
+        private static void updateY(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is ClipBase clipBase && e.NewValue is double value)
+            {
+                //clipBase.updateY();
+            }
+        }
+
+        public double X
+        {
+            get { return (double)GetValue(XProperty); }
+            set { SetValue(XProperty, value); }
+        }
+
+        public double Y
+        {
+            get { return (double)GetValue(YProperty); }
+            set { SetValue(YProperty, value); }
+        }
+
+
         public static SelectorService SelectorService => SelectorService.Default;
 
         public static readonly DependencyProperty IsReadOnlyProperty =
             DepProp.Register<ClipBase, bool>(nameof(IsReadOnly));
 
-
-
-        public IUpdater Updater
+        public PanelType PanelType
         {
-            get { return (IUpdater)GetValue(UpdaterProperty); }
-            set { SetValue(UpdaterProperty, value); }
+            get { return (PanelType)GetValue(PanelTypeProperty); }
+            set { SetValue(PanelTypeProperty, value); }
         }
 
-        public static readonly DependencyProperty UpdaterProperty =
-            DependencyProperty.Register(nameof(Updater), typeof(IUpdater), typeof(ClipBase), new PropertyMetadata());
+
+        public static readonly DependencyProperty PanelTypeProperty =
+            DependencyProperty.Register(nameof(PanelType), typeof(PanelType), typeof(ClipBase), new PropertyMetadata());
 
 
-
-        public static readonly DependencyProperty ViewportXProperty =
-            DependencyProperty.Register(
-                nameof(ViewportX),
-                typeof(Viewport),
-                typeof(ClipBase),
-                new PropertyMetadata(null, OnViewportXChanged));
-
-        public static readonly DependencyProperty ViewportYProperty =
-            DependencyProperty.Register(
-                nameof(ViewportY),
-                typeof(Viewport),
-                typeof(ClipBase),
-                new PropertyMetadata(null, OnViewportYChanged));
-
-        public Viewport? ViewportX
+        public static readonly DependencyProperty DirectionProperty =
+    DependencyProperty.Register(nameof(Direction), typeof(Direction), typeof(ClipBase), new PropertyMetadata(Direction.Down, changed));
+        public Direction Direction
         {
-            get => (Viewport?)GetValue(ViewportXProperty);
-            set => SetValue(ViewportXProperty, value);
+            get { return (Direction)GetValue(DirectionProperty); }
+            set { SetValue(DirectionProperty, value); }
         }
-        public Viewport? ViewportY
+        private static void changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            get => (Viewport?)GetValue(ViewportYProperty);
-            set => SetValue(ViewportYProperty, value);
-        }
-
-        private static void OnViewportXChanged(
-            DependencyObject d,
-            DependencyPropertyChangedEventArgs e)
-        {
+            var timeline = (ClipBase)d;
             var self = (ClipBase)d;
-
-            if (e.OldValue is Viewport old)
-                old.PropertyChanged -= self.OnViewportPropertyChanged;
-
-            if (e.NewValue is Viewport @new)
-                @new.PropertyChanged += self.OnViewportPropertyChanged;
-
-            self.updateX();
         }
-        private static void OnViewportYChanged(
-            DependencyObject d,
-            DependencyPropertyChangedEventArgs e)
-        {
-            var self = (ClipBase)d;
 
-            if (e.OldValue is Viewport old)
-                old.PropertyChanged -= self.OnViewportPropertyChanged;
-
-            if (e.NewValue is Viewport @new)
-                @new.PropertyChanged += self.OnViewportPropertyChanged;
-
-            self.updateY();
-        }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            updateX();
-            updateY();
         }
 
-        private void updateX()
-        {
-            if (ViewportX == null) return;   
-            if (Updater is not null)
-                Updater.UpdateX(this);
-            else
-            {
-                updateThumb();
-                updatePointX();
-                updateThumbs();
-                updateBand();
-            
-            }
-        }
-        private void updateY()
-        {
-            if (ViewportY == null) return;   
-            if (Updater is not null)
-                Updater.UpdateY(this);
-            else
-            {
-                updatePointY();
-            }
-        }
-
-        private void OnViewportPropertyChanged(
-    object? sender,
-    System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            // Only the properties that affect the axis layout need a rebuild.
-            // CursorPosition changes are frequent and don't affect tick layout.
-            switch (e.PropertyName)
-            {
-                case nameof(Viewport.Zoom):
-                case nameof(Viewport.ViewportLength):       
-                case nameof(Viewport.Offset):         
-                    //case nameof(Viewport.Start):
-                    //case nameof(Viewport.End):
-                    updateX();
-                    break;
-            }
-        }
 
         public bool IsReadOnly
         {
@@ -165,9 +114,52 @@ namespace TsTimeline
             SelectorService.UpdateSelectedItems(this);
         }
 
-        protected void OnMouseDownSelectedChanged()
+        public T? TemplateChild<T>(string name) where T : DependencyObject
         {
-            SelectorService.MouseDownSelectionChanged(this);
+            return (T)this.GetTemplateChild(name);
+        }
+
+        //protected void OnMouseDownSelectedChanged()
+        //{
+        //    SelectorService.MouseDownSelectionChanged(this);
+        //}
+
+
+        public static readonly RoutedEvent RenderingEvent =
+              EventManager.RegisterRoutedEvent(
+                  nameof(Rendering),
+                  RoutingStrategy.Bubble,
+                  typeof(RenderEventHandler),
+                  typeof(ClipBase));
+
+        public event RenderEventHandler Rendering
+        {
+            add => AddHandler(RenderingEvent, value);
+            remove => RemoveHandler(RenderingEvent, value);
+        }
+
+        protected override void OnRender(DrawingContext dc)
+        {
+            base.OnRender(dc);
+
+            RaiseEvent(new RenderEventArgs(RenderingEvent, this, dc));
         }
     }
+
+    public sealed class RenderEventArgs : RoutedEventArgs
+    {
+        public RenderEventArgs(
+            RoutedEvent routedEvent,
+            object source,
+            DrawingContext drawingContext)
+            : base(routedEvent, source)
+        {
+            DrawingContext = drawingContext;
+        }
+
+        public DrawingContext DrawingContext { get; }
+    }
+
+    public delegate void RenderEventHandler(object sender, RenderEventArgs e);
+
 }

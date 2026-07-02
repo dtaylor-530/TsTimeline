@@ -13,29 +13,29 @@ namespace TsTimeline
             return DependencyProperty.Register(propertyName, typeof(TProperty), typeof(TOwner),
                 new PropertyMetadata(default(TProperty)));
         }
-        
+
         public static DependencyProperty Register<TOwner, TProperty>(string propertyName, TProperty @default)
         {
             return DependencyProperty.Register(propertyName, typeof(TProperty), typeof(TOwner),
                 new PropertyMetadata(@default));
         }
-        
+
         public static DependencyProperty Register<TOwner, TProperty>(string propertyName, PropertyChangedCallback propertyChanged)
         {
             return DependencyProperty.Register(propertyName, typeof(TProperty), typeof(TOwner),
-                new PropertyMetadata(default(TProperty),propertyChanged));
+                new PropertyMetadata(default(TProperty), propertyChanged));
         }
-        
+
         public static DependencyProperty Register<TOwner, TProperty>(string propertyName, FrameworkPropertyMetadataOptions options)
         {
             return DependencyProperty.Register(propertyName, typeof(TProperty), typeof(TOwner),
-                new FrameworkPropertyMetadata(default(TProperty),options));
+                new FrameworkPropertyMetadata(default(TProperty), options));
         }
-        
+
         public static DependencyProperty Register<TOwner, TProperty>(string propertyName, FrameworkPropertyMetadataOptions options, PropertyChangedCallback propertyChanged)
         {
             return DependencyProperty.Register(propertyName, typeof(TProperty), typeof(TOwner),
-                new FrameworkPropertyMetadata(default(TProperty),options,propertyChanged));
+                new FrameworkPropertyMetadata(default(TProperty), options, propertyChanged));
         }
 
         public static DependencyProperty Register<TOwner, TProperty>(string propertyName, TProperty @default,
@@ -44,26 +44,26 @@ namespace TsTimeline
             return DependencyProperty.Register(propertyName, typeof(TProperty), typeof(TOwner),
                 new PropertyMetadata(@default, propertyChanged));
         }
-        
-        public static DependencyProperty Register<TOwner, TProperty>(string propertyName, TProperty @default , FrameworkPropertyMetadataOptions options)
+
+        public static DependencyProperty Register<TOwner, TProperty>(string propertyName, TProperty @default, FrameworkPropertyMetadataOptions options)
         {
             return DependencyProperty.Register(propertyName, typeof(TProperty), typeof(TOwner),
-                new FrameworkPropertyMetadata(@default,options));
+                new FrameworkPropertyMetadata(@default, options));
         }
-        
-        public static DependencyProperty Register<TOwner, TProperty>(string propertyName, TProperty @default , FrameworkPropertyMetadataOptions options , PropertyChangedCallback propertyChanged)
+
+        public static DependencyProperty Register<TOwner, TProperty>(string propertyName, TProperty @default, FrameworkPropertyMetadataOptions options, PropertyChangedCallback propertyChanged)
         {
             return DependencyProperty.Register(propertyName, typeof(TProperty), typeof(TOwner),
-                new FrameworkPropertyMetadata(@default,options,propertyChanged));
+                new FrameworkPropertyMetadata(@default, options, propertyChanged));
         }
-        
-        public static DependencyPropertyKey RegisterReadOnly<TOwner,TProperty>(string propertyName)
+
+        public static DependencyPropertyKey RegisterReadOnly<TOwner, TProperty>(string propertyName)
         {
             return DependencyProperty.RegisterReadOnly(propertyName, typeof(TProperty), typeof(TOwner),
                 new PropertyMetadata(default(TProperty)));
         }
 
-        public static DependencyPropertyKey RegisterReadOnly<TOwner,TProperty>(string propertyName , TProperty @default)
+        public static DependencyPropertyKey RegisterReadOnly<TOwner, TProperty>(string propertyName, TProperty @default)
         {
             return DependencyProperty.RegisterReadOnly(propertyName, typeof(TProperty), typeof(TOwner),
                 new PropertyMetadata(@default));
@@ -72,12 +72,20 @@ namespace TsTimeline
 
     public static class VisualTreeExtensions
     {
-        public static T FindChild<T>(this FrameworkElement root, Func<FrameworkElement, bool> compare = null) 
+        public static T? FindParent<T>(this DependencyObject child) where T : DependencyObject =>
+            VisualTreeHelper.GetParent(child) switch
+            {
+                null => null,
+                T parent => parent,
+                { } parent => FindParent<T>(parent)
+            };
+
+        public static T FindChild<T>(this FrameworkElement root, Func<FrameworkElement, bool> compare = null)
             where T : FrameworkElement
         {
             if (compare is null)
                 compare = x => true;
-            
+
             var children = Enumerable.Range(0, VisualTreeHelper.GetChildrenCount(root)).Select(x => VisualTreeHelper.GetChild(root, x)).OfType<FrameworkElement>().ToArray();
 
             foreach (var child in children)
@@ -91,25 +99,8 @@ namespace TsTimeline
             }
             return null;
         }
-        
-        public static TParent FindVisualParentWithType<TParent>(this DependencyObject childElement)
-            where TParent : class
-        {
-            FrameworkElement parentElement = (FrameworkElement)VisualTreeHelper.GetParent(childElement);
-            if (parentElement != null)
-            {
-                if (parentElement is TParent parent)
-                {
-                    return parent;
-                }
-
-                return FindVisualParentWithType<TParent>(parentElement);
-            }
-
-            return null;
-        }
     }
-    
+
     public enum TextAlignment
     {
         TopLeft,
@@ -122,12 +113,12 @@ namespace TsTimeline
         RightCenter,
         Center
     }
-    
+
     public static class DrawingContextExtensions
     {
-        public static void DrawTextEx(this DrawingContext @this , string text , double x, double y , TextAlignment alignment = TextAlignment.TopLeft)
+        public static void DrawTextEx(this DrawingContext @this, string text, double x, double y, TextAlignment alignment = TextAlignment.TopLeft)
         {
-            var typeface = new Typeface(SystemFonts.MessageFontFamily , FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
+            var typeface = new Typeface(SystemFonts.MessageFontFamily, FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
             var formattedText = new FormattedText(
                 text,
                 CultureInfo.CurrentCulture,
@@ -139,7 +130,7 @@ namespace TsTimeline
 
             var w = text.Length * 4.5;
             var h = 8;
-            
+
             switch (alignment)
             {
                 case TextAlignment.TopLeft:
@@ -173,8 +164,8 @@ namespace TsTimeline
                     y += h / 2d;
                     break;
             }
-            
-            @this.DrawText(formattedText,new Point(x,y));
+
+            @this.DrawText(formattedText, new Point(x, y));
         }
     }
 
@@ -182,12 +173,12 @@ namespace TsTimeline
     {
         public static int SnapInt(double d, int multiple)
         {
-            return (int)(d ) / multiple * multiple;
+            return (int)(d) / multiple * multiple;
         }
 
         public static double Snap(double d, double multiple)
         {
-            return  (int)((d)/multiple) * multiple;
+            return (int)((d) / multiple) * multiple;
         }
 
         public static int Mod(double d, int value)
