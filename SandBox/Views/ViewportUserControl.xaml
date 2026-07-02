@@ -17,7 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type Slider}">
                 <Setter Property="Width" Value="40"></Setter>
-                <Setter Property="Margin" Value="4"></Setter>
+                <Setter Property="Margin" Value="2,0"></Setter>
             </Style>
             <Style TargetType="{x:Type Path}">
                 <Setter Property="Width" Value="10"></Setter>
@@ -37,15 +37,19 @@
     <Border BorderBrush="Gray"
             BorderThickness="1"
             CornerRadius="4"
-            Padding="10">
+            Padding="4">
 
         <StackPanel>
+            <TextBlock Text="{Binding Axis}" FontWeight="DemiBold"></TextBlock>
             <Grid >
+                
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-
+                
+      
+                
                 <Path Data="{StaticResource Zoom}" ToolTip="Zoom"  ></Path>
 
                 <StackPanel Grid.Column="1"
@@ -82,12 +86,12 @@
                     <Slider Minimum="1"
                  Maximum="2000"
                  TickFrequency="10"     
-                 Value="{Binding ViewportLength,
+                 Value="{Binding Length,
                                  Mode=TwoWay}"/>
 
                     <TextBlock Margin="10,0,0,0"
                     VerticalAlignment="Center"
-                    Text="{Binding ViewportLength,
+                    Text="{Binding Length,
                                  
                                    StringFormat={}{0:F2}}"/>
                 </StackPanel>
@@ -140,31 +144,34 @@
                     Text="{Binding End, StringFormat={}{0:F2}}"/>
                 </StackPanel>
             </Grid>
-            <!--<Grid >
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Path Data="{StaticResource Current}" ToolTip="End" ></Path>
+
+                <Path Data="{StaticResource Height}" ToolTip="Minimum Spacing" ></Path>
 
 
 
                 <StackPanel Grid.Column="1"
-                 Orientation="Horizontal">
+               Orientation="Horizontal">
 
-                    <Slider Minimum="1"
-                 Maximum="2000"
-                 TickFrequency="10"
-                 Value="{Binding Current,
-                                 Mode=TwoWay}"/>
+                    <Slider Minimum="5"
+               Maximum="50"
+               TickFrequency="5"
+                          IsSnapToTickEnabled="True"
+   
+               Value="{Binding MinimumSpacing,
+                               Mode=TwoWay}"/>
 
                     <TextBlock Margin="10,0,0,0"
-                    VerticalAlignment="Center"
-                    Text="{Binding Current, StringFormat={}{0:F2}}"/>
+                  VerticalAlignment="Center"
+                  Text="{Binding MinimumSpacing,                                 
+                                 StringFormat={}{0:F2}}"/>
                 </StackPanel>
-            </Grid>-->
-            
+            </Grid>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -184,12 +191,12 @@
                  TickFrequency="5"
                             IsSnapToTickEnabled="True"
      
-                 Value="{Binding MinPixelSpacing,
+                 Value="{Binding MinimumSpacing,
                                  Mode=TwoWay}"/>
 
                     <TextBlock Margin="10,0,0,0"
                     VerticalAlignment="Center"
-                    Text="{Binding MinPixelSpacing,                                 
+                    Text="{Binding MinimumSpacing,                                 
                                    StringFormat={}{0:F2}}"/>
                 </StackPanel>
             </Grid>

@@ -5,7 +5,7 @@ namespace SandBox
 {
     public partial class MediaUserControl : UserControl
     {
-        public PlayerViewModel ViewModel;
+        public MediaService ViewModel;
 
         public MediaUserControl()
         {
@@ -14,7 +14,7 @@ namespace SandBox
 
             this.Loaded += (s, e) =>
             {
-                ViewModel = this.DataContext as PlayerViewModel;
+                ViewModel = this.DataContext as MediaService;
             };
         }
 

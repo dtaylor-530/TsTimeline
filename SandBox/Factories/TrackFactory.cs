@@ -1,62 +1,80 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using static SandBox.ChildrenConverter;
 
 namespace SandBox
 {
-    public class TrackSimulationService
+    public class TrackFactory : Factory
     {
-        public void Load(PlayListViewModel master, PlayListViewModel slaves)
-        {
-            var maximum = 100;
-            var rand = new Random();
-            System.Timers.Timer _refreshTimer = new System.Timers.Timer(300) { AutoReset = false};
-            _refreshTimer.Elapsed += (s, e) => Application.Current.Dispatcher.BeginInvoke(()=> refreshStacks());
+        private ViewModel master;
+        private ViewModel slaves;
 
-            foreach (var i in Enumerable.Range(0, 200))
+        public TrackFactory()
+        {
+            this.PropertyChanged += (s, e) => handler(master, slaves);
+        }
+
+        public void Load(ViewModel master, ViewModel slaves)
+        {
+            this.master = master;
+            this.slaves = slaves;
+            this.PropertyChanged += (s, e) => handler(master, slaves);
+
+            var maximum = (int)App.viewportX.End;
+            var rand = new Random();
+            System.Timers.Timer _refreshTimer = new System.Timers.Timer(300) { AutoReset = false };
+            _refreshTimer.Elapsed += (s, e) => Application.Current.Dispatcher.BeginInvoke(() => refreshStacks());
+
+            foreach (var i in Enumerable.Range(0, Count))
             {
                 var start = rand.Next(maximum);
                 var end = start + rand.Next(maximum - start);
-                var holdClip = new HoldClipViewModel()
+                var holdClip = new ViewModel()
                 {
+                    Key = Keys.HoldClip,
                     X = start,
                     Width = end - start,
                 };
-                var track = new TrackViewModel()
+                var track = new ViewModel()
                 {
-                    Name = $"Track {i}",
+                    Key = Keys.TrackClip,
+                    Name = "A",
                     Order = i,
-                    Clips =
+                    Children =
                     [
                         holdClip,
-                        new TriggerClipViewModel()
+                        new ViewModel()
                         {
-                            Value = rand.Next(maximum),
+                            Key =  Keys.TriggerClip,
+                            X = rand.Next(maximum),
                         },
-                        new TriggerClipViewModel()
+                        new ViewModel()
                         {
-                            Value = rand.Next(maximum),
+                            Key =  Keys.TriggerClip,
+                            X = rand.Next(maximum),
                         }
                     ]
                 };
                 Setup(holdClip);
-                slaves.Tracks.Add(track);
+                slaves.Add(track);
             }
             refreshStacks();
 
             void refreshStacks()
             {
-                master.Tracks.Clear();
+                master.Clear();
                 foreach (var item in toStacks())
                 {
-                    master.Tracks.Add(item);
+                    master.Add(item);
                 }
+                //master.Remove(master.Children.Last());
             }
             void Setup(INotifyPropertyChanged holdClip)
-            {    
+            {
                 holdClip.PropertyChanged += (s, e) =>
                 {
                     _refreshTimer.Stop();
@@ -64,23 +82,25 @@ namespace SandBox
                 };
             }
 
-            IEnumerable<TrackViewModel> toStacks()
+            IEnumerable<ViewModel> toStacks()
             {
                 return toRanges(
-                    slaves.Tracks.OfType<TrackViewModel>(),
-                    a => a.Clips.OfType<HoldClipViewModel>()
-                    .Select(a => ((int)a.X, (int)(a.X + a.Width))))
-                    .Select(kvp => new TrackViewModel()
+                    slaves.Children.OfType<Notification>().Where(a => a.Key == Keys.TrackClip),
+                    a => a.Children.OfType<Notification>().Where(a => a.Key == Keys.HoldClip)
+                    .OfType<ViewModel>()
+                    .Select(a => ((int)a.startValue, (int)(a.endValue))))
+                    .Select(kvp => new ViewModel()
                     {
+                        Key = Keys.TrackClip,
                         Order = kvp.Key,
-                        Clips = new(
-                            groupContiguousNumbers([.. kvp.Value])
-                            .Select(group => new HoldClipViewModel()
+                        Children = [.. groupContiguousNumbers([.. kvp.Value])
+                            .Select(group => new ViewModel()
                             {
+                                Key = Keys.BandClip,
                                 X = group.First(),
                                 Width = group.Last() - group.First(),
                             })
-                            .Cast<Notification>())
+                            .Cast<Notification>()]
                     })
                     .OrderBy(a => a.Order);
             }
@@ -149,5 +169,30 @@ namespace SandBox
                     });
             }
         }
+
+        bool flag = false;
+        void handler(ViewModel master, ViewModel slaves)
+        {
+            flag = true;
+            Application.Current.Dispatcher.BeginInvoke(() =>
+            {
+                if (flag == false)
+                    return;
+                flag = false;
+                if (master != null && slaves != null)
+                {
+                    master.Clear();
+                    slaves.Clear();
+                    Load(master, slaves);
+                }
+            }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+        }
+
+        public void Unload()
+        {
+            this.PropertyChanged -= (s, e) => handler(master, slaves);
+
+        }
+
     }
 }

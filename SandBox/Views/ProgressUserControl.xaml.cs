@@ -27,12 +27,12 @@ namespace SandBox
             InitializeComponent();
             this.Loaded += (s, e) =>
             {
-                if (this.DataContext is ProgressViewModel progressViewModel)
+                if (this.DataContext is ViewModel { Key : Keys.Progress } progressViewModel)
                 {
-                    this.Value = ValueConverter.Convert(progressViewModel.Progress, typeof(string), default, default).ToString();
+                    this.Value = ValueConverter.Convert(progressViewModel.X, typeof(string), default, default).ToString();
                     progressViewModel.PropertyChanged += (s, e) =>
                     {
-                        this.Value = ValueConverter.Convert(progressViewModel.Progress, typeof(string), default, default).ToString();
+                        this.Value = ValueConverter.Convert(progressViewModel.X, typeof(string), default, default).ToString();
                     };
                 }
             };

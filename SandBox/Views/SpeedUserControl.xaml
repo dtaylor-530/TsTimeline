@@ -4,31 +4,58 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SandBox"
-             d:DataContext="{d:DesignInstance local:SpeedViewModel}"             
+             d:DataContext="{d:DesignInstance local:ViewModel}"             
              mc:Ignorable="d" 
                    d:Background="White"
              d:DesignHeight="50" d:DesignWidth="180">
-    
-    <Border BorderBrush="Gray"
+
+    <Border BorderBrush="Gray" VerticalAlignment="Stretch"
+                     HorizontalAlignment="Stretch" BorderThickness="1" CornerRadius="4" Margin="4">
+
+        <Grid VerticalAlignment="Stretch">
+            <ToggleButton Name="ShowPopupButton"          
+            Width="100"
+                      BorderBrush="Transparent"
+            Height="30" >
+                <ToggleButton.Content>
+                    <TextBlock Margin="0,0,0,0"
+                           VerticalAlignment="Center"
+                              >
+                    <Run Text="Rate:"></Run>
+                    <Run  Text="{Binding Value, StringFormat=F1}"/>
+                    </TextBlock>
+                </ToggleButton.Content>
+            </ToggleButton>
+
+            <Popup PlacementTarget="{Binding ElementName=ShowPopupButton}"
+               AllowsTransparency="True"
+           Placement="Bottom"
+           StaysOpen="False"
+           IsOpen="{Binding ElementName=ShowPopupButton, Path=IsChecked}">
+                <Border BorderBrush="Gray"                                      
             BorderThickness="1"
             CornerRadius="4"
-            Padding="10">
+               
+            Padding="4">
+                    <Border.Background>
+                        <SolidColorBrush Color="GhostWhite" Opacity="0.5"></SolidColorBrush>
+                    </Border.Background>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Rate"
+                        <TextBlock Text="Rate"
                        VerticalAlignment="Center"
                        Margin="0,0,10,0"/>
 
-            <StackPanel Grid.Column="1"
+                        <StackPanel Grid.Column="1"
                         Orientation="Horizontal">
 
-                <Slider Minimum="0.5"
-                        Orientation="Vertical"
+                            <Slider Minimum="0.5"
+                        Orientation="Horizontal"
                         Maximum="16"
                         Ticks="0.5,1,2,4,8,16"
                         Width="150"
@@ -36,11 +63,13 @@
                         IsSnapToTickEnabled="True"
                         Value="{Binding Value, Mode=TwoWay}"/>
 
-                <TextBlock Margin="10,0,0,0"
-                           VerticalAlignment="Center"
-                           Width="28"
-                           Text="{Binding Value, StringFormat=F1}"/>
-            </StackPanel>
+
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Popup>
         </Grid>
     </Border>
+
+
 </UserControl>

@@ -1,130 +1,95 @@
-﻿using System.Windows;
-using Renderers;
-using TsTimeline;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection.Metadata;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace SandBox
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
+
     public partial class App : Application
     {
-        static IAxisLayer xBottomGridLayer = new XBottomGridLayer();
-        static IAxisLayer xBottomTickLayer = new XBottomTickLayer();
-        static IAxisLayer xBottomLabelLayer = new XBottomLabelLayer();
-        static IAxisLayer yGridLayer = new YGridLayer();
-        static IAxisLayer yTickLayer = new YTickLayer();
-        static IAxisLayer yLabelLayer = new YLabelLayer();
-  
+        public static IEnumerable ChartTypes => Enum.GetValues<ChartType>();
+        private ClipBaseTree treeView;
+        private CustomStyleSelector styleSelector;
+
         protected override void OnStartup(StartupEventArgs e)
         {
-            var vm = new MainWindowViewModel
-            {
-                Player = new()
-                {
-                    Master = new PlayListViewModel
-                    {
-                        Name = "My PlayList",
-                        Tracks = [],      
-                    },
-                    Slaves = new PlayListViewModel
-                    {
-                        Name = "My PlayList",
-                        Tracks = [],      
-                    }
-                },
+            treeView = new ClipBaseTree();
+            initialiseViewPorts();
+            //initialiseLayout();
+            initialise();
 
-            Configuration = new() {
-                    ChartType = ChartType.Points,
-                    XAxisRenderer = new CombinationLayer(xBottomGridLayer, xBottomTickLayer, xBottomLabelLayer),
-                    XAxisFactory = new X_AxisFactory(new TimelineTickGenerator()),
-                    YAxisRenderer = new CombinationLayer(yGridLayer, yTickLayer, yLabelLayer),
-                    YAxisFactory = new Y_AxisFactory(new YUp_TimelineTickGenerator()),
-                },
-                ViewportX = new() { },
-                ViewportY = new() { },
-                ViewportItemY = new() { End = 100, Start = 0, ViewportLength = 1000 },
-                Speed = new(),
-                Progress = new()
+            TimeService.Instance.Load(speed);
+            TimeService.Instance.Load(MediaService);
+            mapSimulationService.Load(viewportX);
+            mapSimulationService.Load(viewportY);
+
+            chartTypeViewModel.Enum = ChartType.Points;
+            styleSelector = App.Current.Resources["CustomStyleSelector"] as CustomStyleSelector;
+            var templateSelector = App.Current.Resources["ClipTemplateSelector"] as DataTemplateSelector;
+            treeView.ItemsSource = new[] { viewmodel };
+            treeView.ItemContainerStyleSelector = styleSelector;
+            treeView.ItemTemplateSelector = templateSelector;
+
+            var window = new Window
+            {
+                Content = treeView
             };
 
-            var timeSimulation = new TimeSimulationService();
-     
-            timeSimulation.Load(vm.Speed);
-
             reloadData();
-            vm.Configuration.PropertyChanged += (s, e) =>
+
+            chartTypeViewModel.PropertyChanged += (s, e) =>
             {
-                if (e.PropertyName == nameof(ConfigurationViewModel.ChartType))
+                if (e.PropertyName == nameof(ViewModel.Enum))
                     reloadData();
             };
 
-            new Window { Content = vm }.Show();
+
+            window.Show();
+
             base.OnStartup(e);
 
-            void reloadData()
+        }
+
+        public static Brush CountryBrush
+        {
+            get;
+
+        } = new DrawingBrush(Drawing());
+
+        static Drawing Drawing()
+        {
+            var group = new DrawingGroup();
+
+            using (var drawingcontext = group.Open())
             {
-                vm.Player.Master.Tracks?.Clear();
-                vm.Player.Slaves.Tracks?.Clear();
-                timeSimulation.Unload();
-                if (vm.Configuration.ChartType == TsTimeline.ChartType.Points)
-                {
-                    timeSimulation.Load(vm.Player, vm.Progress, new ProgressService());
-                    new ChartSimulationService().Load(vm.Player.Master, vm.Player.Slaves);
-                    vm.ViewportY.Zoom = 2;
-                    vm.ViewportX.Zoom = 10;
-                    vm.Configuration.CombinedTimelineDirection = TsTimeline.Direction.Up;
-                    vm.Configuration.TimelineDirection = TsTimeline.Direction.Down;
-                    if (vm.Configuration.XAxisRenderer is CombinationLayer layer)
-                    {
-                        layer.AddLayer(xBottomLabelLayer);
-                    }
-                    if (vm.Configuration.YAxisRenderer is CombinationLayer ylayer)
-                    {
-                        ylayer.AddLayer(yLabelLayer);
-                    }
-                }
-                else if (vm.Configuration.ChartType == TsTimeline.ChartType.Bands)
-                {
-                    timeSimulation.Load(vm.Player, vm.Progress, new ProgressService());
-                    new TrackSimulationService().Load(vm.Player.Master, vm.Player.Slaves);
-                    vm.ViewportY.Zoom = 2;
-                    vm.ViewportX.Zoom = 10;
-                    vm.Configuration.CombinedTimelineDirection = TsTimeline.Direction.Up;
-                    vm.Configuration.TimelineDirection = TsTimeline.Direction.Down;
-                    if (vm.Configuration.XAxisRenderer is CombinationLayer layer)
-                    {
-                        layer.AddLayer(xBottomLabelLayer);
-                    }
-                    if (vm.Configuration.YAxisRenderer is CombinationLayer ylayer)
-                    {
-                        ylayer.AddLayer(yLabelLayer);
-                    }
-                }
-                else if (vm.Configuration.ChartType == TsTimeline.ChartType.Map)
-                {
-                    timeSimulation.Load(vm.Player, vm.Progress, new StaggeredProgressService());
-                    new MapSimulationService().Load(vm.Player.Master, vm.Player.Slaves);
-                    vm.ViewportY.Zoom = 0.1;
-                    vm.ViewportX.Zoom = 0.1;
-                    vm.ViewportItemY.End = 10000;
-                    vm.ViewportX.End = 10000;
-                    vm.Configuration.CombinedTimelineDirection = TsTimeline.Direction.None;
-                    vm.Configuration.TimelineDirection = TsTimeline.Direction.Right;
-                    if(vm.Configuration.XAxisRenderer is CombinationLayer layer)
-                    {
-                        layer.RemoveLayer(xBottomLabelLayer);
-                    }
-                    if(vm.Configuration.YAxisRenderer is CombinationLayer ylayer)
-                    {
-                        ylayer.RemoveLayer(yLabelLayer);
-                    }
-                }
-                else
-                {
-                    throw new System.Exception(" ");
-                }
+                CountryTextureLayer.Draw(drawingcontext);
             }
+
+            return group;
         }
     }
+
+    public record Context(Viewport Viewport, UpdateType UpdateType);
+    public record InitialisationContext(Viewport Viewport) : Context(Viewport, UpdateType.Initilisation);
+    public record UpdateContext(Viewport Viewport) : Context(Viewport, UpdateType.Viewport);
+    public record RenderContext(Viewport Viewport, DrawingContext DrawingContext, ViewModel Playlist) : Context(Viewport, UpdateType.Render)
+    {
+    }
+
+    public enum UpdateType
+    {
+        Initilisation,
+        Viewport,
+        Vector,
+        Render
+    }
+
 }

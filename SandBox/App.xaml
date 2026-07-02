@@ -4,58 +4,173 @@
              xmlns:local="clr-namespace:SandBox"
              xmlns:renderers="clr-namespace:Renderers;assembly=Renderers"
              xmlns:flags="clr-namespace:FamFamFam.Flags.Wpf;assembly=FamFamFam.Flags.Wpf"
-             xmlns:tsTimeline="clr-namespace:TsTimeline;assembly=TsTimeline">
+             xmlns:tsTimeline="clr-namespace:TsTimeline;assembly=TsTimeline"
+             xmlns:hex="http://hexinnovation.com/math">
 
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/TsTimeline;component/Themes/Generic.xaml" />
-
+                <ResourceDictionary Source="/Resources/Paths.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <local:ClipUpdater x:Key="ClipUpdater"/>
+            <Pen x:Key="BlackPen" 
+            Thickness="0.5" 
+            Brush="CornflowerBlue"
+            LineJoin="Miter"
+            StartLineCap="Square"
+            EndLineCap="Square" />
 
-            <SolidColorBrush x:Key="LandFill" Color="#FFFF00A2" />
-            <SolidColorBrush x:Key="LandStroke" Color="#FF020202" />
-            <SolidColorBrush x:Key="WaterFill" Color="#FF303030" />
+            <SolidColorBrush x:Key="BandBrush" Color="CornflowerBlue" Opacity="0.5"/>
+            <SolidColorBrush x:Key="HoldBrush" Color="#FF5DD17E" Opacity="0.5"/>
+            <!--<SolidColorBrush x:Key="LandFill" Color="#FF00FFAC" />-->
+            <DrawingBrush x:Key="CrossHatchBrush"
+                  TileMode="Tile"
+                  Viewport="0,0,4,4"
+                  ViewportUnits="Absolute"
+                  Viewbox="0,0,4,4"
+                  ViewboxUnits="Absolute">
 
-            <!--<local:ValueConverter x:Key="ValueConverter"/>-->
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <!-- Background -->
+                        <GeometryDrawing Brush="{StaticResource HoldBrush}">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,4,4"/>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+
+                         <!--Diagonal lines-->
+                        <GeometryDrawing Pen="{StaticResource BlackPen}">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <LineGeometry StartPoint="0,4" EndPoint="4,0"/>
+                                    <LineGeometry StartPoint="0,0" EndPoint="4,4"/>
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
+            <SolidColorBrush x:Key="LandStroke" Color="#FF1A3217" />
+  
+
             <local:BasicValueConverter x:Key="ValueConverter"/>
             <local:PanelTypeConverter x:Key="PanelTypeConverter"/>
             <local:ChildrenConverter x:Key="ChildrenConverter"/>
             <local:WidthConverter x:Key="WidthConverter"/>
-
-
+            <local:DirectionToVisibilityConverter x:Key="DirectionToVisibilityConverter"/>
             <flags:CountryIdToFlagImageSourceConverter x:Key="CountryIdToFlagImageSourceConverter" />
+            <local:IdToEnumConverter x:Key="IdToEnumConverter" />
+            <hex:MathConverter x:Key="MathConverter"></hex:MathConverter>
+            <local:AdditionConverter x:Key="AdditionConverter"></local:AdditionConverter>
+
+            <Style x:Key="MasterStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource {x:Type TreeViewItem}}" >
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <tsTimeline:FlexPanel Direction="{Binding DataContext.Direction, RelativeSource={RelativeSource AncestorType=TreeViewItem} }"/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="IsExpanded" Value="True"></Setter>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type tsTimeline:ClipBase}">
+                            <ItemsPresenter x:Name="PART_ITEMS_PRESENTER" HorizontalAlignment="Left"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+            </Style>
+
+            <Style x:Key="ConfigStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource {x:Type TreeViewItem}}" >
+                <Setter Property="IsExpanded" Value="True"></Setter>
+                <Setter Property="tsTimeline:FlexPanel.GridLength" Value="{Binding GridLength}"/>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type tsTimeline:ClipBase}">
+                            <ItemsPresenter x:Name="PART_ITEMS_PRESENTER" HorizontalAlignment="Left"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="DefaultStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource {x:Type TreeViewItem}}" >
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <StackPanel IsItemsHost="True"/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="HorizontalAlignment" Value="{Binding HorizontalAlignment}"></Setter>
+                <Setter Property="IsExpanded" Value="True"></Setter>
+                <Setter Property="tsTimeline:FlexPanel.GridLength" Value="{Binding GridLength}"/>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
+                <Setter Property="Margin" Value="{Binding Margin}"/>
+            </Style>
 
             <Style x:Key="_TriggerClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource TriggerClipStyle}">
-                <Setter Property="X" Value="{Binding Value}"></Setter>
+                <Setter Property="X" Value="{Binding X}"></Setter>
+                <Setter Property="Canvas.Left" Value="{Binding X}"></Setter>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
             </Style>
 
             <Style x:Key="_HoldClipStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource HoldClipStyle}">
-            
-                <Setter Property="X" Value="{Binding X, Mode=TwoWay}">
-                </Setter>
-                <Setter Property="Size" Value="{Binding Width, Mode=TwoWay, Converter={StaticResource WidthConverter}}">
-                </Setter> 
-                
+                <Setter Property="Background" Value="{StaticResource CrossHatchBrush}"></Setter>
+                <Setter Property="Canvas.Left" Value="{Binding X}"></Setter>
+                <Setter Property="Width" Value="{Binding Width, Mode=TwoWay}"/>
+                <!--<Setter Property="Size" Value="{Binding Width, Mode=TwoWay, Converter={StaticResource WidthConverter}}"/>-->
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
             </Style>
 
             <Style x:Key="_BandClipStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource BandClipStyle}">
-                <Setter Property="X" Value="{Binding X, Mode=TwoWay}">
-                </Setter>
-                <Setter Property="Size" Value="{Binding Width, Mode=TwoWay, Converter={StaticResource WidthConverter}}">
+                <Setter Property="Background" Value="{StaticResource BandBrush}"></Setter>
+                <Setter Property="RenderOptions.EdgeMode" Value="Aliased"></Setter>
+                <Setter Property="Height" Value="{Binding Height}"></Setter>
+                <Setter Property="Canvas.Left" Value="{Binding X}"></Setter>
+                <Setter Property="Width" Value="{Binding Width, Mode=TwoWay}"/>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
+            </Style>
+            
+            <Style x:Key="TitleStyle"  TargetType="{x:Type tsTimeline:ClipBase}" >
+                <Setter Property="Height" Value="24"></Setter>
+                <Setter Property="Width" Value="80"/>
+                <Setter Property="Canvas.Left" Value="{Binding X}"></Setter>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type tsTimeline:ClipBase}">
+                            <Grid>
+                                <ContentPresenter ContentSource="Header"/>                            
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
                 </Setter>
             </Style>
 
-            <Style x:Key="_PointClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource PointClipStyle}">
+            <Style x:Key="_PointClipStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource PointClipStyle}">
+                <Setter Property="Width" Value="{Binding Width, FallbackValue=4}"></Setter>
+                <Setter Property="Height" Value="{Binding Height, FallbackValue=4}"></Setter>
                 <Setter Property="X" Value="{Binding X}"></Setter>
                 <Setter Property="Y" Value="{Binding Y}"></Setter>
+                <Setter Property="Background" Value="{Binding Background}"></Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
             </Style>
 
-            <Style x:Key="ItemPointClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource _PointClipStyle}">
-                <Setter Property="Updater" Value="{StaticResource ClipUpdater}"></Setter>
-            </Style>
 
             <Style x:Key="ContentStyle" TargetType="{x:Type tsTimeline:ClipBase}">
                 <Setter Property="Template">
@@ -69,18 +184,97 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
+            </Style>
+
+
+            <Style x:Key="ChartLineStyle" TargetType="{x:Type tsTimeline:ClipBase}">
+                <Setter Property="X" Value="{Binding WorldX}"></Setter>
+                <Setter Property="Y" Value="{Binding WorldY}"></Setter>
+                <Setter Property="tsTimeline:Ex.Width" Value="{Binding WorldWidth}"></Setter>
+                <Setter Property="tsTimeline:Ex.Height" Value="{Binding WorldHeight}"></Setter>
+                <Setter Property="Background" Value="{Binding Background, FallbackValue=Black}"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
+                              <Line
+                                X1="{TemplateBinding X}" 
+                                Y1="{TemplateBinding Y}"
+
+    StrokeThickness="2"
+                                Stroke="{Binding Background}">
+                                <Line.X2>
+                                    <MultiBinding ConverterParameter="(x+y)" Converter="{StaticResource AdditionConverter}">
+                                        <Binding Path="X" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                        <Binding Path="(tsTimeline:Ex.Width)" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Line.X2>
+                                <Line.Y2>
+                                    <MultiBinding ConverterParameter="(x+y)" Converter="{StaticResource AdditionConverter}">
+                                        <Binding Path="Y" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                        <Binding Path="(tsTimeline:Ex.Height)" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Line.Y2>
+                            </Line>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
+            </Style>
+
+            <Style x:Key="RendererStyle" TargetType="{x:Type tsTimeline:ClipBase}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
+                <EventSetter Event="Rendering"
+                     Handler="TreeViewItem_Rendering"/>
+
+            </Style>
+
+            <Style x:Key="ChartsStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource {x:Type TreeViewItem}}" >
+                <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <UniformGrid IsItemsHost="True" Columns="1" />
+                            <!--<tsTimeline:UniformPanel IsItemsHost="True" />-->
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="tsTimeline:FlexPanel.GridLength" Value="{Binding GridLength}"/>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type tsTimeline:ClipBase}">
+                            <ItemsPresenter x:Name="PART_ITEMS_PRESENTER" Margin="30,0,0,0" HorizontalAlignment="Left"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
             <Style x:Key="CountryStyle" TargetType="{x:Type tsTimeline:ClipBase}">
-                <Setter Property="Updater" Value="{StaticResource ClipUpdater}"></Setter>
+                <Setter Property="Canvas.Left" Value="{Binding UILeft}"></Setter>
+                <Setter Property="Canvas.Top" Value="{Binding UITop}"></Setter>
+                <Setter Property="Width" Value="{Binding UIWidth}"></Setter>
+                <Setter Property="Height" Value="{Binding UIHeight}"></Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
                             <Path x:Name="PART_PATH">
                                 <Path.Style>
                                     <Style TargetType="{x:Type Path}">
-                                        <!--<Setter Property="Data" Value="M19.375 36.7818V100.625C19.375 102.834 21.1659 104.625 23.375 104.625H87.2181C90.7818 104.625 92.5664 100.316 90.0466 97.7966L26.2034 33.9534C23.6836 31.4336 19.375 33.2182 19.375 36.7818Z"></Setter>-->
-                                        <Setter Property="Fill" Value="{StaticResource LandFill}"/>
+                                        <Setter Property="Fill" Value="{x:Static local:App.CountryBrush}"/>
                                         <Setter Property="Stroke" Value="{StaticResource LandStroke}"/>
                                         <Setter Property="StrokeThickness" Value="0.5"/>
                                         <Setter Property="StrokeLineJoin" Value="Round"/>
@@ -91,52 +285,304 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
             </Style>
 
             <Style x:Key="CountryItemStyle" TargetType="{x:Type tsTimeline:ClipBase}" >
+                <Setter Property="tsTimeline:CustomPanel.ArrangeRect" Value="{Binding Position, Mode=OneWayToSource}" />
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
+                            <Grid/>
                         </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
+            </Style>
+            <Style x:Key="ChartStyle"  TargetType="{x:Type tsTimeline:ClipBase}">
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <tsTimeline:ExpandPanel/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type tsTimeline:ClipBase}">
+                            <ItemsPresenter x:Name="PART_ITEMS_PRESENTER" HorizontalAlignment="Left"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
+            </Style>
+            <Style x:Key="ChartObjectsStyle"  TargetType="{x:Type tsTimeline:ClipBase}">
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <tsTimeline:ExpandPanel/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type tsTimeline:ClipBase}">
+                            <ItemsPresenter x:Name="PART_ITEMS_PRESENTER" HorizontalAlignment="Left"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
+            </Style>
 
+            <Style x:Key="TrackStyle"  TargetType="{x:Type tsTimeline:ClipBase}">
+                <Setter Property="Height" Value="{Binding Height}"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <tsTimeline:TrackPanel/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type tsTimeline:ClipBase}">
+                            <ItemsPresenter x:Name="PART_ITEMS_PRESENTER" HorizontalAlignment="Left"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <EventSetter Event="Loaded"
+                 Handler="TreeViewItem_Loaded"/>
+            </Style>
+
+            <Style x:Key="PlaylistStyle"  TargetType="{x:Type tsTimeline:ClipBase}">
+                <Setter Property="PanelType" Value="{Binding PanelType}"/>
+                <Setter Property="Direction" Value="{Binding Direction}"/>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <tsTimeline:CustomPanel 
+                                ViewportX="{x:Static local:App.viewportX}"
+                                ViewportY="{x:Static local:App.viewportY}"
+                        PanelType="{Binding PanelType, RelativeSource={RelativeSource AncestorType=TreeViewItem}}"                       
+                        Direction="{Binding Direction, RelativeSource={RelativeSource AncestorType=TreeViewItem}}"                      
+                        />
+                            <!--<tsTimeline:CustomPanel 
+                        PanelType="DirectionalStackPanel"                       
+                        Direction="Down"                      
+                        />-->
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type tsTimeline:ClipBase}">
+                            <ScrollViewer 
+                                x:Name="PART_SCROLL_VIEWER"
+                                HorizontalAlignment="Stretch" 
+                                          VerticalAlignment="Stretch"    
+                                          MinHeight="300"
+                                          MinWidth="400"
+                                          
+                                          Background="Transparent"
+                                          CanContentScroll="False"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Auto"
+                                          HorizontalContentAlignment="Left">
+
+                                <ItemsPresenter x:Name="PART_ITEMS_PRESENTER"  HorizontalAlignment="Left"/>
+                            </ScrollViewer>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <EventSetter Event="Loaded"
+                     Handler="TreeViewItem_Loaded"/>
+            </Style>
+
+            <Style x:Key="ProgressStyle"  TargetType="{x:Type tsTimeline:ClipBase}">
+                <Setter Property="tsTimeline:CustomPanel.ArrangeRect" Value="{Binding Position, Mode=OneWayToSource}" />
+                <Setter Property="Visibility" Value="{Binding Direction, Converter={StaticResource DirectionToVisibilityConverter}}"/>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <tsTimeline:TimelinePanel/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type tsTimeline:ClipBase}">
+                            <ItemsPresenter x:Name="PART_ITEMS_PRESENTER" HorizontalAlignment="Left"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
+            </Style>
+
+            <Style x:Key="ThumbStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource Timeline_Thumb}">
+                <Setter Property="Visibility" Value="{Binding Direction, Converter={StaticResource DirectionToVisibilityConverter}}"/>
+                <Setter Property="X" Value="{Binding X}"/>
+                <Setter Property="Width" Value="{Binding Width}"/>
+                <Setter Property="Height" Value="{Binding Height}"/>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
+                <Setter Property="Direction" Value="{Binding Direction}"/>
+                <Setter Property="HorizontalAlignment" Value="{Binding HorizontalAlignment}"/>
+                <Setter Property="VerticalAlignment" Value="{Binding VerticalAlignment}"/>
+                <Setter Property="Margin" Value="{Binding Margin}"/>
+                <Setter Property="Canvas.Left" Value="{Binding X}" />
+                <!--<Setter Property="Canvas.Top" Value="{Binding Y}" />-->
+            </Style>
+
+            <Style x:Key="_AreaStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource AreaStyle}">
+                <Setter Property="Visibility" Value="{Binding Direction, Converter={StaticResource DirectionToVisibilityConverter}}"/>
+                <Setter Property="X" Value="{Binding X}"></Setter>
+                <Setter Property="Y" Value="{Binding Y}"></Setter>
+                <Setter Property="Background" Value="{Binding Background}"></Setter>
+                <Setter Property="Width" Value="{Binding Width}"></Setter>
+                <Setter Property="Height" Value="{Binding Height}"></Setter>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
+                <Setter Property="Opacity" Value="{Binding Opacity}"></Setter>
+                <Setter Property="Canvas.Left" Value="{Binding X}" />
+                <Setter Property="Canvas.Top" Value="{Binding Y}" />
+            </Style>
+
+            <Style x:Key="_Area2Style"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource AreaStyle}">
+                <Setter Property="Visibility" Value="{Binding Direction, Converter={StaticResource DirectionToVisibilityConverter}}"/>
+                <Setter Property="X" Value="{Binding X}"></Setter>
+                <Setter Property="Y" Value="{Binding Y}"></Setter>
+                <Setter Property="Background" Value="{Binding Background}"></Setter>
+                <Setter Property="Width" Value="{Binding Width}"></Setter>
+                <Setter Property="Height" Value="{Binding Height}"></Setter>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
+                <Setter Property="Opacity" Value="{Binding Opacity}"></Setter>
+                <Setter Property="Canvas.Left" Value="{Binding X}" />
+                <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type tsTimeline:ClipBase}">
+                            <Grid x:Name="PART_AREA">
+                                <Grid.Resources>
+
+                                    <Grid x:Key="WallpaperVisual" Background="Black">
+                                        <Canvas>
+                                            <Viewbox Width="20" Height="20"
+                                                     Canvas.Left="0"
+                                                     Canvas.Top="15">
+                                                <Path Fill="#80AFB3A6" Data="{StaticResource Banjo}" ></Path>
+                                            </Viewbox>
+
+                                            <Viewbox Width="20" Height="20"
+                                                     Canvas.Left="40"
+                                                     Canvas.Top="15">
+                                                <Path Fill="#80AFB3A6" Data="{StaticResource Beer}"/>
+                                            </Viewbox>
+
+                                            <Viewbox Width="20" Height="20"
+                                                     Canvas.Left="20"
+                                                     Canvas.Top="55">
+                                                <Path Fill="#80AFB3A6" Data="{StaticResource Currencies}"/>
+                                            </Viewbox>
+
+                                            <!-- SVG #2 -->
+                                            <Viewbox Width="20" Height="20"
+                                                     Canvas.Left="60"
+                                                     Canvas.Top="55">
+                                                <Path Fill="#80AFB3A6" Data="{StaticResource Motorbike}"/>
+                                            </Viewbox>
+                                        </Canvas>
+                                    </Grid>
+                                </Grid.Resources>
+                                <Border Background="Gray"></Border>
+                                <!-- Main glass tint -->
+                                <Border
+                                    Background="#90FFFFFF"
+                                    BorderBrush="#80FFFFFF"
+                                    BorderThickness="1"/>
+
+                                <!-- Gloss highlight -->
+                                <Border IsHitTestVisible="False">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#90FFFFFF" Offset="0"/>
+                                            <GradientStop Color="#40FFFFFF" Offset="0.35"/>
+                                            <GradientStop Color="#10FFFFFF" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Border.Effect>
+                                        <DropShadowEffect
+                                            BlurRadius="15"
+                                            ShadowDepth="2"
+                                            Opacity="0.3"/>
+                                    </Border.Effect>
+                                </Border>
+
+                                <Grid>
+                                    <Grid.Background>
+                                        <VisualBrush Stretch="None"
+                                                     TileMode="Tile"
+                                                     Viewbox="0,0,80,80"
+                                                     ViewboxUnits="Absolute"
+                                                     Viewport="0,-15,80,80"
+                                                     ViewportUnits="Absolute">
+                                            <VisualBrush.Visual>
+                                                <StaticResource ResourceKey="WallpaperVisual"/>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Grid.Background>
+                                </Grid>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="_LineStyle"  TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource LineStyle}">
+                <Setter Property="X" Value="{Binding X}"></Setter>
+                <Setter Property="Y" Value="{Binding Y}"></Setter>
+                <Setter Property="Background" Value="{Binding Background}"></Setter>
+                <Setter Property="Width" Value="{Binding Width}"></Setter>
+                <Setter Property="Height" Value="{Binding Height}"></Setter>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
+                <Setter Property="Canvas.Left" Value="{Binding X}" />
+                <Setter Property="Canvas.Top" Value="{Binding Y}" />
             </Style>
 
             <local:CustomStyleSelector x:Key="CustomStyleSelector" 
                                        TriggerStyle="{StaticResource _TriggerClipStyle}"
                                        HoldStyle="{StaticResource _HoldClipStyle}"
                                        BandStyle="{StaticResource _BandClipStyle}"
-                                       PointStyle="{StaticResource ItemPointClipStyle}"
-                                       CountryStyle="{StaticResource CountryItemStyle}"
-                                       ContentStyle="{StaticResource ContentStyle}"
-                                       >
-            </local:CustomStyleSelector>
-
-            <local:CustomStyleSelector x:Key="CustomCombinedStyleSelector" 
-                                       TriggerStyle="{StaticResource _TriggerClipStyle}"
-                                       HoldStyle="{StaticResource _HoldClipStyle}"
-                                       BandStyle="{StaticResource _BandClipStyle}"
                                        PointStyle="{StaticResource _PointClipStyle}"
                                        CountryStyle="{StaticResource CountryStyle}"
+                                       CountryItemStyle="{StaticResource CountryItemStyle}"
                                        ContentStyle="{StaticResource ContentStyle}"
+                                       DefaultStyle="{StaticResource DefaultStyle}"
+                                       MasterStyle="{StaticResource MasterStyle}"
+                                       ConfigStyle="{StaticResource ConfigStyle}"
+                                       ChartStyle="{StaticResource ChartStyle}"
+                                       ChartObjectsStyle="{StaticResource ChartObjectsStyle}"
+                                       ChartsStyle="{StaticResource ChartsStyle}"                             
+                                       ProgressStyle="{StaticResource ProgressStyle}"
+                                       RendererStyle="{StaticResource RendererStyle}"
+                                       PlaylistStyle="{StaticResource PlaylistStyle}"
+                                       TrackStyle="{StaticResource TrackStyle}"
+                                       AreaStyle="{StaticResource _AreaStyle}"
+                                       Area2Style="{StaticResource _Area2Style}"
+                                       LineStyle="{StaticResource _LineStyle}"
+                                       ThumbStyle="{StaticResource ThumbStyle}"
+                                       TitleStyle="{StaticResource TitleStyle}"
+                                       ChartLineStyle="{StaticResource ChartLineStyle}"
                                        >
             </local:CustomStyleSelector>
+            
 
             <local:ClipTemplateSelector x:Key="ClipTemplateSelector">
                 <local:ClipTemplateSelector.TrackTemplate>
-                    <HierarchicalDataTemplate DataType="{x:Type local:TrackViewModel}" ItemsSource="{Binding Clips}">
+                    <HierarchicalDataTemplate DataType="{x:Type local:ViewModel}" ItemsSource="{Binding Children}">
                         <Grid>
-                            <!--<Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="10"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                            </Grid.ColumnDefinitions>-->
                             <TextBlock Text="{Binding Name}"/>
-                            <!--<TextBox  Text="{Binding Min , Converter={StaticResource ValueConverter}, Mode=OneWay}" IsReadOnly="True" Grid.Column="2"/>
-                            <TextBox  Text="{Binding Max , Converter={StaticResource ValueConverter}, Mode=OneWay}" IsReadOnly="True" Grid.Column="3"/>-->
                         </Grid>
                     </HierarchicalDataTemplate>
                 </local:ClipTemplateSelector.TrackTemplate>
@@ -146,110 +592,104 @@
                 <local:ClipTemplateSelector.CountryNameTemplate>
 
                     <DataTemplate>
-                        <TextBlock Text="{Binding Name}" FontWeight="DemiBold"/>
+                        <TextBlock Text="{Binding Name}"  
+                                   Width="240" FontWeight="DemiBold" 
+                                   FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </DataTemplate>
                 </local:ClipTemplateSelector.CountryNameTemplate>
                 <local:ClipTemplateSelector.CountryFlagTemplate>
-                    <DataTemplate>
-                        <Image Source="{Binding Name, Converter={StaticResource CountryIdToFlagImageSourceConverter}}"
-                                   Opacity="0.9"
-                          Stretch="Uniform" Width="60" Height="15" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <DataTemplate xmlns:flag="clr-namespace:Flags.Icons.WPF;assembly=Flags.Icons.WPF">
+                        <!--<Image Source="{Binding Name, Converter={StaticResource CountryIdToFlagImageSourceConverter}}"
+                                   Opacity="1"
+                               HorizontalAlignment="Left"
+                          Stretch="Uniform" Width="240" RenderOptions.BitmapScalingMode="HighQuality" />-->
+                        <flag:FlagIcon Twemoji="{Binding Name, Converter={StaticResource IdToEnumConverter}}" Width="240" Height="40"  />
                     </DataTemplate>
                 </local:ClipTemplateSelector.CountryFlagTemplate>
+                <local:ClipTemplateSelector.SpeedTemplate>
+                    <DataTemplate DataType="{x:Type local:ViewModel}">
+                        <local:SpeedUserControl/>
+                    </DataTemplate>
+                </local:ClipTemplateSelector.SpeedTemplate>
+                <local:ClipTemplateSelector.ServiceTemplate>
+                    <DataTemplate DataType="{x:Type local:ViewModel}">
+                        <local:ServiceUserControl Margin="1"/>
+                    </DataTemplate>
+                </local:ClipTemplateSelector.ServiceTemplate>         
+                <local:ClipTemplateSelector.TitleTemplate>
+                    <DataTemplate DataType="{x:Type local:ViewModel}">
+                        <TextBlock Text="{Binding Name}"  
+                                   FontWeight="DemiBold" 
+                                   Opacity="0.3"
+                                   FontSize="16" 
+                                   VerticalAlignment="Center" 
+                                   HorizontalAlignment="Center"/>
+                    </DataTemplate>
+                </local:ClipTemplateSelector.TitleTemplate>
+                <local:ClipTemplateSelector.TimeTemplate>
+                    <DataTemplate DataType="{x:Type local:TimeService}">
+                        <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4" Padding="4" Margin="4">
+                       
+                        <TextBlock Text="{Binding Progress, StringFormat=F2}" 
+                                   FontWeight="DemiBold" 
+                                   Opacity="0.8"
+                                   FontSize="14" 
+                                   Width="40"
+                                   
+                                   VerticalAlignment="Center" 
+                                   HorizontalAlignment="Center"/>
+                        </Border>
+                    </DataTemplate>
+                </local:ClipTemplateSelector.TimeTemplate>
+                <local:ClipTemplateSelector.ChartTypeTemplate>
+                    <DataTemplate DataType="{x:Type local:ViewModel}">
+                        <Border BorderBrush="Gray" VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch" BorderThickness="1" CornerRadius="4" Margin="4">
+                            <Grid >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock VerticalAlignment="Center" Text="Type" Margin="2" 
+                     >
+                                </TextBlock>
+                                <ComboBox x:Name="PART_COMBOBOX" VerticalAlignment="Center" Margin="2" Grid.Row="1" 
+                                          Background="Transparent"
+                                          BorderBrush="Transparent"
+                                          BorderThickness="0"
+                    SelectedItem="{Binding Enum, Mode=TwoWay}" 
+                    ItemsSource="{x:Static local:App.ChartTypes}"
+                     Width="70">
+                                </ComboBox>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                
+                </local:ClipTemplateSelector.ChartTypeTemplate>
+
             </local:ClipTemplateSelector>
 
-            <DataTemplate DataType="{x:Type local:PlayerViewModel}">
-                <local:MediaUserControl  Margin="4"/>
+            <DataTemplate DataType="{x:Type local:MediaService}">
+                <local:MediaUserControl  Margin="2"/>
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type renderers:Viewport}">
                 <local:ViewportUserControl  Margin="4"/>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type local:SpeedViewModel}">
-                <local:SpeedUserControl Margin="4"/>
-            </DataTemplate>
 
-            <DataTemplate DataType="{x:Type local:ConfigurationViewModel}">
-                <local:ConfigurationUserControl Margin="4"/>
-            </DataTemplate>
 
-            <DataTemplate DataType="{x:Type local:ProgressViewModel}">
+
+
+            <DataTemplate x:Key="Progress" DataType="{x:Type local:ViewModel}">
                 <local:ProgressUserControl Margin="4" ValueConverter="{StaticResource ValueConverter}"/>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type local:MainWindowViewModel}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+            <HierarchicalDataTemplate DataType="{x:Type renderers:Notification}" ItemsSource="{Binding Children, Mode=OneWay}">
+                <TextBlock Text="{Binding Key}"></TextBlock>
+            </HierarchicalDataTemplate>
 
-                        <StackPanel>
-                            <TextBlock Text="X" FontWeight="DemiBold"  HorizontalAlignment="Center"></TextBlock>
-                            <ContentControl Content="{Binding ViewportX}"/>
-                        </StackPanel>
 
-                        <StackPanel  Grid.Column="1">
-                            <TextBlock Text="Y" FontWeight="DemiBold"  HorizontalAlignment="Center"></TextBlock>
-                            <ContentControl Content="{Binding ViewportY}" Grid.Column="0"/>
-                        </StackPanel>
-
-                        <StackPanel  Grid.Column="2">
-                            <TextBlock Text="Y_" FontWeight="DemiBold" HorizontalAlignment="Center"></TextBlock>
-                            <ContentControl Content="{Binding ViewportItemY}" Grid.Column="0"/>
-                        </StackPanel>
-                        <ContentControl Content="{Binding Player}" Grid.Column="3"/>
-                        <ContentControl Content="{Binding Speed}" Grid.Column="4"/>
-                        <ContentControl Content="{Binding Progress}" Grid.Column="5"/>
-                        <ContentControl Content="{Binding Configuration}" Grid.Column="6"/>
-                    </Grid>
-
-                    <tsTimeline:CombinedTimeline 
-                        x:Name="CombinedTimeline"
-                        ValueConverter="{StaticResource ValueConverter}"
-                        Grid.Row="1"
-                        Value="{Binding Progress.Progress, Mode=TwoWay}"
-                        XAxisFactory="{Binding Configuration.XAxisFactory}"
-                        XRenderer="{Binding Configuration.XAxisRenderer}"
-                        YAxisFactory="{Binding Configuration.YAxisFactory}"
-                        YRenderer="{Binding Configuration.YAxisRenderer}"
-                        PanelType="{Binding Configuration.ChartType, Converter={StaticResource PanelTypeConverter}}"                      
-                        Direction="{Binding Configuration.CombinedTimelineDirection, Mode=OneWay}"
-                        ViewportX="{Binding ViewportX}"
-                        ViewportY="{Binding ViewportY}"
-                        ItemsSource="{Binding Player.Master.Tracks}"
-                        OffsetX="{Binding ElementName=TsTimeline, Path=OffsetX, Mode=OneWay}"
-                        ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
-                        ItemContainerStyleSelector="{StaticResource CustomCombinedStyleSelector}">
-                    </tsTimeline:CombinedTimeline>
-
-                    <tsTimeline:TsTimeline 
-                            x:Name="TsTimeline"
-                        ValueConverter="{StaticResource ValueConverter}"
-                        Grid.Row="2"     
-                        Value="{Binding Progress.Progress, Mode=TwoWay}"
-                        Direction="{Binding Configuration.TimelineDirection}"
-                        ViewportX="{Binding ViewportX}"
-                        ViewportY="{Binding ViewportItemY}"
-                        ItemsSource="{Binding Player.Slaves.Tracks}"
-                        ItemTemplateSelector="{StaticResource ClipTemplateSelector}"
-                        ItemContainerStyleSelector="{StaticResource CustomStyleSelector}">
-                    </tsTimeline:TsTimeline>
-
-                </Grid>
-            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

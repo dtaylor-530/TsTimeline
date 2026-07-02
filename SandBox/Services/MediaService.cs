@@ -1,28 +1,18 @@
 ﻿using System;
-using System.Diagnostics.Metrics;
 
 namespace SandBox
 {
-
-    public class PlayerViewModel : Notification
+    public class MediaService : ViewModel
     {
-
         private int _currentIndex = 0;
-        private double _progress;
         private bool _isPlaying;
-        private PlayListViewModel master, slaves;
+        private double rate = 1 / 5000.0;
 
-        public PlayerViewModel()
+        public MediaService()
         {
         }
-        public PlayListViewModel Master { get => master; set { master = value; OnPropertyChanged(); } }
-
-        public PlayListViewModel Slaves { get => slaves; set { slaves = value; OnPropertyChanged(); } }
-
 
         public event Action<PlayState> PlayStateChanged;
-
-        public TrackViewModel CurrentTrack => Master.Tracks.Count > 0 ? (TrackViewModel)Master.Tracks[CurrentIndex] : null;
 
         public int CurrentIndex
         {
@@ -33,7 +23,19 @@ namespace SandBox
                 {
                     _currentIndex = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(CurrentTrack));
+                }
+            }
+        }
+
+        public double CurrentRate
+        {
+            get => rate;
+            set
+            {
+                if (rate != value)
+                {
+                    rate = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -69,23 +71,23 @@ namespace SandBox
 
         public void Next()
         {
-            CurrentIndex = (CurrentIndex + 1) % Master.Tracks.Count;
-            ResetProgress();
+            CurrentIndex++;
+            //ResetProgress();
         }
 
         public void Previous()
         {
             CurrentIndex--;
 
-            if (CurrentIndex < 0)
-                CurrentIndex = Master.Tracks.Count - 1;
+            //if (CurrentIndex < 0)
+            //    CurrentIndex = Playlist.Tracks.Count - 1;
 
-            ResetProgress();
+            //ResetProgress();
         }
 
 
         private void ResetProgress()
-        {            
+        {
             PlayStateChanged.Invoke(PlayState.Reset);
         }
     }
