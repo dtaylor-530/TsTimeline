@@ -1,6 +1,6 @@
 ﻿namespace SandBox
 {
-    public class Factory : Notification
+    public class BaseFactory : Notification
     {
         private int count = 10;
 

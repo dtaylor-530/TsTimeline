@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Windows;
-using System.Windows.Media;
-
-
-namespace SandBox
+﻿namespace SandBox
 {
 
-    public class ChartFactory : Factory
+    public class ChartFactory : BaseFactory
     {
         private ViewModel master;
         private ViewModel slaves;
@@ -20,7 +11,6 @@ namespace SandBox
 
         public ChartFactory()
         {
-
         }
 
         public void Load(ViewModel master, ViewModel slaves)
@@ -42,7 +32,7 @@ namespace SandBox
                     Key = Keys.TrackClip,
                     Order = i,
                     //Height = yLayout.CellLength,
-                    Children = andLines(children(5, colors.MoveNext() ? colors.Current : Colors.Black), colors.Current.WithOpacity(0.5)),
+                    Children = andLines(children(5, colors.MoveNext() ? ToMediaColor(colors.Current) : Colors.Black), ToMediaColor(colors.Current.WithOpacity(0.5))),
                 };
 
                 slaves.Add(track);
@@ -145,7 +135,11 @@ namespace SandBox
         public void Unload()
         {
             this.PropertyChanged -= (s, e) => handler(master, slaves);
+        }
 
+        public static Color ToMediaColor(System.Drawing.Color color)
+        {
+            return Color.FromArgb(color.A, color.R, color.G, color.B);
         }
     }
 }

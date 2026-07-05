@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace TsTimeline
 {
-    public class SelectorService : Notification
+    public class SelectorService 
     {
         public static SelectorService Default { get; } = new SelectorService();
         
@@ -91,7 +91,6 @@ namespace TsTimeline
 
         public void RaiseSelectionChanged()
         {
-            OnPropertyChanged(nameof(SelectedItem));
         }
     }
 }

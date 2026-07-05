@@ -1,6 +1,6 @@
 ﻿namespace SandBox
 {
-    class MathHelpers
+    public static class MathHelpers
     {
         /// <summary>
         /// quintic easing function

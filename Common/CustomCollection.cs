@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-
-namespace Renderers
+﻿
+namespace Common
 {
     internal class CustomCollection : IReadOnlyCollection<object>, INotifyCollectionChanged
     {

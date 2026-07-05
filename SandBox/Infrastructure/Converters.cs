@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Globalization;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using Flags.Icons;
-using TsTimeline;
+﻿using Flags.Icons;
 
 namespace SandBox
 {

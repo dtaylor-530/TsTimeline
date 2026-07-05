@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Formats.Tar;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Shapes;
+﻿using System.Windows.Shapes;
 
 namespace SandBox
 {

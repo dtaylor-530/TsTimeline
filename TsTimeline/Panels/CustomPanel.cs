@@ -6,45 +6,61 @@ namespace TsTimeline
 {
     public partial class CustomPanel : Canvas
     {
-        public static readonly DependencyProperty ViewportXProperty =
-            DependencyProperty.Register(nameof(ViewportX), typeof(Viewport), typeof(CustomPanel),
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange, change));
+        public static readonly DependencyProperty IncludeInMeasureProperty =
+            DependencyProperty.RegisterAttached(
+                "IncludeInMeasure",
+                typeof(bool),
+                typeof(CustomPanel),
+                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsMeasure));
+
+        public static void SetIncludeInMeasure(UIElement element, bool value)
+            => element.SetValue(IncludeInMeasureProperty, value);
+
+        public static bool GetIncludeInMeasure(UIElement element)
+            => (bool)element.GetValue(IncludeInMeasureProperty);
+
+
+        public static readonly DependencyProperty ScaleXProperty =
+            DependencyProperty.Register(nameof(ScaleX), typeof(double), typeof(CustomPanel), new PropertyMetadata(0d));
+
+        public static readonly DependencyProperty ScaleYProperty =
+            DependencyProperty.Register(nameof(ScaleY), typeof(double), typeof(CustomPanel), new PropertyMetadata(0d));
+
+        
+
+        public double ScaleX
+        {
+            get { return (double)GetValue(ScaleXProperty); }
+            set { SetValue(ScaleXProperty, value); }
+        }
+
+        public double ScaleY
+        {
+            get { return (double)GetValue(ScaleYProperty); }
+            set { SetValue(ScaleYProperty, value); }
+        }
 
         private static void change(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is CustomPanel panel && e.NewValue is Viewport viewport)
+            if (d is CustomPanel panel /*&& e.NewValue is Viewport viewport*/)
             {
-                viewport.PropertyChanged += (s, e) =>
-                {
-                    if (
-                    e.PropertyName == nameof(Viewport.Start) ||
-                    e.PropertyName == nameof(Viewport.End) ||
-                    e.PropertyName == nameof(Viewport.Zoom))
+                //viewport.PropertyChanged += (s, e) =>
+                //{
+                    //if (
+                    //e.PropertyName == nameof(Viewport.Start) ||
+                    //e.PropertyName == nameof(Viewport.End) ||
+                    //e.PropertyName == nameof(Viewport.Zoom))
                         panel.InvalidateMeasure();
-                };
+                //};
             }
         }
 
-        public static readonly DependencyProperty ViewportYProperty =
-            DependencyProperty.Register(nameof(ViewportY), typeof(Viewport), typeof(CustomPanel),
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange, change));
-
+    
         public static readonly DependencyProperty PanelTypeProperty =
             DependencyProperty.Register(nameof(PanelType), typeof(PanelType), typeof(CustomPanel),
                 new FrameworkPropertyMetadata(PanelType.None, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
 
-        public Viewport ViewportX
-        {
-            get { return (Viewport)GetValue(ViewportXProperty); }
-            set { SetValue(ViewportXProperty, value); }
-        }
-
-        public Viewport ViewportY
-        {
-            get { return (Viewport)GetValue(ViewportYProperty); }
-            set { SetValue(ViewportYProperty, value); }
-        }
-
+    
         public PanelType PanelType
         {
             get { return (PanelType)GetValue(PanelTypeProperty); }
@@ -90,15 +106,11 @@ namespace TsTimeline
             {
                 child.Measure(new Size(availableSize.Width, availableSize.Height));
                 var size = child.DesiredSize;
-                //var left = Canvas.GetLeft(child);
-                //var top = Canvas.GetTop(child);
 
-                //maxLeft = Math.Max(maxLeft, left + child.DesiredSize.Width);
-                //maxTop = Math.Max(maxTop, top + child.DesiredSize.Height);
-                if (child is ClipBase { X: { } x, Y: { } y, DataContext:Notification{ Key: "Point" } })
+                if (child is ClipBase { X: { } x, Y: { } y} && GetIncludeInMeasure(child))
                 {
-                    maxLeft = Math.Max(maxLeft, (x + child.DesiredSize.Width) * ViewportX.Zoom);
-                    maxTop = Math.Max(maxTop, (y + child.DesiredSize.Height) * ViewportY.Zoom);
+                    maxLeft = Math.Max(maxLeft, (x + child.DesiredSize.Width) * ScaleX);
+                    maxTop = Math.Max(maxTop, (y + child.DesiredSize.Height) *  ScaleY);
                 }
             }
             return new Size(maxLeft, maxTop);
@@ -130,7 +142,7 @@ namespace TsTimeline
             }
             //if (double.IsInfinity(availableSize.Height))
             //    return new Size(0, 0);
-            return new Size(maxWidth * ViewportX.Zoom, maxHeight * ViewportY.Zoom);
+            return new Size(maxWidth * ScaleX, maxHeight * ScaleY);
         }
     }
 }

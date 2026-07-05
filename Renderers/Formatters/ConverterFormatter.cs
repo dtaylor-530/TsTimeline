@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Data;
-
-namespace Renderers
+﻿namespace Renderers
 {
     public sealed class ConverterFormatter(IValueConverter _converter) : IFormatter
     {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Media;
-
-namespace SandBox
+﻿namespace SandBox
 {
     public partial class ViewModel : IUpdater
     {

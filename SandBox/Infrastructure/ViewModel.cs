@@ -1,11 +1,5 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Media3D;
-
-namespace SandBox
+﻿namespace SandBox
 {
-
     public partial class ViewModel : Notification
     {
         private double x, y, value = 1, width;

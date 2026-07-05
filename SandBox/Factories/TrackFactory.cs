@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows;
-using static SandBox.ChildrenConverter;
-
-namespace SandBox
+﻿namespace SandBox
 {
-    public class TrackFactory : Factory
+    public class TrackFactory : BaseFactory
     {
         private ViewModel master;
         private ViewModel slaves;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Renderers
+﻿namespace Renderers
 {
     public sealed class TimelineTickGenerator : ITickGenerator
     {

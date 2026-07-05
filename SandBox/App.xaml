@@ -5,7 +5,8 @@
              xmlns:renderers="clr-namespace:Renderers;assembly=Renderers"
              xmlns:flags="clr-namespace:FamFamFam.Flags.Wpf;assembly=FamFamFam.Flags.Wpf"
              xmlns:tsTimeline="clr-namespace:TsTimeline;assembly=TsTimeline"
-             xmlns:hex="http://hexinnovation.com/math">
+             xmlns:hex="http://hexinnovation.com/math"
+             xmlns:common="clr-namespace:Common;assembly=Common">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -167,8 +168,7 @@
                 <Setter Property="X" Value="{Binding X}"></Setter>
                 <Setter Property="Y" Value="{Binding Y}"></Setter>
                 <Setter Property="Background" Value="{Binding Background}"></Setter>
-                <EventSetter Event="Loaded"
-                     Handler="TreeViewItem_Loaded"/>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
             </Style>
 
 
@@ -365,8 +365,8 @@
                     <Setter.Value>
                         <ItemsPanelTemplate>
                             <tsTimeline:CustomPanel 
-                                ViewportX="{x:Static local:App.viewportX}"
-                                ViewportY="{x:Static local:App.viewportY}"
+                               ScaleX="{Binding Zoom, Source={x:Static local:App.viewportX}}"
+                               ScaleY="{Binding Zoom, Source={x:Static local:App.viewportY}}"
                         PanelType="{Binding PanelType, RelativeSource={RelativeSource AncestorType=TreeViewItem}}"                       
                         Direction="{Binding Direction, RelativeSource={RelativeSource AncestorType=TreeViewItem}}"                      
                         />
@@ -398,8 +398,7 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-                <EventSetter Event="Loaded"
-                     Handler="TreeViewItem_Loaded"/>
+                <EventSetter Event="Loaded" Handler="TreeViewItem_Loaded"/>
             </Style>
 
             <Style x:Key="ProgressStyle"  TargetType="{x:Type tsTimeline:ClipBase}">
@@ -673,7 +672,7 @@
                 <local:MediaUserControl  Margin="2"/>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type renderers:Viewport}">
+            <DataTemplate DataType="{x:Type common:Viewport}">
                 <local:ViewportUserControl  Margin="4"/>
             </DataTemplate>
 
@@ -685,7 +684,7 @@
                 <local:ProgressUserControl Margin="4" ValueConverter="{StaticResource ValueConverter}"/>
             </DataTemplate>
 
-            <HierarchicalDataTemplate DataType="{x:Type renderers:Notification}" ItemsSource="{Binding Children, Mode=OneWay}">
+            <HierarchicalDataTemplate DataType="{x:Type common:Notification}" ItemsSource="{Binding Children, Mode=OneWay}">
                 <TextBlock Text="{Binding Key}"></TextBlock>
             </HierarchicalDataTemplate>
 

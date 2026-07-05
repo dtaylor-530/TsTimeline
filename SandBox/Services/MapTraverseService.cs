@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Controls;
-
-namespace SandBox
+﻿namespace SandBox
 {
-
-
     public class MapTraverseService : Notification
     {
         private List<ViewModel> lines = [];

@@ -1,7 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-
-namespace SandBox
+﻿namespace SandBox
 {
     public partial class MediaUserControl : UserControl
     {

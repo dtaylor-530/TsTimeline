@@ -1,11 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Renderers;
 
 namespace TsTimeline
 {
-
 
     public partial class ClipBase : TreeViewItem, ISelectable
     {

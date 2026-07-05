@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using static SandBox.ChildrenConverter;
+﻿using static SandBox.ChildrenConverter;
 
 namespace SandBox
 {
@@ -29,7 +27,7 @@ namespace SandBox
             {
                 return TimeTemplate;
             }
-            if (item is Factory )
+            if (item is BaseFactory )
             {
                 return ServiceTemplate;
             }

@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-
-namespace SandBox
+﻿namespace SandBox
 {
     /// <summary>
     /// Interaction logic for ServiceUserControl.xaml

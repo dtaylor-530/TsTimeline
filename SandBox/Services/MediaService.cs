@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SandBox
+﻿namespace SandBox
 {
     public class MediaService : ViewModel
     {

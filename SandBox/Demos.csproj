@@ -24,7 +24,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TsTimeline\TsTimeline.csproj" />
+      <ProjectReference Include="..\Common\Common.csproj" />
+      <ProjectReference Include="..\Renderers\Renderers.csproj" />
+      <ProjectReference Include="..\TsTimeline\Views.csproj" />
     </ItemGroup>
 
 </Project>

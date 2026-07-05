@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Renderers
+﻿namespace Renderers
 {
     public sealed class NameLabelFormatter : IFormatter
     {

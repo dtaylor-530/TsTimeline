@@ -4,6 +4,7 @@
 
 
     <Style x:Key="PointClipStyle" TargetType="{x:Type tsTimeline:ClipBase}" BasedOn="{StaticResource {x:Type tsTimeline:ClipBase}}">
+        <Setter Property="tsTimeline:CustomPanel.IncludeInMeasure" Value="True"/>
         <Setter Property="Width" Value="4"></Setter>
         <Setter Property="Height" Value="4"></Setter>
         <Setter Property="Background" >

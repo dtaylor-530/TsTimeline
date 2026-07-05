@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Text;
-using System.Windows.Controls;
-using ISO3166;
-
-namespace SandBox
+﻿namespace SandBox
 {
     public partial class ViewModel
     {

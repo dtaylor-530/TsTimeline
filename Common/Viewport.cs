@@ -1,15 +1,5 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Controls;
-
-namespace Renderers
+﻿namespace Common
 {
-    public enum Axis
-    {
-        X, Y, Z
-    }
-
     public sealed class Viewport : Notification
     {
         private double _offset;
@@ -96,17 +86,6 @@ namespace Renderers
                 OnPropertyChanged();
             }
         }
-
-        //public double CursorPosition
-        //{
-        //    get => _cursorPosition;
-        //    set
-        //    {
-        //        if (_cursorPosition == value) return;
-        //        _cursorPosition = value;
-        //        OnPropertyChanged();
-        //    }
-        //}
 
         public int MinimumSpacing
         {

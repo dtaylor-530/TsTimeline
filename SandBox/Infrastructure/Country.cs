@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-
-namespace SandBox
+﻿namespace SandBox
 {
 
     public class Country : Notification, ISize

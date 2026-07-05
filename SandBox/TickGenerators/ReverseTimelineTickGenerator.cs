@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 namespace Renderers
 {
     public sealed class ReverseTimelineTickGenerator : ITickGenerator

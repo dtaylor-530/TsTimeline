@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Renderers
+﻿namespace Renderers
 {
     public interface ITickGenerator
     {

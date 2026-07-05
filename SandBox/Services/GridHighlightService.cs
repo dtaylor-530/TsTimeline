@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace SandBox
+﻿namespace SandBox
 {
     public class GridHighlightService : Notification
     {

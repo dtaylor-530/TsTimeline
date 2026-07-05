@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows;
-
-namespace Renderers
+﻿namespace Renderers
 {
     public sealed class XTopLabelLayer : IAxisLayer
     {

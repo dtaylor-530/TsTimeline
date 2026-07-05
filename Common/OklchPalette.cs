@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Media;
+﻿using System.Drawing;
 
 namespace SandBox
 {
@@ -181,7 +178,8 @@ namespace SandBox
             if (r < 0 || r > 1 || g < 0 || g > 1 || bl < 0 || bl > 1)
                 return null;
 
-            return Color.FromRgb(
+            return Color.FromArgb(
+                (byte)255,
                 (byte)(r * 255),
                 (byte)(g * 255),
                 (byte)(bl * 255));
