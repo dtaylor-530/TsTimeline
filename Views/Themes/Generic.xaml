@@ -1,0 +1,268 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:views="clr-namespace:Views">
+
+
+    <Style TargetType="{x:Type views:ClipBase}">
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <Canvas IsItemsHost="True" />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type views:ClipBase}">
+                    <ItemsPresenter />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+
+    <Style x:Key="BandClipStyle" TargetType="{x:Type views:ClipBase}" BasedOn="{StaticResource {x:Type views:ClipBase}}">
+        <Setter Property="Background" >
+            <Setter.Value>
+                <SolidColorBrush Color="CornflowerBlue" Opacity="0.5"></SolidColorBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type views:ClipBase}">
+                    <Border
+                                        x:Name="PART_CENTER"        
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Width="{TemplateBinding Width}"
+                                        Height="{TemplateBinding Height}" 
+                        ToolTip="{Binding (Canvas.Left), RelativeSource={RelativeSource TemplatedParent}}">
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+    <Style x:Key="HoldThumbStyle" TargetType="{x:Type Thumb}" >
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource AncestorType=views:ClipBase}}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <!--<Setter Property="Height" Value="{Binding ActualHeight , RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}" />-->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}"
+                         BorderBrush="{TemplateBinding BorderBrush}"
+                         BorderThickness="{TemplateBinding BorderThickness}"
+                         Width="{TemplateBinding Width}"
+                         Height="{TemplateBinding Height}"
+                         CornerRadius="2" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="HoldClipStyle" TargetType="{x:Type views:ClipBase}" >
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <views:HoldPanel/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type views:ClipBase}">
+                    <ItemsPresenter/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="PointClipStyle" TargetType="{x:Type views:ClipBase}" BasedOn="{StaticResource {x:Type views:ClipBase}}">
+        <Setter Property="views:CustomPanel.IncludeInMeasure" Value="True"/>
+        <Setter Property="Width" Value="4"></Setter>
+        <Setter Property="Height" Value="4"></Setter>
+        <Setter Property="Background" >
+            <Setter.Value>
+                <SolidColorBrush Color="Coral" Opacity="0.5"></SolidColorBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type views:ClipBase}" >
+                    <Ellipse
+                      x:Name="PART_POINT" 
+                      Fill="{TemplateBinding Background}"
+                      Width="{TemplateBinding Width}"
+                      Height="{TemplateBinding Height}" >
+                        <Ellipse.ToolTip>
+                            <StackPanel>
+                                <TextBlock Text="{Binding X, RelativeSource={RelativeSource TemplatedParent}}"></TextBlock>
+                                <TextBlock Text="{Binding Y, RelativeSource={RelativeSource TemplatedParent}}"></TextBlock>
+                            </StackPanel>
+                        </Ellipse.ToolTip>
+                    </Ellipse>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="Timeline_Thumb"  TargetType="{x:Type views:ClipBase}" >
+        <Style.Resources>
+            <Style TargetType="Thumb">
+                <!--<Setter Property="Height"
+          Value="{Binding ActualHeight , RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}" />-->
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Thumb">
+                            <Path  x:Name="PART_Path" 
+                                  RenderTransformOrigin="0.5,0.5"
+                                  HorizontalAlignment="Center"                                       
+                                          SnapsToDevicePixels="True"
+                                          UseLayoutRounding="True"                                   
+                                          Data="M10,0 
+                                          H50 V40 
+                                          H50 L30,65 
+                                          L10,40 
+                                          Z"
+                                  Stretch="Uniform" 
+                                  Height="{TemplateBinding Height}" 
+                                  Stroke="Gray">
+                                <Path.Fill>
+                                    <SolidColorBrush Opacity="0.3" Color="Gray"></SolidColorBrush>
+                                </Path.Fill>
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform
+                                           Angle="{Binding Direction,
+                           RelativeSource={RelativeSource AncestorType=views:ClipBase},
+                                           ConverterParameter=Angle,
+                           Converter={x:Static views:DirectionConverter.Instance}}" />
+
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                            <ControlTemplate.Triggers>
+                                <!-- When dragging -->
+                                <Trigger Property="IsDragging" Value="True">
+                                    <Setter TargetName="PART_Path"
+                                                               Property="Fill"
+                                                               Value="BlueViolet"/>
+                                </Trigger>
+                                <Trigger Property="IsDragging" Value="True">
+                                    <Setter TargetName="PART_Path"
+                                                               Property="Fill"
+                                                               Value="BlueViolet"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="BorderBrush" Value="Red" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Style.Resources>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type views:ClipBase}">
+                    <Thumb x:Name="PART_THUMB" 
+                           Cursor="Hand" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--<Style x:Key="Timeline_Line"  TargetType="{x:Type views:ClipBase}">
+       <Setter Property="Template">
+           <Setter.Value>
+               <ControlTemplate>
+                   <Rectangle Fill="Plum"
+                              x:Name="PART_LINE"  
+                              Width="{TemplateBinding Width}"
+                              Height="{TemplateBinding Height}"          
+                              Margin="0,0,0,0">                             
+                   </Rectangle>
+               </ControlTemplate>
+           </Setter.Value>
+       </Setter>
+   </Style>-->
+
+    <SolidColorBrush Color="#FF3BE400" Opacity="0.5" x:Key="Color"/>
+
+    <Style x:Key="LineStyle"  TargetType="{x:Type views:ClipBase}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type views:ClipBase}">
+                    <Rectangle 
+                              x:Name="PART_LINE" 
+                              Fill="{TemplateBinding Background}"
+                              Opacity="{TemplateBinding Opacity}"
+                              Width="{TemplateBinding Width}"
+                              Height="{TemplateBinding Height}"          
+                              Margin="0,0,0,0">
+                    </Rectangle>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="AreaStyle"  TargetType="{x:Type views:ClipBase}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type views:ClipBase}">
+                    <Rectangle 
+                              x:Name="PART_AREA" 
+                              Fill="{Binding Background, RelativeSource={RelativeSource Mode=TemplatedParent}, FallbackValue={StaticResource Color}}"
+                              Opacity="{TemplateBinding Opacity}"
+                              Width="{TemplateBinding Width}"
+                              Height="{TemplateBinding Height}"          
+                              Margin="0,0,0,0">
+                    </Rectangle>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="TriggerClipStyle" TargetType="{x:Type views:ClipBase}" BasedOn="{StaticResource {x:Type views:ClipBase}}">
+        <Style.Resources>
+            <Style TargetType="Thumb">
+                <Setter Property="Height"
+                        Value="{Binding ActualHeight , RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}" />
+                <Setter Property="Width" Value="20" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Path Stroke="{TemplateBinding BorderBrush}"
+                                  Margin="{TemplateBinding Padding}"
+                                  Fill="{TemplateBinding Background}"
+                                  Stretch="Fill"
+                                  StrokeThickness="1"
+                                  Data="M 0,0 L 1,1 L 0,2 L -1,1 Z" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="BorderBrush" Value="Red" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Style.Resources>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Thumb x:Name="PART_THUMB" Background="OrangeRed" Opacity="0.7" Padding="6,3"         Cursor="Hand"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

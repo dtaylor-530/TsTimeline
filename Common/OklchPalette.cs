@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace SandBox
+namespace Common
 {
     public static class OklchPalette
     {

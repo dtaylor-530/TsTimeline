@@ -1,4 +1,4 @@
-﻿namespace SandBox
+﻿namespace Common
 {
     public enum PlayState
     {

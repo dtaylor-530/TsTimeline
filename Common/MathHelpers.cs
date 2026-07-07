@@ -1,4 +1,4 @@
-﻿namespace SandBox
+﻿namespace Common
 {
     public static class MathHelpers
     {
