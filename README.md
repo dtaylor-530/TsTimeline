@@ -1,7 +1,5 @@
-# TsTimiline
-C# WPF Timeline Control
+C# WPF Chart Controls
 
-WPF にてタイムラインをレンダリングするためのコントールです。
-つまみ部分に関してはThumbStyles.xamlをインポートせずに独自で定義することでカスタマイズ可能です。
+![](https://github.com/p4j4dyxcry/TsTimeline/blob/master/Images/Bands.png)
 
-![](https://github.com/p4j4dyxcry/TsTimeline/blob/master/ScreenShots/01.gif)
+![](https://github.com/p4j4dyxcry/TsTimeline/blob/master/Images/Charts.png)
